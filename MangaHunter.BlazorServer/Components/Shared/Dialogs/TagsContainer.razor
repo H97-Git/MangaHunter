@@ -1,0 +1,80 @@
+<MudDialog>
+    <TitleContent>
+        Select Tags :
+    </TitleContent>
+    <DialogContent>
+        <Tags Included="Included" Excluded="Excluded" Click="OnTagsClick"/>
+    </DialogContent>
+    <DialogActions>
+        <MudButton StartIcon="@Icons.Filled.Close" OnClick="Cancel">Cancel</MudButton>
+        <MudSpacer/>
+        <MudButton StartIcon="@Icons.Rounded.SettingsBackupRestore" OnClick="Reset">Reset</MudButton>
+        <MudButton StartIcon="@Icons.Filled.AddBox" OnClick="Apply">Apply</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    protected MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public List<Guid> Included { get; set; } = new();
+
+    [Parameter]
+    public List<Guid> Excluded { get; set; } = new();
+
+    protected override void OnParametersSet()
+    {
+        MudDialog.Options.FullWidth = true;
+        MudDialog.Options.MaxWidth = MaxWidth.Large;
+        MudDialog.SetOptions(MudDialog.Options);
+    }
+
+    private void HandleTagList(MangadexTag tag)
+    {
+        var guid = new Guid(tag.Id);
+        var findIncluded = Included.Find(x => x.Equals(guid));
+        var findExcluded = Excluded.Find(x => x.Equals(guid));
+        if (findIncluded.Equals(new Guid()) && findExcluded.Equals(new Guid()))
+        {
+            Included.Add(new Guid(tag.Id));
+        }
+        else if (findExcluded.Equals(new Guid()))
+        {
+            Included.Remove(new Guid(tag.Id));
+            Excluded.Add(new Guid(tag.Id));
+        }
+        else
+        {
+            Excluded.Remove(new Guid(tag.Id));
+        }
+    }
+
+    private void OnTagsClick(MangadexTag tag)
+    {
+        HandleTagList(tag);
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void Reset()
+    {
+        Included.Clear();
+        Excluded.Clear();
+    }
+
+    private void Apply()
+    {
+    //Tuple didn't work and to avoid creating a new class SearchQueryParameters is used here but it's useless
+        MudDialog.Close(DialogResult.Ok(new SearchQueryParameters
+        {
+            IncludeTags = Included,
+            ExcludeTags = Excluded,
+        }));
+    }
+
+}

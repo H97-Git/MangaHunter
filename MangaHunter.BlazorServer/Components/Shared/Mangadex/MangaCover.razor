@@ -1,0 +1,33 @@
+@using MangaHunter.Contracts.Common
+@using ImgProxy
+<MudTooltip Arrow="true" Placement="Placement.Top" Text="@Mangadex?.Title.EnglishOrDefault">
+    <MudImage Class="@Class"
+              ObjectFit="ObjectFit.Cover"
+              Src="@Src"
+              Height="185"
+              Width="130"/>
+    @* Height="195" *@
+    @* Width="160"/> *@
+</MudTooltip>
+
+@code {
+    [Inject]
+    protected IWebHostEnvironment Environment { get; set; }
+    
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public MangadexDto? Mangadex { get; set; }
+
+    private string Src => ImgProxy(Mangadex?.CoverArt?.Thumbnail512Px.ToString());
+
+    protected override bool ShouldRender() => Mangadex is not null;
+        const string salt = "68656C6C6F";
+        const string key = "736563726574";
+
+    private string ImgProxy(string? src) => ImgProxyBuilder.New
+        .WithEndpoint(Environment.IsProduction() ? "https://cdn.mangahunter.org" : "http://localhost:8080")
+        .WithCredentials(key, salt)
+        .Build(src, encode: true);
+}

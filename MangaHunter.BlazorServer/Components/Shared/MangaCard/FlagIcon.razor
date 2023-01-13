@@ -1,0 +1,36 @@
+<MudTooltip Arrow="true" Placement="Placement.Top" Text="@tooltipText">
+    <MudAvatar Class="noBorder"
+               Color="Color.Transparent"
+               Image="@_src"
+               Size="Size.Large"
+               Variant="Variant.Outlined"/>
+</MudTooltip>
+
+@code {
+
+    [Parameter]
+    public string OriginalLanguage { get; set; }
+
+    private string tooltipText => OriginalLanguage switch{
+        "ja" =>
+            "Manga",
+        "zh" =>
+            "Manhua",
+        "ko" =>
+            "Manhwa",
+        _=> "Manga ?"
+        };
+
+    private string _src =>
+        OriginalLanguage switch
+        {
+            "ja" =>
+                "ico/flags/flag-japan-circle.svg",
+            "zh" =>
+                "ico/flags/flag-china-circle.svg",
+            "ko" =>
+                "ico/flags/flag-south_korea-circle.svg",
+            _ => "ico/flags/flag-japan-circle.svg"
+            };
+
+}

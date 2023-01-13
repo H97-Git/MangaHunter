@@ -1,0 +1,37 @@
+@using MangaHunter.Contracts.Common
+<MudMenu Label="Tags" EndIcon="@Icons.Filled.KeyboardArrowDown" > @*Class="mx-2"*@
+    <ChildContent>
+        @{
+            var groupBy = Mangadex.Tags.GroupBy(x => x.Group);
+            @foreach (var tags in groupBy)
+            {
+                // var variant = _variant();
+                <MudMenuItem>
+                    <MudText Typo="Typo.body2">@tags.Key</MudText>
+                    @foreach (var tag in tags)
+                    {
+                        <MudChip Label="true" Variant="@_variant()">@tag.Name.EnglishOrDefault</MudChip>
+                    }
+                </MudMenuItem>
+            }
+        }
+    </ChildContent>
+</MudMenu>
+
+@code {
+
+    [Parameter]
+    public MangadexDto Mangadex { get; set; }
+
+    private static Variant _variant()
+    {
+        return new Random().Next(3) switch
+        {
+            1 => Variant.Filled,
+            2 => Variant.Outlined,
+            3 => Variant.Text,
+            _ => Variant.Text
+            };
+    }
+
+}

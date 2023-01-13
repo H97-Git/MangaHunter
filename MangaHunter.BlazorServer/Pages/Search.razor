@@ -1,0 +1,131 @@
+@page "/search"
+
+<PageHeader Title="Search"/>
+
+<MudPaper Class="pa-10 mb-8" Elevation="3">
+    @* SEARCH BAR *@
+    <MudStack Row="true">
+        <SearchContainer Search="OnSearchMangaDex"/>
+        <MudButton OnClick="OnOpenTags">Tags</MudButton>
+    </MudStack>
+    @* TAGS PANEL *@
+</MudPaper>
+
+@* SEARCH RESULT *@
+@switch (Responses)
+{
+    case null:
+        break;
+    case {Count:0}:
+        <MudText>No results !</MudText>
+        break;
+    default:
+        <SearchResultContainer Add="AddToListFromSearch" HunterResponses="@Responses"/>
+        break;
+}
+
+@code {
+
+    [Inject]
+    protected IDialogService DialogService { get; set; }
+
+    [Inject]
+    protected NavigationManagerHandler NavigationManagerHandler { get; set; }
+
+    [Inject]
+    protected IApiService ApiService { get; set; }
+
+    [Inject]
+    protected ISnackbar Snackbar { get; set; }
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "title")]
+    public string? Query { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "included")]
+    public string? IncludedFromQuery { get; set; }
+
+    private List<Guid> IncludedTags { get; set; } = new();
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "excluded")]
+    public string? ExcludedFromQuery { get; set; }
+
+    private List<Guid> ExcludedTags { get; set; } = new();
+
+    private List<HunterResponse>? Responses { get; set; }
+
+    private void OnSearchMangaDex(string query)
+    {
+        NavigationManagerHandler.SearchHandler(query, IncludedTags, ExcludedTags);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Query is not null)
+        {
+            QueryParametersToGuids(IncludedFromQuery, IncludedTags);
+            QueryParametersToGuids(ExcludedFromQuery, ExcludedTags);
+            await FetchData();
+        }
+    }
+
+    private async Task FetchData()
+    {
+        SearchQueryParameters searchQueryParameters = new()
+        {
+            Title = Query,
+            IncludeTags = IncludedTags,
+            ExcludeTags = ExcludedTags,
+            Amount = 20
+        };
+        var responses = await ApiService.Search(searchQueryParameters);
+        if (!responses.IsError)
+        {
+            Responses = responses.Value;
+        }
+    }
+
+    private async Task AddToListFromSearch(HunterResponse hunterResponse)
+    {
+        var hunterDto = hunterResponse.HunterDto!;
+        hunterDto.Username = UserState.Username;
+        hunterDto.Status = ReadingStatusDto.WantToRead;
+        var result = await ApiService.AddManga(username: UserState.Username, hunterDto: hunterDto);
+        if (result.IsError)
+        {
+            Snackbar.Add("Error", Severity.Error);
+            Snackbar.Add(result.FirstError.Description, Severity.Error);
+        }
+        else
+        {
+            Snackbar.Add("Good", Severity.Success);
+        }
+    }
+
+    private static void QueryParametersToGuids(string? src, List<Guid> guids)
+    {
+        guids.Clear();
+        if (string.IsNullOrEmpty(src))
+            return;
+        guids.AddRange(src.Split(",").Select(guid => new Guid(guid)));
+    }
+
+    private async Task OnOpenTags()
+    {
+        var parameters = new DialogParameters {["Included"] = IncludedTags, ["Excluded"] = ExcludedTags};
+        var dialog = await DialogService.ShowAsync<TagsContainer>("TagsContainer",parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            var data = (SearchQueryParameters) result.Data;
+            if (data.IncludeTags != null) IncludedTags = data.IncludeTags.ToList();
+            if (data.ExcludeTags != null) ExcludedTags = data.ExcludeTags.ToList();
+        }
+    }
+
+}

@@ -1,0 +1,79 @@
+@using MangaHunter.Contracts.Hunter
+@using MangaHunter.Contracts.Common
+@using MangaHunter.BlazorServer.Common.Services
+@using MangaHunter.BlazorServer.Common
+@inject IApiService ApiService
+<MudExpansionPanel Text="Latest Releases" IsExpandedChanged="ExpandedChanged">
+    @if (_isLoading)
+    {
+        <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
+    }
+    @if (RssMangaUpdates is not null && RssMangaUpdates.Channel.Item is not {Count:0})
+    {
+        var groups = RssMangaUpdates.Channel.Item.GroupBy(x => x.Description);
+        foreach (var group in groups)
+        {
+            var groupKey = group.Key.ToUpper();
+            foreach (var item in group.Take(1))
+            {
+                <MudStack>
+                    <MudTooltip Arrow="true" Placement="Placement.Top" Text="@groupKey">
+                        <MudChip Style="overflow: hidden" Color="Color.Transparent">@groupKey</MudChip>
+                    </MudTooltip>
+                    <MudText>@CleanTitle(item.Title)</MudText>
+                </MudStack>
+            }
+        }
+    }
+</MudExpansionPanel>
+
+@code {
+
+    [Parameter]
+    public string Username { get; set; }
+
+    [Parameter]
+    public string MangadexId { get; set; }
+
+    private RssMangaUpdatesDto? RssMangaUpdates { get; set; }
+
+    private bool _firstExpanded = false;
+    private bool _isLoading = false;
+
+    private async Task ExpandedChanged(bool isExpanded)
+    {
+        if (!_firstExpanded)
+        {
+            _isLoading = true;
+            var hunterResponse = await ApiService.GetMangaById(Username, MangadexId, new QueryParameters {HasMangaUpdatesRss = true});
+            if (!hunterResponse.IsError)
+            {
+                RssMangaUpdates = hunterResponse.Value.RssMangaUpdatesDto;
+            }
+            _isLoading = false;
+        }
+        _firstExpanded = true;
+    }
+
+    private string CleanTitle(string src)
+    {
+        var title = RssMangaUpdates?.Channel.Title.Replace(" - Releases on MangaUpdates", "");
+        if (title == null) return string.Empty;
+
+        var final = "";
+        var splitInfos = src.Replace(title, "").ToUpper().Split(" ");
+        foreach (var info in splitInfos)
+        {
+            if (info.Contains("V."))
+            {
+                final += info.Replace("V.", "Volume : ");
+            }
+            if (info.Contains("C."))
+            {
+                final += info.Replace("C.", " Chapter : ");
+            }
+        }
+        return final;
+    }
+
+}

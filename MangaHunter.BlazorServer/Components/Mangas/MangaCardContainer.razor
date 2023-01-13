@@ -1,0 +1,97 @@
+@using MangaHunter.BlazorServer.Common
+@using Serilog
+@using MudBlazor
+@using MangaHunter.BlazorServer.Common.Services
+@using MangaHunter.Contracts.Hunter
+@using ImgProxy
+@inject IApiService ApiService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+@if (HunterResponse is not {HunterDto:null} and {MangadexDto:null})
+{
+    <EmptyContainer HunterResponse="HunterResponse" DeleteUi="OnDeleteUi"/>
+}
+
+@if (HunterResponse is not {HunterDto:null} and not {MangadexDto: null})
+{
+    <MudCard Outlined="true" Style="position: relative">
+        <CardHeader Mangadex="HunterResponse.MangadexDto"/>
+        <MudCardMedia Image="@ImgProxy(HunterResponse.MangadexDto.CoverArt?.Thumbnail512Px.ToString())"/>
+        <MudCardContent>
+            <MudStack Row="true">
+                <StatusContainer Mangadex="HunterResponse.MangadexDto"/>
+                @if (!IsSearchResult)
+                {
+                    <ReadingStatusContainer ReadingStatus="HunterResponse.HunterDto.Status"/>
+                }
+                <MudSpacer/>
+                <TagsMenu Mangadex="@HunterResponse.MangadexDto"/>
+            </MudStack>
+            <MudDivider Class="ma-2"/>
+            @if (!IsSearchResult)
+            {
+                <MangaUpdatesContainer Username="@Username" MangadexId="@HunterResponse.HunterDto.MangadexId.ToString()"/>
+                <RssContainer Username="@Username" MangadexId="@HunterResponse.HunterDto.MangadexId.ToString()"/>
+                <MudExpansionPanel Text="@($"Readings history : {HunterResponse.HunterDto.History.Count}")">
+                    @if (HunterResponse.HunterDto!.History is not {Count:0})
+                    {
+                        <Timeline History="@HunterResponse.HunterDto.History"/>
+                    }
+                </MudExpansionPanel>
+            }
+            else
+            {
+                <MudExpansionPanel Text="Description">
+                    @{
+                        var description = HunterResponse.MangadexDto.Description.EnglishOrDefault;
+                        var indexOf = description.IndexOf("---", StringComparison.Ordinal);
+                        var index = indexOf is -1 ? description.Length : indexOf;
+                    }
+                    <MudText>@description[.. index]</MudText>
+                </MudExpansionPanel>
+            }
+        </MudCardContent>
+        @if (!IsReadOnly)
+        {
+            <MudCardActions>
+                <CardActions Add="Add" DeleteUi="OnDeleteUi" HunterResponse="HunterResponse" IsSearchResult="IsSearchResult"/>
+            </MudCardActions>
+        }
+    </MudCard>
+}
+
+
+@code {
+
+    [Inject]
+    protected IWebHostEnvironment Environment { get; set; }
+
+    [CascadingParameter]
+    protected UserState? UserState { get; set; }
+
+    [Parameter]
+    public HunterResponse HunterResponse { get; set; }
+
+    [Parameter]
+    public bool IsReadOnly { get; set; }
+
+    [Parameter]
+    public bool IsSearchResult { get; set; }
+
+    [Parameter]
+    public EventCallback<HunterResponse> Add { get; set; }
+
+    [Parameter]
+    public EventCallback<HunterResponse> OnDeleteUi { get; set; }
+
+    private string Username => UserState?.Username ?? HunterResponse.HunterDto?.Username!;
+        const string salt = "68656C6C6F";
+        const string key = "736563726574";
+
+    private string ImgProxy(string? src) => ImgProxyBuilder.New
+        .WithEndpoint(Environment.IsProduction() ? "https://cdn.mangahunter.org" : "http://localhost:8080")
+        .WithCredentials(key, salt)
+        .Build(src, encode: true);
+
+}

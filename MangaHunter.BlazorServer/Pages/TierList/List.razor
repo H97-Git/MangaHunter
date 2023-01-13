@@ -1,0 +1,98 @@
+@page "/users/{UserName}/TierList"
+
+<AuthorizeView>
+    <Authorized>
+        <MudStack Row="true" Class="my-2">
+            <PageHeader Title="TierList"/>
+            <MudSpacer/>
+            <MudButton Variant="Variant.Filled" Color="Color.Inherit" StartIcon="@Icons.Material.Outlined.Add" OnClick="OnAdd">Add</MudButton>
+        </MudStack>
+        <MudTable Style="cursor: pointer"
+                  Breakpoint="Breakpoint.Sm"
+                  Hover="true"
+                  Items="@TierListModels"
+                  LoadingProgressColor="Color.Info"
+                  T="TierListDto"
+                  OnRowClick="RowClickEvent">
+            <HeaderContent>
+                <MudTh>Title</MudTh>
+                <MudTh>Created</MudTh>
+                <MudTh>Last Modified</MudTh>
+                <MudTh>Code</MudTh>
+            </HeaderContent>
+            <RowTemplate Context="rowContext">
+                <MudTd DataLabel="Title">@rowContext.Title</MudTd>
+                <MudTd DataLabel="Created">@rowContext.CreatedOnUtc</MudTd>
+                <MudTd DataLabel="Last Modified">@rowContext.UpdatedOnUtc</MudTd>
+                <MudTd DataLabel="Code">@rowContext.ShareCode</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </Authorized>
+    <NotAuthorized>
+        <div>
+            <span>Nothing here !</span>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+
+    [Inject]
+    protected NavigationManager NavigationManager { get; set; }
+
+    [Inject]
+    protected IApiService ApiService { get; set; }
+
+    [Inject]
+    protected ISnackbar Snackbar { get; set; }
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    [Parameter]
+    public string UserName { get; set; }
+
+    private List<TierListDto>? TierListModels { get; set; }
+
+    private void RowClickEvent(TableRowClickEventArgs<TierListDto> tableRowClickEventArgs)
+    {
+        var id = tableRowClickEventArgs.Item.ShareCode;
+        NavigationManager.NavigateTo($"users/{UserState.Username}/TierList/{id}");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchData();
+    }
+
+    private async Task OnAdd()
+    {
+        var tierListModel = new TierListDto {CreatorName = UserState.Username, UserName = UserState.Username, Title = "New Tierlist"};
+
+        var result = await ApiService.AddTierList(UserState.Username, tierListModel);
+        if (result.IsError)
+        {
+            Snackbar.Add("Failed", Severity.Error);
+            Snackbar.Add(result.FirstError.Description, Severity.Error);
+        }
+        else
+        {
+            Snackbar.Add("Succeeded", Severity.Success);
+            await FetchData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task FetchData()
+    {
+        TierListModels = new List<TierListDto>();
+
+        var result = await ApiService.GetUserTierList(UserState.Username);
+        if (!result.IsError)
+        {
+            TierListModels = result.Value;
+        }
+    }
+
+}

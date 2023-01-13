@@ -1,0 +1,150 @@
+@page "/users/{OwnerUsername}/mangas"
+@page "/users/{OwnerUsername}/mangas/{Status}"
+@implements IDisposable
+
+<PageHeader Title="@($"Mangas list of @{OwnerUsername}")"/>
+@* @if (IsLoading) *@
+@* { *@
+@*     <span>Loading ...</span> *@
+@* } *@
+@* else *@
+@* { *@
+<MudPaper Class="ma-2 pa-2">
+    <MudStack Row="true">
+        <FilterStatus OwnerUserId="@OwnerUsername" Status="@Status"/>
+        <MudText Align="Align.Justify" Style="align-self: center">
+            @(Status is null
+                ? $"Total : {Response.Total}"
+                : $"Filtered : {Response.Filtered} / {Response.Total}")
+        </MudText>
+        <MudSpacer/>
+        <MudButton OnClick="OnSearch" EndIcon="@Icons.Filled.Search">Search</MudButton>
+    </MudStack>
+</MudPaper>
+@if (Response.List is not {Count:0})
+{
+    <MangasContainer IsReadOnly="@IsReadOnly" Response="@Response.List"/>
+}
+
+<MudPaper Class="ma-2 pa-2">
+    <MudStack Row="true">
+        <MudPagination Selected="@(Page ?? 1)" SelectedChanged="OnPageChange" Rectangular="true" Variant="Variant.Filled" Count="@PageCount" Class="my-4"/>
+        <MudSpacer/>
+        <MudSelect T="int" Label="Page Size" Disabled="true">
+            @foreach (var size in _pageSizes)
+            {
+                <MudSelectItem Value="@size"/>
+            }
+        </MudSelect>
+    </MudStack>
+</MudPaper>
+@* } *@
+
+@code{
+
+    [Inject]
+    protected IApiService ApiService { get; set; }
+
+    [Inject]
+    protected NavigationManagerHandler NavigationManagerHandler { get; set; }
+
+    [Inject]
+    protected ISnackbar Snackbar { get; set; }
+
+    [Inject]
+    protected IDialogService DialogService { get; set; }
+
+    [Inject]
+    protected PersistentComponentState ApplicationState { get; set; }
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    [Parameter]
+    public string? OwnerUsername { get; set; }
+
+    private bool IsReadOnly => OwnerUsername != UserState.Username;
+
+    [Parameter]
+    public string? Status { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "p")]
+    public int? Page { get; set; }
+
+    private static readonly int[] _pageSizes = {9, 27, 36, 45, 99};
+    private static int PageSize => 36;
+    private int PageCount => (Status is null ? Response.Total : Response.Filtered + PageSize - 1) / PageSize;
+
+    private string StateKey => $"response.page{Page}.size{PageSize}";
+    // private bool IsLoading { get; set; }
+    private HunterResponseWithPagination Response { get; set; } = new();
+
+    private PersistingComponentStateSubscription Subscription { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Subscription = ApplicationState.RegisterOnPersisting(Persist);
+    }
+
+    private void OnPageChange(int i)
+    {
+        if (Page == i || i == 1)
+            return;
+        Page = i;
+        NavigationManagerHandler.NavigateToPage(i);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+    // IsLoading = true;
+        if (OwnerUsername is not null)
+        {
+            await FetchResponse();
+        }
+    // IsLoading = false;
+    }
+
+    private async Task FetchResponse()
+    {
+        if (ApplicationState.TryTakeFromJson<HunterResponseWithPagination>(StateKey, out var stored))
+        {
+            if (stored is not null)
+            {
+                Response = stored;
+                return;
+            }
+        }
+
+        var queryParametersMangadex = new QueryParameters {Page = Page ?? 1, Size = PageSize, Status = Status, HasMangadex = true};
+
+        var result = await ApiService.GetUserListWithPagination(OwnerUsername, queryParametersMangadex);
+        if (!result.IsError)
+        {
+            Response = result.Value;
+        }
+    }
+
+    private async Task OnSearch()
+    {
+        var parameters = new DialogParameters {["Username"] = UserState.Username};
+        var dialog = await DialogService.ShowAsync<SearchInUserList>("Search Manga", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            Snackbar.Add("Succeeded", Severity.Success);
+        }
+    }
+
+    private Task Persist()
+    {
+        ApplicationState.PersistAsJson(StateKey, Response);
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Subscription.Dispose();
+    }
+
+}

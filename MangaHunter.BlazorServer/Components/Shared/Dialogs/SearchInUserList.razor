@@ -1,0 +1,67 @@
+@inject IApiService ApiService
+<MudDialog DisableSidePadding="true">
+    <TitleContent>
+        <MudText>Search in your list</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudPaper Class="ma-2 pa-2">
+            <SearchContainer Search="Search" IsImmediate="true"/>
+        </MudPaper>
+        @if (SearchResult is not {Count:0})
+        {
+            <MudContainer Style="max-height: 660px;overflow: auto">
+                <MangasContainer IsReadOnly="@false" Response="@SearchResult"/>
+            </MudContainer>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudText>Total - @Response.Count</MudText>
+        <MudButton StartIcon="@Icons.Filled.Cancel" OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string Username { get; set; }
+
+    private List<HunterResponse> Response { get; set; } = new();
+    private List<HunterResponse> SearchResult { get; set; } = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Response = await FetchResponse();
+    }
+
+    private async Task<List<HunterResponse>> FetchResponse()
+    {
+        var parms = new QueryParameters {HasMangadex = true};
+        var result = await ApiService.GetUserList(Username, parms);
+        return !result.IsError ? result.Value : new List<HunterResponse>();
+    }
+
+    private void Search(string query)
+    {
+        SearchResult.Clear();
+        foreach (var hr in Response.Where(hr => hr.MangadexDto != null && hr.MangadexDto.Title.EnglishOrDefault.Contains(query, StringComparison.InvariantCultureIgnoreCase)))
+        {
+            SearchResult.Add(hr);
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        MudDialog.Options.FullWidth = true;
+        MudDialog.Options.MaxWidth = MaxWidth.ExtraLarge;
+        MudDialog.SetOptions(MudDialog.Options);
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+}

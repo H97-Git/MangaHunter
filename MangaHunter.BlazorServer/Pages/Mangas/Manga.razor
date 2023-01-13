@@ -1,0 +1,100 @@
+@page "/manga/{MangaId}"
+
+<PageHeader Title="@($"Manga {MangaId}")"/>
+
+@if (HunterResponse is not {MangadexDto:null})
+{
+    <MudStack Row="true">
+        <MudStack>
+            <MudStack Row="true">
+                <FlagIcon OriginalLanguage="@HunterResponse.MangadexDto.OriginalLanguage"/>
+                <MudTooltip Arrow="true" Placement="Placement.Top" Text="@HunterResponse.MangadexDto.Title.EnglishOrDefault">
+                    <MudText Class="trim" Typo="Typo.h6">@HunterResponse.MangadexDto.Title.EnglishOrDefault</MudText>
+                    <MudText Typo="Typo.caption">@HunterResponse.MangadexDto.PublicationDemographic</MudText>
+                </MudTooltip>
+            </MudStack>
+            <MudImage Height="500" Src="@HunterResponse.MangadexDto.CoverArt?.Thumbnail512Px.ToString()"></MudImage>
+            <MudStack Row="true">
+                <TagsMenu Mangadex="@HunterResponse.MangadexDto"/>
+                <MudSpacer/>
+                <IconSites Mangadex="@HunterResponse.MangadexDto"/>
+            </MudStack>
+        </MudStack>
+        <MudStack>
+            <MudStack Row="true">
+                <StatusContainer Mangadex="HunterResponse.MangadexDto"/>
+                @if (HunterResponse.HunterDto != null)
+                {
+                    <ReadingStatusContainer ReadingStatus="@HunterResponse.HunterDto.Status"/>
+                }
+                <MangaUpdatesContainer Username="@UserState.Username" MangadexId="@HunterResponse.HunterDto?.MangadexId.ToString()"/>
+            </MudStack>
+            <MudStack>
+                <MudText Typo="Typo.h5">Description</MudText>
+                @{
+                    var description = HunterResponse.MangadexDto.Description.EnglishOrDefault;
+                    var indexOf = description.IndexOf("---", StringComparison.Ordinal);
+                    var index = indexOf is -1 ? description.Length : indexOf;
+                }
+                <MudText Typo="Typo.body1">@description[.. index]</MudText>
+                <MudStack>
+                    <MudContainer>
+
+                        <RssContainer Username="@UserState.Username" MangadexId="@HunterResponse.HunterDto.MangadexId.ToString()"/>
+                    </MudContainer>
+                    <MudContainer>
+                        <MudExpansionPanel Text="@($"Readings history : {HunterResponse.HunterDto.History.Count}")">
+                            @if (HunterResponse.HunterDto!.History is not {Count:0})
+                            {
+                                <Timeline History="@HunterResponse.HunterDto.History"/>
+                            }
+                        </MudExpansionPanel>
+                    </MudContainer>
+                </MudStack>
+                <MudSpacer/>
+                <CardActions IsSearchResult="false" HunterResponse="@HunterResponse"/>
+            </MudStack>
+        </MudStack>
+    </MudStack>
+}
+
+@code{
+
+    [Inject]
+    protected IApiService ApiService { get; set; }
+
+    [Inject]
+    protected NavigationManagerHandler NavigationManagerHandler { get; set; }
+
+    [Inject]
+    protected ISnackbar Snackbar { get; set; }
+
+    [Inject]
+    protected IDialogService DialogService { get; set; }
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    [Parameter]
+    public string MangaId { get; set; } = string.Empty;
+
+    private HunterResponse HunterResponse { get; set; } = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await FetchResponse(UserState.Username, MangaId);
+    }
+
+    private async Task FetchResponse(string username, string mangaId)
+    {
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(mangaId))
+            return;
+        var parameters = new QueryParameters {HasMangadex = true, HasMangaUpdates = true, HasMangaUpdatesRss = true};
+        var result = await ApiService.GetMangaById(username, mangaId, parameters);
+        if (!result.IsError)
+        {
+            HunterResponse = result.Value;
+        }
+    }
+
+}

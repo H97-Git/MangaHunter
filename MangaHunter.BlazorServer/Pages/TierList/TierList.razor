@@ -1,0 +1,221 @@
+@page "/users/{OwnerUserName}/TierList/{Id}"
+@page "/TierList/{Id}"
+
+@if (IsInEditMode)
+{
+    <MudTextField @bind-Value="TierLisResponse.TierList.Title" Label="Title" Variant="Variant.Text"/>
+}
+else
+{
+    <MudStack Row="true">
+        <PageHeader Title="@TierLisResponse.TierList.Title"/>
+        <MudSpacer/>
+        <MudText Typo="Typo.h5">Tierlist of @TierLisResponse.TierList.UserName</MudText>
+    </MudStack>
+}
+<TierListToolBar AddTier="AddTier" AddMangas="AddMangas" DeleteTierList="DeleteTierList" SaveTierList="SaveTierList" ToggleEditMode="ToggleEditMode"/>
+<MudDropContainer
+    ApplyDropClassesOnDragStarted="true"
+    CanDropClass="mud-border-success"
+    NoDropClass="mud-border-error"
+    Class="d-flex flex-column flex-wrap flex-grow-1"
+    ItemDropped="ItemUpdated"
+    Items="_dropItems"
+    ItemsSelector="@((item, dropzone) => item.Identifier == dropzone)"
+    @ref="_dropContainer"
+    T="DropItem">
+    <ChildContent>
+        @foreach (var rowDto in TierLisResponse.TierList.Tiers)
+        {
+            <TierContainer RemoveTier="() => RemoveTier(rowDto)" TierModel="rowDto" IsInEditMode="IsInEditMode"/>
+        }
+        <UnlistedMangas Count="@_dropItems.Count(x => x.Identifier == UnlistedIdentifier)" Identifier="@UnlistedIdentifier"/>
+        <MudPaper Style="position: fixed;bottom: 16px;left: 16px;">
+            <MudDropZone
+                CanDrop="@(_ => true)"
+                Identifier="@DeleteIdentifier"
+                T="DropItem">
+                <ChildContent>
+                    <MudIcon Size="Size.Large" Icon="@Icons.Filled.Delete"/>
+                </ChildContent>
+            </MudDropZone>
+        </MudPaper>
+    </ChildContent>
+    <ItemRenderer>
+        <MangaCover Class="ma-2 rounded-lg"
+                    Mangadex="@TierLisResponse.MangadexDtos.Find(x => x.Id.Equals(context.MangadexId))"/>
+    </ItemRenderer>
+</MudDropContainer>
+
+@code {
+
+    [Inject]
+    IApiService ApiService { get; set; }
+
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+
+    [Inject]
+    ISnackbar Snackbar { get; set; }
+
+    [Inject]
+    IDialogService DialogService { get; set; }
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    [Parameter]
+    public string OwnerUserName { get; set; }
+
+    [Parameter]
+    public string Id { get; set; }
+
+    private MudDropContainer<DropItem> _dropContainer;
+    private static List<DropItem> _dropItems = new();
+    private static List<DropItem> _deletedItems = new();
+    private TierListResponse TierLisResponse { get; set; } = new() {TierList = new TierListDto()};
+
+    private bool IsInEditMode { get; set; }
+    private void ToggleEditMode() => IsInEditMode = !IsInEditMode;
+    private static string UnlistedIdentifier => "Unlisted";
+    private static string DeleteIdentifier => "Delete";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await ApiService.GetTierListById(Id);
+        if (!result.IsError)
+        {
+            TierLisResponse = result.Value;
+            _dropItems.Clear();
+            foreach (var tier in TierLisResponse.TierList.Tiers)
+            {
+                foreach (var mangadexId in tier.MangaIds)
+                {
+                    _dropItems.Add(new DropItem(mangadexId, tier.Identifier.ToString()));
+                }
+            }
+            foreach (var unlistedMangadexId in TierLisResponse.TierList.UnlistedMangaIds)
+            {
+                _dropItems.Add(new DropItem(unlistedMangadexId, UnlistedIdentifier));
+            }
+        }
+    }
+
+    private static void ItemUpdated(MudItemDropInfo<DropItem> dropItem)
+    {
+        if (dropItem.DropzoneIdentifier == DeleteIdentifier)
+        {
+            _dropItems.Remove(dropItem.Item);
+            _deletedItems.Add(dropItem.Item);
+        }
+        dropItem.Item.Identifier = dropItem.DropzoneIdentifier;
+    }
+
+    private async Task SaveTierList()
+    {
+        if (TierLisResponse is not {TierList:null})
+        {
+            var tierlist = DropItemsToTierlist();
+            var result = await ApiService.UpdateTierList(UserState.Username, tierlist);
+            if (result.IsError)
+            {
+                Snackbar.Add("Failed", Severity.Error);
+                Snackbar.Add(result.FirstError.ToString(), Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add("Succeeded", Severity.Success);
+            }
+        }
+    }
+
+    private async Task DeleteTierList()
+    {
+        var confirmDelete = await DialogService.ShowAsync<ConfirmDelete>("Delete");
+        var isCancelled = (await confirmDelete.Result).Cancelled;
+        if (isCancelled)
+            return;
+
+        var result = await ApiService.DeleteTierList(UserState.Username, TierLisResponse.TierList.Id);
+        if (!result.IsError)
+        {
+            Snackbar.Add("Succeeded", Severity.Success);
+            NavigationManager.NavigateTo($"users/{UserState.Username}/tierlist");
+        }
+        else
+        {
+            Snackbar.Add("Failed", Severity.Error);
+            Snackbar.Add(result.FirstError.Description, Severity.Error);
+        }
+    }
+
+    private async Task AddMangas()
+    {
+        var parameters = new DialogParameters {["Username"] = UserState.Username, ["MangadexToAdd"] = TierLisResponse.MangadexDtos.ToList()};
+        var dialog = await DialogService.ShowAsync<AddMangasToTierList>("Add Mangas", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            Snackbar.Add("Succeeded", Severity.Success);
+            if (result.Data is List<MangadexDto> mangadexDtos)
+            {
+                foreach (var mangadexDto in mangadexDtos)
+                {
+                    TierLisResponse.MangadexDtos.Add(mangadexDto);
+                    _dropItems.Add(new DropItem(mangadexDto.Id, UnlistedIdentifier));
+                }
+            }
+        }
+    }
+
+    private void AddTier()
+    {
+        TierLisResponse.TierList.Tiers.Add(new TierRowDto
+        {
+            Title = "Title",
+            SubTitle = "...",
+            Color = "#000",
+            Identifier = Guid.NewGuid()
+        });
+    }
+
+    private void RemoveTier(TierRowDto tierModel)
+    {
+        TierLisResponse.TierList.Tiers.Remove(tierModel);
+    }
+
+    private TierListDto DropItemsToTierlist()
+    {
+        var tierlist = TierLisResponse.TierList;
+        foreach (var dropItem in _dropItems)
+        {
+            if (dropItem.Identifier == UnlistedIdentifier)
+            {
+                if (!tierlist.UnlistedMangaIds.Any(x => x.Equals(dropItem.MangadexId)))
+                    tierlist.UnlistedMangaIds.Add(dropItem.MangadexId);
+            }
+            else
+            {
+                var tier = tierlist.Tiers.Find(x => x.Identifier.ToString() == dropItem.Identifier);
+                if (tier is null) continue;
+
+                if (!tier.MangaIds.Any(x => x.Equals(dropItem.MangadexId)))
+                    tier.MangaIds.Add(dropItem.MangadexId);
+
+                tierlist.UnlistedMangaIds.Remove(dropItem.MangadexId);
+                var tierOrigin = tierlist.Tiers.Find(x => x.Identifier.ToString() == dropItem.OriginIdentifier);
+                if (tierOrigin != null && tierOrigin.Identifier != tier.Identifier)
+                {
+                    tierOrigin.MangaIds.Remove(dropItem.MangadexId);
+                }
+            }
+        }
+        foreach (var dropItem in _deletedItems)
+        {
+            var tierOrigin = tierlist.Tiers.Find(x => x.Identifier.ToString() == dropItem.OriginIdentifier);
+            tierOrigin?.MangaIds.Remove(dropItem.MangadexId);
+        }
+        return tierlist;
+    }
+
+}

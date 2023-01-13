@@ -1,0 +1,82 @@
+@using MudBlazor
+@using MangaHunter.BlazorServer.Common.Services
+@using MangaHunter.BlazorServer.Components.Shared.Dialogs
+@using MangaHunter.BlazorServer.Common
+@using MangaHunter.Contracts.Common
+@using MangaHunter.Contracts.Hunter
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IApiService ApiService
+@if (IsSearchResult)
+{
+    <AuthorizeView>
+        <Authorized>
+            <MudButton OnClick="OnAdd" StartIcon="@Icons.Rounded.PlaylistAdd"
+                       Style=@($"background-color: {Colors.DeepPurple.Default}") Variant="@Variant.Filled">
+                Add
+            </MudButton>
+        </Authorized>
+    </AuthorizeView>
+}
+else
+{
+    <MudIconButton Icon="@Icons.Rounded.Edit" OnClick="OnUpdate"/>
+    <MudIconButton Icon="@Icons.Rounded.Delete" OnClick="OnDelete"/>
+}
+<MudSpacer/>
+<IconSites Mangadex="HunterResponse.MangadexDto"/>
+
+@code {
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    [Parameter]
+    public HunterResponse HunterResponse { get; set; }
+
+    [Parameter]
+    public EventCallback<HunterResponse> Add { get; set; }
+
+    [Parameter]
+    public EventCallback<HunterResponse> DeleteUi { get; set; }
+
+    [Parameter]
+    public bool IsSearchResult { get; set; }
+
+    private async Task OnAdd()
+    {
+        await Add.InvokeAsync(HunterResponse);
+    }
+
+    private async Task OnDelete()
+    {
+        var confirmDelete = DialogService.Show<ConfirmDelete>("Delete");
+        var isCancelled = (await confirmDelete.Result).Cancelled;
+        if (isCancelled)
+            return;
+
+        var result = await ApiService.DeleteManga(UserState.Username, HunterResponse.HunterDto.MangadexId.ToString());
+        if (result.IsError)
+        {
+            Snackbar.Add("Failed", Severity.Error);
+            Snackbar.Add(result.FirstError.Description, Severity.Error);
+        }
+        else
+        {
+            await DeleteUi.InvokeAsync(HunterResponse);
+            Snackbar.Add("Succeeded", Severity.Success);
+        }
+    }
+
+    private async Task OnUpdate()
+    {
+        var parameters = new DialogParameters {[nameof(HunterResponse)] = HunterResponse, ["Username"] = UserState.Username};
+        var dialog = await DialogService.ShowAsync<UpdateManga>("Update Manga", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            Snackbar.Add("Succeeded", Severity.Success);
+        }
+    }
+
+}

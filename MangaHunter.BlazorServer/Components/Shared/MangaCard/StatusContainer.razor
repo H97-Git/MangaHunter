@@ -1,0 +1,51 @@
+@using MangaHunter.Contracts.Common
+@switch (Mangadex.Status)
+{
+    case MangaStatus.None:
+        <MudChip Variant="Variant.Outlined" Color="Color.Default">None</MudChip>
+        break;
+    case MangaStatus.Ongoing:
+        <MudChip Variant="Variant.Outlined" Color="Color.Info">Ongoing</MudChip>
+        break;
+    case MangaStatus.Completed:
+        @if (string.IsNullOrWhiteSpace(Mangadex.LastVolume) && string.IsNullOrWhiteSpace(Mangadex.LastChapter))
+        {
+            <MudChip Variant="Variant.Outlined" Color="Color.Success">Completed</MudChip>
+        }
+        else
+        {
+            <MudTooltip Arrow="true" Placement="Placement.Top" Text="@TooltipText()">
+                <MudChip Variant="Variant.Outlined" Color="Color.Success">Completed</MudChip>
+            </MudTooltip>
+        }
+        break;
+    case MangaStatus.Hiatus:
+        <MudChip Variant="Variant.Outlined" Color="Color.Warning">Hiatus</MudChip>
+        break;
+    case MangaStatus.Cancelled:
+        <MudChip Variant="Variant.Outlined" Color="Color.Error">Cancelled</MudChip>
+        break;
+    default:
+        throw new ArgumentOutOfRangeException();
+}
+
+@code {
+
+    [Parameter]
+    public MangadexDto Mangadex { get; set; }
+
+    private string TooltipText()
+    {
+        if (!string.IsNullOrEmpty(Mangadex.LastChapter) && string.IsNullOrEmpty(Mangadex.LastVolume))
+        {
+            return $"Chapter : {Mangadex.LastChapter}";
+        }
+        if (string.IsNullOrEmpty(Mangadex.LastChapter) && !string.IsNullOrEmpty(Mangadex.LastVolume))
+        {
+            return $"Volume : {Mangadex.LastVolume}";
+        }
+
+        return $"Volume : {Mangadex.LastVolume} - Chapter : {Mangadex.LastChapter}";
+    }
+
+}

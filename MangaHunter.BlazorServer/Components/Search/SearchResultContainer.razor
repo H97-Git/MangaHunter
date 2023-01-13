@@ -1,0 +1,40 @@
+@using MangaHunter.BlazorServer.Common.Services
+@using MangaHunter.Contracts.Hunter
+@inject IApiService ApiService;
+@* @if (IsContentLoading) *@
+@* { *@
+@*     <MudPaper Height="300"> *@
+@*         <MudOverlay Visible="IsContentLoading" DarkBackground="true" Absolute="true"> *@
+@*             <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/> *@
+@*         </MudOverlay> *@
+@*     </MudPaper> *@
+@* } *@
+@if (HunterResponses is not null or {Count:0})
+{
+    <MudGrid Spacing="2" Justify="Justify.Center">
+        @foreach (var hunterResponse in HunterResponses)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MangaCardContainer IsSearchResult="true" Add="Add" HunterResponse="hunterResponse"/>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+
+    [Parameter]
+    public List<HunterResponse>? HunterResponses { get; set; }
+
+    
+    [Parameter]
+    public EventCallback<HunterResponse> Add { get; set; }
+    
+    private bool IsContentLoading { get; set; } = false;
+    
+    private async Task OnAdd(HunterResponse hunterResponse)
+    {
+        await Add.InvokeAsync(hunterResponse);
+    }
+
+}

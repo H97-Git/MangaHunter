@@ -1,0 +1,33 @@
+@using MangaHunter.Contracts.Hunter
+@inject NavigationManager NavigationManager
+@if (Response is not null or {Count:0})
+{
+    <MudGrid>
+        @foreach (var hunterResponse in Response)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MangaCardContainer
+                    IsReadOnly="IsReadOnly"
+                    HunterResponse="hunterResponse"
+                    OnDeleteUi="OnDeleteUi"/>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+
+    [Parameter]
+    public List<HunterResponse> Response { get; set; }
+
+    [Parameter]
+    public bool IsReadOnly { get; set; }
+
+    private void OnDeleteUi(HunterResponse hunterResponse)
+    {
+        var mm = Response.Find(x => x.HunterDto.MangadexId.Equals(hunterResponse.HunterDto.MangadexId));
+        if (mm != null)
+            Response?.Remove(mm);
+    }
+
+}

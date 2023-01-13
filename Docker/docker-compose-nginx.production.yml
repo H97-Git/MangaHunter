@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: ${NETWORK}
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+      - "${HTTPS_PORT}:${HTTPS_PORT}"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/nginx/proxy.conf:/etc/nginx/proxy.conf
+      - letsencrypt-certs:/etc/nginx/certs
+      - letsencrypt-vhost-d:/etc/nginx/vhost.d
+      - letsencrypt-html:/usr/share/nginx/html
+  acme-companion:
+    image: nginxproxy/acme-companion
+    container_name : ${NETWORK}-acme
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt-certs:/etc/nginx/certs
+      - letsencrypt-vhost-d:/etc/nginx/vhost.d
+      - letsencrypt-html:/usr/share/nginx/html
+    environment:
+      - DEFAULT_EMAIL=${EMAIL}
+      - NGINX_PROXY_CONTAINER=${NETWORK}
+networks:
+  default:
+    external:
+      name: ${NETWORK}
+ 
+volumes:
+  letsencrypt-certs:
+    external: true
+  letsencrypt-vhost-d:
+    external: true
+  letsencrypt-html:
+    external: true

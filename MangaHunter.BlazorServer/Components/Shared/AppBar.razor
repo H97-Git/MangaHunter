@@ -1,0 +1,41 @@
+﻿@using MangaHunter.BlazorServer.Common
+
+<MudAppBar Dense="true" Fixed="false">
+    @* <MudToolBar Style="width: 100%"> *@
+    <MudNavLink Href="/" Class="mx-1 logo">
+        <MudImage Src="@Src" Width="100"/>
+    </MudNavLink>
+    <MudButton Class="mx-1" IconClass="nav-menu__search--icon" StartIcon="@Icons.Material.Rounded.Search" Href="search">Search</MudButton>
+    <AuthorizeView>
+        <Authorized>
+            <MudButton Class="mx-1" IconClass="nav-menu__mangas--icon" StartIcon="@Icons.Material.Rounded.MenuBook" Href="@($"users/{UserState.Username}/mangas")">Mangas</MudButton>
+            <MudButton Class="mx-1" IconClass="nav-menu__tierlist--icon" StartIcon="@Icons.Material.Rounded.ViewList" Href="@($"users/{UserState.Username}/tierlist")">Tier List</MudButton>
+            @* <MudButton Class="mx-1" IconClass="nav-menu__import--icon" StartIcon="@Icons.Material.Rounded.CloudUpload" Href="@($"users/{UserState.Username}/import")">Import</MudButton> *@
+        </Authorized>
+    </AuthorizeView>
+    <MudSpacer/>
+    @* <MudToggleIconButton Class="mr-3" *@
+    @*                      Color="@Color.Warning" *@
+    @*                      Icon="@Icons.Material.Filled.LightMode" *@
+    @*                      Toggled="@IsDarkMode" *@
+    @*                      ToggledChanged="@ToggleDarkMode" *@
+    @*                      ToggledColor="@Color.Default" *@
+    @*                      ToggledIcon="@Icons.Material.Filled.DarkMode"/> *@
+    <AccesControl/>
+    @* </MudToolBar> *@
+</MudAppBar>
+
+@code{
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    [Parameter]
+    public bool IsDarkMode { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ToggleDarkMode { get; set; }
+
+    private string Src => !IsDarkMode ? "logo-dark.png" : "logo-light.png";
+
+}

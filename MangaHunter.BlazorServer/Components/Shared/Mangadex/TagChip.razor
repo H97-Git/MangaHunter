@@ -1,0 +1,45 @@
+@using MudBlazor
+@using MangaHunter.BlazorServer.Common
+<MudChip
+    Text="@Tag.Attributes.Name.En"
+    Icon="@Icon"
+    IconColor="Color.Primary"
+    Variant="@Variant.Outlined"
+    OnClick="OnClick"/>
+
+@code {
+
+
+    [Parameter]
+    public MangadexTag Tag { get; set; }
+
+    [Parameter]
+    public EventCallback<MangadexTag> Click { get; set; }
+
+    [Parameter]
+    public bool IsIncluded { get; set; }
+
+    [Parameter]
+    public bool IsExcluded { get; set; }
+    
+    private string Icon => IsIncluded ? Icons.Rounded.Add : IsExcluded ? Icons.Rounded.Remove : "";
+    private async Task OnClick()
+    {
+        await Click.InvokeAsync(Tag);
+        switch (IsIncluded)
+        {
+            case false when IsExcluded:
+                IsIncluded = false;
+                IsExcluded = false;
+                break;
+            case true:
+                IsExcluded = true;
+                IsIncluded = false;
+                break;
+            default:
+                IsIncluded = true;
+                break;
+        }
+    }
+
+}

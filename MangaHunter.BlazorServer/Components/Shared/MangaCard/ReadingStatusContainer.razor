@@ -1,0 +1,25 @@
+@using MangaHunter.Contracts.Hunter
+@switch (ReadingStatus)
+{
+    case ReadingStatusDto.WantToRead:
+        <MudChip Variant="Variant.Filled" Color="Color.Warning">Want to read</MudChip>
+        break;
+    case ReadingStatusDto.Reading:
+        <MudChip Variant="Variant.Filled" Color="Color.Info">Reading</MudChip>
+        break;
+    case ReadingStatusDto.Dropped:
+        <MudChip Variant="Variant.Filled" Color="Color.Error">Dropped</MudChip>
+        break;
+    case ReadingStatusDto.Read:
+        <MudChip Variant="Variant.Filled" Color="Color.Success">Read</MudChip>
+        break;
+    default:
+        throw new ArgumentOutOfRangeException();
+}
+
+@code {
+
+    [Parameter]
+    public ReadingStatusDto ReadingStatus { get; set; }
+
+}

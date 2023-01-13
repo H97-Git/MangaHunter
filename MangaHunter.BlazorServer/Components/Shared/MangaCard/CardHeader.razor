@@ -1,0 +1,29 @@
+@using MangaHunter.Contracts.Common
+<MudStack AlignItems="AlignItems.Center" Row="true">
+
+</MudStack>
+<MudCardHeader Style="padding: 0px">
+    <CardHeaderAvatar>
+        <FlagIcon OriginalLanguage="@Mangadex.OriginalLanguage"/>
+    </CardHeaderAvatar>
+    <CardHeaderContent>
+        <MudNavLink Href="@($"manga/{Mangadex.Id}")">
+            <MudTooltip Arrow="true" Placement="Placement.Top" Text="@Mangadex.Title.EnglishOrDefault">
+                <MudText Class="trim" Typo="Typo.h6">
+                    @Mangadex.Title.EnglishOrDefault
+                </MudText>
+                <MudText Typo="Typo.caption">@Mangadex.PublicationDemographic</MudText>
+            </MudTooltip>
+        </MudNavLink>
+    </CardHeaderContent>
+    <CardHeaderActions>
+
+    </CardHeaderActions>
+</MudCardHeader>
+
+@code {
+
+    [Parameter]
+    public MangadexDto Mangadex { get; set; }
+
+}

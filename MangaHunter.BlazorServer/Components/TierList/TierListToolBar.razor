@@ -1,0 +1,69 @@
+<MudPaper Elevation="2" Class="ma-2">
+    <MudToolBar>
+        <MudTooltip Arrow="true" Placement="Placement.Bottom" Text="Delete this list">
+            <MudIconButton Color="Color.Inherit" Icon="@Icons.Material.Outlined.Delete" OnClick="OnDeleteTierList"/>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Bottom" Text="@EditModeToolTip">
+            <MudIconButton Class="mx-5" Color="Color.Inherit" Icon="@Icons.Material.Outlined.Edit" OnClick="OnToggleEditMode"/>
+        </MudTooltip>
+        <MudTooltip Arrow="true" Placement="Placement.Bottom" Text="Add a Tier to this list">
+            <MudIconButton Color="Color.Inherit" Icon="@Icons.Material.Outlined.Add" OnClick="OnAddTier"/>
+        </MudTooltip>
+        <MudSpacer/>
+        @if (!IsInEditMode)
+        {
+            <MudButton Class="mr-5" Color="Color.Primary" OnClick="OnAddMangas" Variant="Variant.Outlined">Add Mangas</MudButton>
+            <MudButton Color="Color.Success" OnClick="OnSaveTierList" Variant="Variant.Filled">Save Tier List !</MudButton>
+        }
+    </MudToolBar>
+</MudPaper>
+
+@code {
+
+    [Parameter]
+    public EventCallback<bool> ToggleEditMode { get; set; }
+
+    [Parameter]
+    public EventCallback AddMangas { get; set; }
+
+    [Parameter]
+    public EventCallback AddTier { get; set; }
+
+    [Parameter]
+    public EventCallback SaveTierList { get; set; }
+
+    [Parameter]
+    public EventCallback DeleteTierList { get; set; }
+
+    private bool IsInEditMode { get; set; }
+
+    private string EditModeToolTip
+        => "Toggle Edit Mode : " + (IsInEditMode ? "ON" : "OFF");
+
+    private async Task OnToggleEditMode()
+    {
+        IsInEditMode = !IsInEditMode;
+        await ToggleEditMode.InvokeAsync();
+    }
+
+    private async Task OnAddMangas()
+    {
+        await AddMangas.InvokeAsync();
+    }
+
+    private async Task OnAddTier()
+    {
+        await AddTier.InvokeAsync();
+    }
+
+    private async Task OnSaveTierList()
+    {
+        await SaveTierList.InvokeAsync();
+    }
+
+    private async Task OnDeleteTierList()
+    {
+        await DeleteTierList.InvokeAsync();
+    }
+
+}

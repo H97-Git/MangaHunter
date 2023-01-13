@@ -1,0 +1,44 @@
+@using Microsoft.AspNetCore.WebUtilities
+@using Serilog
+@using System.Security.Claims
+@using MangaHunter.BlazorServer.Common
+@using MudBlazor
+@inject NavigationManager NavigationManager
+<AuthorizeView>
+    <Authorized>
+        <MudMenu AnchorOrigin="Origin.BottomCenter">
+            <ActivatorContent>
+                <MudAvatar Image="@Picture"/>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Disabled="true">Profile</MudMenuItem>
+                <MudMenuItem Disabled="true">Theme</MudMenuItem>
+                <MudNavLink Href="auth/logout" Icon="@Icons.Material.Rounded.Logout">Sign Out</MudNavLink>
+            </ChildContent>
+        </MudMenu>
+    </Authorized>
+    <NotAuthorized>
+        <div>
+            <MudNavLink Href="@LoginUriWithReturnUrl()" Icon="@Icons.Material.Rounded.Login">Sign In</MudNavLink>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    private List<Claim> Claims { get; set; }
+
+    private string Picture => UserState.Picture;
+
+    private string LoginUriWithReturnUrl()
+    {
+        var returnUri = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        return returnUri is "" or "auth/login" or "auth/logout"
+            ? "auth/login"
+            : QueryHelpers.AddQueryString("auth/login", "returnUrl", returnUri);
+    }
+
+}

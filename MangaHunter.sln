@@ -1,0 +1,51 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{0389B339-F211-4DE1-8739-B3442E4C22DA}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaHunter.Domain", "MangaHunter.Domain\MangaHunter.Domain.csproj", "{7E3275EE-FF59-41C8-AD86-97EE74A641B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaHunter.Application", "MangaHunter.Application\MangaHunter.Application.csproj", "{0E002BFD-A5B7-4B43-9716-CECFCFBBFCD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaHunter.Infrastructure", "MangaHunter.Infrastructure\MangaHunter.Infrastructure.csproj", "{B480E3F4-4E11-42F1-A182-B45371FB3F0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaHunter.Contracts", "MangaHunter.Contracts\MangaHunter.Contracts.csproj", "{25AA00E7-189D-4959-921F-DE194D77D83A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaHunter.API", "MangaHunter.API\MangaHunter.API.csproj", "{4E8D3400-8817-4CF5-8630-555D4B17F344}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaHunter.BlazorServer", "MangaHunter.BlazorServer\MangaHunter.BlazorServer.csproj", "{D884FDA1-942D-4F81-8409-0CDEDE3B2D24}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7E3275EE-FF59-41C8-AD86-97EE74A641B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E3275EE-FF59-41C8-AD86-97EE74A641B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E3275EE-FF59-41C8-AD86-97EE74A641B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E3275EE-FF59-41C8-AD86-97EE74A641B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E002BFD-A5B7-4B43-9716-CECFCFBBFCD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E002BFD-A5B7-4B43-9716-CECFCFBBFCD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E002BFD-A5B7-4B43-9716-CECFCFBBFCD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E002BFD-A5B7-4B43-9716-CECFCFBBFCD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B480E3F4-4E11-42F1-A182-B45371FB3F0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B480E3F4-4E11-42F1-A182-B45371FB3F0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B480E3F4-4E11-42F1-A182-B45371FB3F0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B480E3F4-4E11-42F1-A182-B45371FB3F0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25AA00E7-189D-4959-921F-DE194D77D83A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25AA00E7-189D-4959-921F-DE194D77D83A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25AA00E7-189D-4959-921F-DE194D77D83A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25AA00E7-189D-4959-921F-DE194D77D83A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E8D3400-8817-4CF5-8630-555D4B17F344}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E8D3400-8817-4CF5-8630-555D4B17F344}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E8D3400-8817-4CF5-8630-555D4B17F344}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E8D3400-8817-4CF5-8630-555D4B17F344}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D884FDA1-942D-4F81-8409-0CDEDE3B2D24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D884FDA1-942D-4F81-8409-0CDEDE3B2D24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D884FDA1-942D-4F81-8409-0CDEDE3B2D24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D884FDA1-942D-4F81-8409-0CDEDE3B2D24}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

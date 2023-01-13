@@ -1,0 +1,54 @@
+@using MangaHunter.Contracts.Hunter
+@using MangaHunter.BlazorServer.Common
+@using MangaHunter.BlazorServer.Common.Services
+@inject IApiService ApiService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+<MudCard Outlined="true">
+    <MudCardContent>
+        <MudText>Id wasn't found on Mangadex.</MudText>
+        <MudText>You can test if the direct link work.</MudText>
+        <MudText>Or just delete it.</MudText>
+    </MudCardContent>
+
+    <MudCardActions>
+        <IconLink Href="@MangadexUri(HunterResponse.HunterDto!.MangadexId)" Src="mangadex.ico"/>
+        <MudSpacer/>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnDelete">Delete</MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    [Parameter]
+    public HunterResponse HunterResponse { get; set; }
+
+    [Parameter]
+    public EventCallback<HunterResponse> DeleteUi { get; set; }
+
+    private static string MangadexUri(Guid id) => $"https://mangadex.org/title/{id.ToString()}";
+
+    private async Task OnDelete()
+    {
+        var confirmDelete = DialogService.Show<ConfirmDelete>("Delete");
+        var isCancelled = (await confirmDelete.Result).Cancelled;
+        if (isCancelled)
+            return;
+
+        var result = await ApiService.DeleteManga(UserState.Username, HunterResponse.HunterDto!.MangadexId.ToString());
+        if (result.IsError)
+        {
+            Snackbar.Add("Failed", Severity.Error);
+            Snackbar.Add(result.FirstError.Description, Severity.Error);
+        }
+        else
+        {
+            await DeleteUi.InvokeAsync(HunterResponse);
+            Snackbar.Add("Succeeded", Severity.Success);
+        }
+    }
+
+}

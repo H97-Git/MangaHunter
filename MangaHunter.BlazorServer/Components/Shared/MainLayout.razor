@@ -1,0 +1,68 @@
+﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISnackbar Snackbar
+<MudThemeProvider Theme="UserState.Theme" @bind-IsDarkMode="IsDarkMode"/>
+<MudSnackbarProvider/>
+<MudDialogProvider/>
+<CascadingValue Value="@UserState">
+    <MudLayout>
+        <AppBar IsDarkMode="IsDarkMode" ToggleDarkMode="ToggleDarkMode"/>
+        @* <TMenu *@
+        @*     ThemeManager="UserState.ThemeManager" *@
+        @*     ThemeManagerChanged="ThemeManagerChanged" *@
+        @*     ThemingDrawerOpen="IsThemingDrawerOpen" *@
+        @*     ThemingDrawerOpenChanged="DrawerThemeToggle"/> *@
+        @* <TButton OnClick="@(() => IsThemingDrawerOpen = true)"/> *@
+        <MudMainContent>
+            <MudContainer>
+                @Body
+            </MudContainer>
+        </MudMainContent>
+    </MudLayout>
+</CascadingValue>
+
+@code{
+
+    [Inject]
+    protected NavigationManagerHandler NavigationManagerHandler { get; set; }
+
+    private UserState UserState { get; } = new();
+    private bool IsDarkMode { get; set; } = true;
+    private void ToggleDarkMode() => IsDarkMode = !IsDarkMode;
+
+    private bool IsThemingDrawerOpen { get; set; }
+    private void DrawerThemeToggle() => IsThemingDrawerOpen = !IsThemingDrawerOpen;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = state.User;
+        if (user.Identity is {IsAuthenticated:true})
+        {
+            UserState.LogIn(state.User.Claims.ToList());
+            if (!UserState.IsEmailVerified)
+            {
+                var returnUri = QueryHelpers.AddQueryString("auth/logout", "returnUrl", "/check_email");
+                NavigationManagerHandler.NavigateTo(returnUri);
+            }
+        }
+    }
+
+    private async Task ThemeManagerChanged()
+    {
+        UserState.Theme.Palette = UserState.ThemeManager.IsDarkMode
+            ? UserState.DarkPalette
+            : UserState.LightPalette;
+
+        UserState.Theme.Palette.Primary = UserState.ThemeManager.PrimaryColor;
+    //
+    // await UpdateThemeManagerLocalStorage();
+        StateHasChanged();
+    }
+
+    private async Task UpdateThemeManagerLocalStorage()
+    {
+    //await LocalStorage.SetItemAsync("themeManager", AppState.ThemeManager);
+    }
+
+}

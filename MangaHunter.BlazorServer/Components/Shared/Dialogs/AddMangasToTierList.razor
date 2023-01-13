@@ -1,0 +1,119 @@
+@inject IApiService ApiService
+@if (HunterResponse.List is not {Count: 0})
+{
+    <MudDialog>
+        <TitleContent>
+            Select Mangas :
+        </TitleContent>
+        <DialogContent>
+            <MudGrid Spacing="2" Style="max-height: 500px;overflow: auto">
+                @foreach (var mangadexDto in HunterResponse.List.Select(hunterResponse => hunterResponse.MangadexDto))
+                {
+                    @if (mangadexDto is not null)
+                    {
+                        <MudItem xs="3" @onclick="() => OnAddToList(mangadexDto)">
+                            <MangaCover Class="@BorderClass(mangadexDto)" Mangadex="mangadexDto"/>
+                        </MudItem>
+                    }
+                }
+            </MudGrid>
+            <MudPagination Selected="@Page"
+                           SelectedChanged="OnPageChange"
+                           Rectangular="true"
+                           Variant="Variant.Filled"
+                           Count="@PageCount"
+                           Class="my-4"/>
+
+        </DialogContent>
+        <DialogActions>
+            <MudText>Count : @MangadexToAdd.Count</MudText>
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+            <MudButton Color="Color.Primary" OnClick="OnAdd">Add</MudButton>
+        </DialogActions>
+    </MudDialog>
+}
+
+@code {
+    private int Page { get; set; } = 1;
+    private static int PageSize => 100;
+    private int PageCount => (HunterResponse.Filtered + PageSize - 1) / PageSize;
+
+    [Parameter]
+    public List<MangadexDto> MangadexToAdd { get; set; } = new();
+
+    private List<MangadexDto> _mangadexIn { get; set; } = new();
+
+    private QueryParameters QueryParameters => new() {Page = Page, Size = PageSize, HasMangadex = true, Status = "wanttoread", ExcludedStatus = true};
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public HunterResponseWithPagination HunterResponse { get; set; } = new();
+
+    [Parameter]
+    public string Username { get; set; }
+
+    private string BorderClass(MangadexDto mangadexDto)
+    {
+        var isIn = MangadexToAdd.Find(c => c.Id.Equals(mangadexDto.Id));
+        return isIn is null ? "rounded-lg" : "border-solid border-4 mud-border-success rounded-lg";
+    }
+
+    private async Task FetchData()
+    {
+        var result = await ApiService.GetUserListWithPagination(Username, QueryParameters);
+        if (!result.IsError)
+        {
+            HunterResponse = result.Value;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        MudDialog.Options.FullWidth = true;
+        MudDialog.Options.MaxWidth = MaxWidth.Small;
+        MudDialog.SetOptions(MudDialog.Options);
+
+        _mangadexIn = MangadexToAdd.ToList();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await FetchData();
+    }
+
+    private async Task OnPageChange(int i)
+    {
+        Page = i;
+        await FetchData();
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void OnAddToList(MangadexDto mangadexDto)
+    {
+        var isIn = MangadexToAdd.Find(c => c.Id.Equals(mangadexDto.Id));
+        if (isIn is null)
+        {
+            MangadexToAdd.Add(mangadexDto);
+        }
+        else
+        {
+            MangadexToAdd.Remove(mangadexDto);
+        }
+    }
+
+    private void OnAdd()
+    {
+        foreach (var mangadexDto in _mangadexIn)
+        {
+            MangadexToAdd.Remove(mangadexDto);
+        }
+        MudDialog.Close(DialogResult.Ok(MangadexToAdd));
+    }
+
+}

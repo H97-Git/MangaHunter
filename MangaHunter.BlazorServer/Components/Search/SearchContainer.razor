@@ -1,0 +1,49 @@
+<MudTextField Adornment="Adornment.End"
+              AdornmentColor="Color.Primary"
+              AdornmentIcon="@Icons.Filled.Search"
+              @bind-Value="Query"
+              Immediate="@true"
+              Label="Enter the title of a series ex: Naruto"
+              MaxLength="100"
+              OnAdornmentClick="OnClick"
+              @onkeypress="OnKeyPress"
+              Variant="Variant.Outlined"/>
+
+@code {
+
+    // HelperText="@($"Query : {Query}")"
+    [Parameter]
+    public bool IsImmediate { get; set; } = false;
+
+    private string? Query { get; set; }
+
+    [Parameter]
+    public EventCallback<string> Search { get; set; }
+
+    private async Task OnClick()
+    {
+        await OnSearch();
+    }
+
+    private async Task OnKeyPress(KeyboardEventArgs k)
+    {
+        if (IsImmediate)
+        {
+            await OnSearch();
+            return;
+        }
+        if (k.Code == "Enter")
+        {
+            await OnSearch();
+        }
+    }
+
+    private async Task OnSearch()
+    {
+    //Todo : Display a message to user. "Query is empty"
+        if (string.IsNullOrWhiteSpace(Query) || Query.Length <= 3)
+            return;
+        await Search.InvokeAsync(Query);
+    }
+
+}

@@ -1,0 +1,102 @@
+@using System.Reflection
+@using MangaHunter.BlazorServer.Common
+@using MangaHunter.Contracts.TierList
+
+<MudPaper Class="pa-8 ma-2 d-flex flex-column" Style=@($"background-color: {ColorHex}")>
+    @*  *@
+    @if (IsInEditMode)
+    {
+        <div class="d-flex">
+            <MudTextField @bind-Value="TierModel.Title" Label="Tier Title" Variant="Variant.Text"></MudTextField>
+            <MudSpacer/>
+            <MudIconButton OnClick="OnRemoveTier" Icon="@Icons.Material.Filled.Delete"/>
+        </div>
+        <MudTextField @bind-Value="TierModel.SubTitle" Label="SubTitle" Variant="Variant.Text"></MudTextField>
+        <MudSelect @bind-Value="ColorHex" Label="Select tier color" OpenIcon="@Icons.Material.Outlined.ColorLens">
+            @foreach (var item in MaterialColorShades)
+            {
+                <MudSelectItem Style="@($"background-color: {item.Value}")" Value="@(item.Value)">@item.Color - @item.Name</MudSelectItem>
+            }
+        </MudSelect>
+    }
+    else
+    {
+        <div class="d-flex">
+            <div class="pa-2 ma-2">
+                @* <MudText>@TierModel.Id</MudText> *@
+                @* <MudText>@TierModel.Identifier</MudText> *@
+                <MudText Typo="Typo.h4" Class="mt-4 pb-2">@TierModel.Title</MudText>
+                <MudText Typo="Typo.subtitle2" Class="mt-4 pb-2">@TierModel.SubTitle</MudText>
+            </div>
+                <MudDropZone
+                    AllowReorder="true"
+                    CanDrop="@(_ => true)"
+                    Class="d-flex flex-wrap flex-grow-1 rounded-lg border-2 border-solid mud-border-lines-default"
+                    Identifier="@TierModel.Identifier.ToString()" T="DropItem"/>
+        </div>
+    }
+</MudPaper>
+
+
+@code {
+    private string ColorHex { get; set; }
+    List<MaterialColor> MaterialColors = new();
+    List<MaterialColor> MaterialColorShades = new();
+
+    public class MaterialColor
+    {
+        public string Color { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
+    }
+
+    [Parameter]
+    public EventCallback RemoveTier { get; set; }
+
+    [Parameter]
+    public TierRowDto TierModel { get; set; }
+
+    [Parameter]
+    public bool IsInEditMode { get; set; }
+
+    private async Task OnRemoveTier()
+        => await RemoveTier.InvokeAsync();
+
+
+    protected override void OnInitialized()
+    {
+        var shades = new List<MaterialColor>();
+        var colors = new List<MaterialColor>();
+        foreach (var prop in typeof(Colors).GetMembers(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy))
+        {
+            if (prop.MemberType != MemberTypes.NestedType) continue;
+            var assembly = typeof(Colors).Assembly;
+            var subColorType = assembly.GetType(prop.ToString());
+            var tempHex = "";
+            foreach (var color in subColorType.GetProperties())
+            {
+                var shadeColor = new MaterialColor
+                {
+                    Color = prop.Name,
+                    Name = color.Name,
+                    Value = color.GetValue(subColorType).ToString()
+                };
+                if (color.Name is "Default" or "Black")
+                {
+                    tempHex = shadeColor.Value;
+                }
+                shades.Add(shadeColor);
+            }
+            var materialColor = new MaterialColor
+            {
+                Color = prop.Name,
+                Value = tempHex
+            };
+            colors.Add(materialColor);
+        }
+        MaterialColors = colors;
+        MaterialColorShades = shades;
+        base.OnInitialized();
+    }
+
+}

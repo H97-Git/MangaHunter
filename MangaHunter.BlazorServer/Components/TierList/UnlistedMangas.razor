@@ -1,0 +1,21 @@
+@using MangaHunter.BlazorServer.Common
+<MudPaper Elevation="1" Class="pa-2 ma-2">
+    <MudExpansionPanel Text="@($"Unlisted Mangas - Count : {Count}")" Class="pa-2">
+        <MudDropZone
+            CanDrop="@(_ => true)"
+            Class="d-flex flex-wrap flex-grow-1 pa-2 rounded-lg border-2 border-solid mud-border-lines-default"
+            Identifier="@Identifier"
+            Style="overflow-y: scroll;max-height: 500px"
+            T="DropItem"/>
+    </MudExpansionPanel>
+</MudPaper>
+
+@code{
+
+    [Parameter]
+    public string Identifier { get; set; } = string.Empty;
+
+    [Parameter]
+    public int Count { get; set; }
+
+}

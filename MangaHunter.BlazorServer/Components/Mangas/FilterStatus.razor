@@ -1,0 +1,56 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using MudBlazor
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@* <MudStack Row="true" Style="align-items: center"> *@
+@*     <MudLink Href="@($"/users/{OwnerUserId}/mangas")" Underline="Underline.None">All</MudLink> *@
+@*     <MudText> / </MudText> *@
+@*     <MudBadge Color="Color.Warning"> *@
+@*         <MudLink Href="@($"/users/{OwnerUserId}/mangas/wanttoread")" Underline="Underline.None">Want To Read</MudLink> *@
+@*     </MudBadge> *@
+@*     <MudText> / </MudText> *@
+@*     <MudBadge Color="Color.Info"> *@
+@*         <MudLink Href="@($"/users/{OwnerUserId}/mangas/reading")" Underline="Underline.None">Reading</MudLink> *@
+@*     </MudBadge> *@
+@*     <MudText> / </MudText> *@
+@*     <MudBadge Color="Color.Success"> *@
+@*         <MudLink Href="@($"/users/{OwnerUserId}/mangas/read")" Underline="Underline.None">Read</MudLink> *@
+@*     </MudBadge> *@
+@*     <MudText> / </MudText> *@
+@*     <MudBadge Color="Color.Error"> *@
+@*         <MudLink Href="@($"/users/{OwnerUserId}/mangas/dropped")" Underline="Underline.None">Dropped</MudLink> *@
+@*     </MudBadge> *@
+@* </MudStack> *@
+
+<MudStack Row="true" Style="align-items: center">
+    <MudLink Href="@($"/users/{OwnerUserId}/mangas")" Underline="Underline.None">
+        <MudChip Style="cursor:pointer" Color="Color.Transparent" Variant="Variant.Filled">All</MudChip>
+    </MudLink>
+    <MudText> / </MudText>
+    <MudLink Href="@($"/users/{OwnerUserId}/mangas/wanttoread")" Underline="Underline.None">
+        <MudChip Style="cursor:pointer" Color="Color.Warning" Variant="Variant.Filled">Want to read</MudChip>
+    </MudLink>
+    <MudText> / </MudText>
+    <MudLink Href="@($"/users/{OwnerUserId}/mangas/reading")" Underline="Underline.None">
+        <MudChip Style="cursor:pointer" Color="Color.Info" Variant="Variant.Filled">Reading</MudChip>
+    </MudLink>
+    <MudText> / </MudText>
+    <MudLink Href="@($"/users/{OwnerUserId}/mangas/read")" Underline="Underline.None">
+       <MudChip Style="cursor:pointer" Color="Color.Success" Variant="Variant.Filled">Read</MudChip>
+    </MudLink>
+    <MudText> / </MudText>
+    <MudLink Href="@($"/users/{OwnerUserId}/mangas/dropped")" Underline="Underline.None">
+        <MudChip Style="cursor:pointer" Color="Color.Error" Variant="Variant.Filled">Dropped</MudChip>
+    </MudLink>
+</MudStack>
+
+@code {
+
+    [Parameter]
+    public string OwnerUserId { get; set; }
+
+    [Parameter]
+    public string Status { get; set; }
+
+}

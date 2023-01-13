@@ -1,0 +1,46 @@
+@using MangaHunter.BlazorServer.Common
+@using Newtonsoft.Json
+@if (TagList is not null)
+{
+    var groupBy = TagList.GroupBy(x => x.Attributes.Group);
+    foreach (var group in groupBy)
+    {
+        <div class="ma-2 pa-2">
+            <MudText>@group.Key.ToUpper()</MudText>
+            @foreach (var tag in group)
+            {
+                <TagChip
+                    IsIncluded="Included.Any(x => x.Equals(new Guid(tag.Id)))"
+                    IsExcluded="Excluded.Any(x => x.Equals(new Guid(tag.Id)))"
+                    Tag="@tag"
+                    Click="OnClick"/>
+            }
+        </div>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public List<Guid> Included { get; set; } = new();
+
+    [Parameter]
+    public List<Guid> Excluded { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<MangadexTag> Click { get; set; }
+
+    private List<MangadexTag>? TagList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var json = await File.ReadAllTextAsync("wwwroot/json/tags.json");
+        TagList = JsonConvert.DeserializeObject<List<MangadexTag>>(json);
+    }
+
+    private async Task OnClick(MangadexTag tag)
+    {
+        await Click.InvokeAsync(tag);
+    }
+
+}

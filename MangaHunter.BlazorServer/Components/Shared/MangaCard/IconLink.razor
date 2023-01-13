@@ -1,0 +1,15 @@
+<MudLink Class="px-2" Href="@Href" Target="_blank">
+    <MudImage Height="28" Src="@_src"/>
+</MudLink>
+
+@code {
+
+    [Parameter]
+    public string Href { get; set; }
+
+    [Parameter]
+    public string Src { get; set; }
+
+    private string _src => "ico/sites/" + Src;
+
+}

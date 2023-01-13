@@ -1,0 +1,124 @@
+@inject ISnackbar Snackbar 
+@inject IApiService ApiService
+@if (HunterResponse.HunterDto is not null && HunterResponse.MangadexDto is not null)
+{
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="@Icons.Material.Filled.EditNote" Class="mr-3 mb-n1"/>
+                Update Manga
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudText Typo="Typo.body1">@HunterResponse.MangadexDto.Title.EnglishOrDefault</MudText>
+            <MudSelect @bind-Value="HunterResponse.HunterDto.Status" Label="Reading status" AdornmentColor="Color.Secondary">
+                @foreach (ReadingStatusDto item in Enum.GetValues(typeof(ReadingStatusDto)))
+                {
+                    @switch (item)
+                    {
+                        case ReadingStatusDto.WantToRead:
+                            <MudSelectItem Value="@item">
+                                <MudText>Want to read</MudText>
+                            </MudSelectItem>
+                            break;
+                        case ReadingStatusDto.Reading:
+                            <MudSelectItem Value="@item">
+                                <MudText>Reading</MudText>
+                            </MudSelectItem>
+                            break;
+                        case ReadingStatusDto.Dropped:
+                            <MudSelectItem Value="@item">
+                                <MudText>Dropped</MudText>
+                            </MudSelectItem>
+                            break;
+                        case ReadingStatusDto.Read:
+                            <MudSelectItem Value="@item">
+                                <MudText>Read</MudText>
+                            </MudSelectItem>
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+            </MudSelect>
+            @if (HunterResponse.HunterDto.History is not {Count:0})
+            {
+                <Timeline History="@HunterResponse.HunterDto.History"/>
+            }
+            @if (HunterResponse.HunterDto.Status is not ReadingStatusDto.WantToRead)
+            {
+                <MudStack Row="true">
+                    @if (hasVolume)
+                    {
+                        <MudTextField @bind-Value="Vol" HelperText="Vol"/>
+                    }
+                    <MudTextField @bind-Value="Ch" HelperText="Ch"/>
+                    <MudDatePicker @bind-Date="Date"/>
+                    <MudButton OnClick="UpdateHistory">Add</MudButton>
+                    <MudTooltip Arrow="true" Placement="Placement.Top" Text="has volume ?">
+                        <MudCheckBox @bind-Checked="@hasVolume"/>
+                    </MudTooltip>
+                </MudStack>
+            }
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="Cancel">Cancel</MudButton>
+            <MudButton Color="Color.Primary" OnClick="OnUpdate">Update</MudButton>
+        </DialogActions>
+    </MudDialog>
+}
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public HunterResponse HunterResponse { get; set; }
+
+    [Parameter]
+    public string Username { get; set; }
+
+    private bool hasVolume { get; set; }
+    private int Vol { get; set; }
+    private float Ch { get; set; }
+    private DateTime? Date { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        MudDialog.Options.FullWidth = true;
+        MudDialog.SetOptions(MudDialog.Options);
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void UpdateHistory()
+    {
+        HunterResponse.HunterDto?.History.Add(new HistoryRowDto()
+        {
+            Vol = Vol,
+            Chapter = Ch,
+            Date = Date ?? null
+        });
+    }
+
+    private async Task OnUpdate()
+    {
+        if (HunterResponse.HunterDto != null)
+        {
+            var result = await ApiService.UpdateManga(Username, HunterResponse.HunterDto);
+            if (result.IsError)
+            {
+                Snackbar.Add("Failed.", Severity.Error);
+                Snackbar.Add(result.FirstError.Description, Severity.Error);
+            }
+            else
+            {
+                MudDialog.Close(DialogResult.Ok(HunterResponse.HunterDto.Id));
+            }
+        }
+    }
+
+}

@@ -1,0 +1,34 @@
+@if (MangaUpdatesDto is not null && !string.IsNullOrEmpty(MangaUpdatesDto.Status))
+{
+    var mangaUpdateStatusLines = MangaUpdatesDto.Status.Split("<BR>");
+    <MudText Typo="@Typo.body2" Style="align-self: center;">@mangaUpdateStatusLines.First()</MudText>
+}
+else
+{
+    <MudText Typo="@Typo.body2" Style="align-self: center;">N/A</MudText>
+}
+
+@code {
+
+    [Inject]
+    protected IApiService ApiService { get; set; }
+
+    [Parameter]
+    public string Username { get; set; } //This is cheating btw;
+
+    [Parameter]
+    public string MangadexId { get; set; }
+
+    private MangaUpdatesDto? MangaUpdatesDto { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var hunterResponse = await ApiService.GetMangaById(Username, MangadexId, new QueryParameters {HasMangaUpdates = true});
+
+        if (!hunterResponse.IsError)
+        {
+            MangaUpdatesDto = hunterResponse.Value.MangaUpdatesDto;
+        }
+    }
+
+}

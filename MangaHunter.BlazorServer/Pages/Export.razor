@@ -1,0 +1,22 @@
+@page "/Export"
+<MudButton Variant="Variant.Filled"
+           Color="Color.Primary"
+           OnClick="ExportTierLists"
+           >
+    Export Tierlists
+</MudButton>
+@code {
+    [Inject]
+    IApiService ApiService { get; set; }
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    private async Task ExportTierLists()
+    {
+        var result = await ApiService.GetUserTierList(UserState.Username);
+        if (!result.IsError)
+        {
+           
+        }
+    }
+}

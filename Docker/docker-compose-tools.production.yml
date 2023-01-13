@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    command: -H unix:///var/run/docker.sock
+    privileged: true
+    environment:
+      - VIRTUAL_HOST=${PORTAINER_HOST}
+      - VIRTUAL_PORT=${PORTAINER_VIRTUAL_PORT}
+      - LETSENCRYPT_HOST=${PORTAINER_HOST}
+    ports:
+      - "${PORTAINER_PORT}:${PORTAINER_PORT}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+#  uptime-kuma:
+#    image: louislam/uptime-kuma:latest
+#    container_name: uptime-kuma
+#    restart: unless-stopped
+#    environment:
+#      - VIRTUAL_HOST=${UPTIME_HOST}
+#      - LETSENCRYPT_HOST=${UPTIME_HOST}
+#    volumes:
+#      - uptime_kuma_data:/app/data
+#    ports:
+#      - "${UPTIME_PORT}:${UPTIME_PORT}"
+  sqlpad:
+    image: sqlpad/sqlpad:latest
+    ports:
+      - "3000:3000"
+    environment:
+      SQLPAD_ADMIN: 'admin@mangahunter.org'
+      SQLPAD_APP_LOG_LEVEL: info
+      SQLPAD_WEB_LOG_LEVEL: warn
+      SQLPAD_CONNECTIONS__sqlserver__name: SQL Server Manga Hunter
+      SQLPAD_CONNECTIONS__sqlserver__driver: sqlserver
+      SQLPAD_CONNECTIONS__sqlserver__host: db
+      SQLPAD_CONNECTIONS__sqlserver__database: master
+      SQLPAD_CONNECTIONS__sqlserver__username: sa
+      SQLPAD_CONNECTIONS__sqlserver__password: S3cur3P@ssW0rd!
+      LETSENCRYPT_HOST: ${PORTAINER_HOST}
+    volumes:
+      - sqlpad-volume:/var/lib/sqlpad
+volumes:
+  portainer_data:
+  sqlpad-volume:
+#  uptime_kuma_data:
+networks:
+  default:
+    external:
+      name: ${NETWORK}

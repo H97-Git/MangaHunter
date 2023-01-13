@@ -1,0 +1,20 @@
+@using MangaHunter.Contracts.Hunter
+@foreach (var rowDto in History)
+{
+    <MudTimelineItem Color="@Color.Info" Size="@Size.Small">
+        <ItemOpposite>
+            <MudText Color="@Color.Info">@rowDto.Date?.ToString("dd / MM / yyyy")</MudText>
+        </ItemOpposite>
+        <ItemContent>
+            <MudAlert Severity="Severity.Success">Vol : @rowDto.Vol Ch : @rowDto.Chapter</MudAlert>
+        </ItemContent>
+    </MudTimelineItem>
+}
+
+
+@code {
+
+    [Parameter]
+    public List<HistoryRowDto> History { get; set; }
+
+}

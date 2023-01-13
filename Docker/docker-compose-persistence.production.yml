@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "${REDIS_PORT}"
+
+  imgproxy:
+    image: darthsim/imgproxy
+    environment:
+      - VIRTUAL_HOST=${CDN_HOST}
+      - VIRTUAL_PORT=${CDN_PORT}
+      - LETSENCRYPT_HOST=${CDN_HOST}
+      - IMGPROXY_KEY=${CDN_KEY}
+      - IMGPROXY_SALT=${CDN_SALT}
+    ports:
+      - "${CDN_PORT}:${CDN_PORT}"
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
+    volumes:
+      - sql-data:/var/opt/mssql
+      - ./mssql:/home/mssql
+    environment:
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
+      - ACCEPT_EULA=Y
+    ports:
+      - "${MSSQL_PORT}:${MSSQL_PORT}"
+
+networks:
+  default:
+    external:
+      name: ${NETWORK}
+volumes:
+  sql-data:
+    external: true

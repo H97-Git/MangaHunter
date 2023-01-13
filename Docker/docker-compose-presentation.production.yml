@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  blazor-server:
+    image: "manga-hunter-blazor-server:1.0.0"
+    environment:
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - VIRTUAL_HOST=${HOST}
+      - LETSENCRYPT_HOST=${HOST}
+    depends_on:
+      - api
+
+  api:
+    image: "manga-hunter-api:1.0.0"
+    environment:
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+    
+networks:
+  default:
+    external:
+      name: ${NETWORK}

@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  blazor-server:
+    environment:
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+    image: "manga-hunter-blazor-server:1.0.0"
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+    depends_on:
+      - api
+
+  api:
+    environment:
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+    image: "manga-hunter-api:1.0.0"
+    depends_on:
+      - redis
+      - db
+
+  redis:
+    image: redis:latest
+    ports:
+      - "${REDIS_PORT}"
+
+  imgproxy:
+    environment:
+      - IMGPROXY_LOG_LEVEL=debug
+      - IMGPROXY_KEY=${CDN_KEY}
+      - IMGPROXY_SALT=${CDN_SALT}
+    image: darthsim/imgproxy
+    ports:
+      - "${CDN_PORT}:${CDN_PORT}"
+    depends_on:
+      - blazor-server
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
+    environment:
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
+      - ACCEPT_EULA=Y
+    ports:
+      - "${MSSQL_PORT}:${MSSQL_PORT}"

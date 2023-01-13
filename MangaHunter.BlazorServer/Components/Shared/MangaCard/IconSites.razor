@@ -1,0 +1,20 @@
+@using MangaHunter.Contracts.Common
+<MudStack Row="true">
+    <IconLink Href="@MangadexUri(Mangadex.Id)" Src="mangadex.ico"/>
+    @if (Mangadex.Links.MangaUpdates is not null)
+    {
+        <IconLink Href="@Mangadex.Links.MangaUpdates" Src="manga-updates.svg"/>
+    }
+    @if (Mangadex.Links.AnimePlanet is not null)
+    {
+        <IconLink Href="@Mangadex.Links.AnimePlanet" Src="anime-planet.ico"/>
+    }
+</MudStack>
+
+@code {
+
+    [Parameter]
+    public MangadexDto Mangadex { get; set; }
+
+    private static string MangadexUri(Guid id) => $"https://mangadex.org/title/{id.ToString()}";
+}
