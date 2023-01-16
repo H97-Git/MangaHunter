@@ -77,6 +77,7 @@ try
                         {
                             return Task.CompletedTask;
                         }
+
                         var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri)
                         {
                             Scheme = scheme, Port = port
@@ -126,12 +127,17 @@ try
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
             app.UseHttpsRedirection();
+            app.Use((context, next) =>
+            {
+                context.Request.Scheme = "https";
+                return next(context);
+            });
         }
 
         app.UseStaticFiles();
         app.UseRouting();
 
-        app.UseCookiePolicy(options:new CookiePolicyOptions()
+        app.UseCookiePolicy(options: new CookiePolicyOptions()
         {
             MinimumSameSitePolicy = SameSiteMode.None,
             Secure = CookieSecurePolicy.Always,
@@ -141,7 +147,7 @@ try
                 Log.Debug($"CookieName : {context.CookieName}");
                 Log.Debug($"CookieOptions.SameSite : {context.CookieOptions.SameSite.ToString()}");
                 Log.Debug($"CookieValue : {context.CookieValue}");
-            } 
+            }
         });
         app.UseAuthentication();
         app.UseAuthorization();
