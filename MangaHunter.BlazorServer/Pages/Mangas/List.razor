@@ -1,6 +1,6 @@
 @page "/users/{OwnerUsername}/mangas"
 @page "/users/{OwnerUsername}/mangas/{Status}"
-@implements IDisposable
+@* @implements IDisposable *@
 
 <PageHeader Title="@($"Mangas list of @{OwnerUsername}")"/>
 @* @if (IsLoading) *@
@@ -54,8 +54,8 @@
     [Inject]
     protected IDialogService DialogService { get; set; }
 
-    [Inject]
-    protected PersistentComponentState ApplicationState { get; set; }
+    // [Inject]
+    // protected PersistentComponentState ApplicationState { get; set; }
 
     [CascadingParameter]
     protected UserState UserState { get; set; }
@@ -80,12 +80,12 @@
     // private bool IsLoading { get; set; }
     private HunterResponseWithPagination Response { get; set; } = new();
 
-    private PersistingComponentStateSubscription Subscription { get; set; }
+    // private PersistingComponentStateSubscription Subscription { get; set; }
 
-    protected override void OnInitialized()
-    {
-        Subscription = ApplicationState.RegisterOnPersisting(Persist);
-    }
+    // protected override void OnInitialized()
+    // {
+    //     Subscription = ApplicationState.RegisterOnPersisting(Persist);
+    // }
 
     private void OnPageChange(int i)
     {
@@ -107,14 +107,14 @@
 
     private async Task FetchResponse()
     {
-        if (ApplicationState.TryTakeFromJson<HunterResponseWithPagination>(StateKey, out var stored))
-        {
-            if (stored is not null)
-            {
-                Response = stored;
-                return;
-            }
-        }
+        // if (ApplicationState.TryTakeFromJson<HunterResponseWithPagination>(StateKey, out var stored))
+        // {
+        //     if (stored is not null)
+        //     {
+        //         Response = stored;
+        //         return;
+        //     }
+        // }
 
         var queryParametersMangadex = new QueryParameters {Page = Page ?? 1, Size = PageSize, Status = Status, HasMangadex = true};
 
@@ -136,15 +136,15 @@
         }
     }
 
-    private Task Persist()
-    {
-        ApplicationState.PersistAsJson(StateKey, Response);
-        return Task.CompletedTask;
-    }
-
-    public void Dispose()
-    {
-        Subscription.Dispose();
-    }
+    // private Task Persist()
+    // {
+    //     ApplicationState.PersistAsJson(StateKey, Response);
+    //     return Task.CompletedTask;
+    // }
+    //
+    // public void Dispose()
+    // {
+    //     Subscription.Dispose();
+    // }
 
 }
