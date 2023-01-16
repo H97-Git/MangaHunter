@@ -56,15 +56,15 @@ try
                         context.ProtocolMessage.RedirectUri = uriBuilder.ToString();
                         return Task.CompletedTask;
                     },
-                    OnRedirectToIdentityProviderForSignOut = context =>
-                    {
-                        var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri)
-                        {
-                            Scheme = scheme, Port = port
-                        };
-                        context.ProtocolMessage.RedirectUri = uriBuilder.ToString();
-                        return Task.CompletedTask;
-                    },
+                    // OnRedirectToIdentityProviderForSignOut = context =>
+                    // {
+                    //     var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri)
+                    //     {
+                    //         Scheme = scheme, Port = port
+                    //     };
+                    //     context.ProtocolMessage.RedirectUri = uriBuilder.ToString();
+                    //     return Task.CompletedTask;
+                    // },
                 };
             });
         // .WithAccessToken(options =>
