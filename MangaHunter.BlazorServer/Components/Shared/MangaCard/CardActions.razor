@@ -12,7 +12,7 @@
     <AuthorizeView>
         <Authorized>
             <MudButton OnClick="OnAdd" StartIcon="@Icons.Rounded.PlaylistAdd"
-                       Style=@($"background-color: {Colors.DeepPurple.Default}") Variant="@Variant.Filled">
+                       Color="Color.Surface" Variant="@Variant.Filled">
                 Add
             </MudButton>
         </Authorized>
@@ -20,11 +20,24 @@
 }
 else
 {
-    <MudIconButton Icon="@Icons.Rounded.Edit" OnClick="OnUpdate"/>
-    <MudIconButton Icon="@Icons.Rounded.Delete" OnClick="OnDelete"/>
+    <MudSpacer/>
+    <MudTooltip Arrow="true" Placement="Placement.Top" Text="Edit">
+        <MudIconButton Icon="@Icons.Rounded.Edit" OnClick="OnUpdate"/>
+    </MudTooltip>
+    <MudTooltip Arrow="true" Placement="Placement.Top" Text="Delete">
+        <MudIconButton Icon="@Icons.Rounded.Delete" OnClick="OnDelete"/>
+    </MudTooltip>
+    <MudTooltip Arrow="true" Placement="Placement.Top" Text="View History">
+        <MudIconButton Icon="@Icons.Rounded.History" OnClick="OnHistory"/>
+    </MudTooltip>
+    @* <MudExpansionPanel Text="@($"Readings history : {HunterResponse.HunterDto.History.Count}")"> *@
+    @*     @if (HunterResponse.HunterDto!.History is not {Count:0}) *@
+    @*     { *@
+    @*         <Timeline History="@HunterResponse.HunterDto.History"/> *@
+    @*     } *@
+    @* </MudExpansionPanel> *@
 }
-<MudSpacer/>
-<IconSites Mangadex="HunterResponse.MangadexDto"/>
+
 
 @code {
 
@@ -79,4 +92,16 @@ else
         }
     }
 
+    private async Task OnHistory()
+    {
+    // var parameters = new DialogParameters {[nameof(HunterResponse)] = HunterResponse, ["Username"] = UserState.Username};
+    // var dialog = await DialogService.ShowAsync<UpdateManga>("Update Manga", parameters);
+    // var result = await dialog.Result;
+    // if (!result.Cancelled)
+    // {
+    // } 
+        Snackbar.Add("Not implemented", Severity.Warning);
+    }
+
 }
+

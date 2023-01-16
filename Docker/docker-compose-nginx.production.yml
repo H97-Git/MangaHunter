@@ -21,6 +21,7 @@ services:
       - letsencrypt-certs:/etc/nginx/certs
       - letsencrypt-vhost-d:/etc/nginx/vhost.d
       - letsencrypt-html:/usr/share/nginx/html
+      - letsencrypt-acme:/etc/acme.sh
     environment:
       - DEFAULT_EMAIL=${EMAIL}
       - NGINX_PROXY_CONTAINER=${NETWORK}
@@ -35,4 +36,6 @@ volumes:
   letsencrypt-vhost-d:
     external: true
   letsencrypt-html:
+    external: true
+  letsencrypt-acme:
     external: true

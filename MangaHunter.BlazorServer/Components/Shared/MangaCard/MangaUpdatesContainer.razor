@@ -1,11 +1,11 @@
 @if (MangaUpdatesDto is not null && !string.IsNullOrEmpty(MangaUpdatesDto.Status))
 {
     var mangaUpdateStatusLines = MangaUpdatesDto.Status.Split("<BR>");
-    <MudText Typo="@Typo.body2" Style="align-self: center;">@mangaUpdateStatusLines.First()</MudText>
+    <MudText Typo="@Typo.body2" Align="Align.Center" >@mangaUpdateStatusLines.First()</MudText>
 }
 else
 {
-    <MudText Typo="@Typo.body2" Style="align-self: center;">N/A</MudText>
+    <MudText Typo="@Typo.body2" Align="Align.Center" >N/A</MudText>
 }
 
 @code {

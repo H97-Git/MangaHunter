@@ -7,6 +7,7 @@
         <ContainerImageName>manga-hunter-blazor-server</ContainerImageName>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Auth0.ManagementApi" Version="7.17.4" />
         <PackageReference Include="ImgProxy" Version="2.2.0" />
         <PackageReference Include="Microsoft.NET.Build.Containers" Version="0.2.7" />
         <PackageReference Include="ErrorOr" Version="1.2.1" />

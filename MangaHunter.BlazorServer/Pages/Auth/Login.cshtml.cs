@@ -7,11 +7,11 @@ namespace MangaHunter.BlazorServer.Pages.Auth;
 
 public class Login : PageModel
 {
-    public async Task OnGet(string returnUrl = "/")
+    public async Task OnGet(string returnUrl = "/home")
     {
-        var authProperties = new LoginAuthenticationPropertiesBuilder()
+        var authPropertiesSignIn = new LoginAuthenticationPropertiesBuilder()
             .WithRedirectUri(returnUrl)
             .Build();
-        await HttpContext.ChallengeAsync(Auth0Constants.AuthenticationScheme, authProperties);
+        await HttpContext.ChallengeAsync(Auth0Constants.AuthenticationScheme, authPropertiesSignIn);
     }
 }

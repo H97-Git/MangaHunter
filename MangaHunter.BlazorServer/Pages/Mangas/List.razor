@@ -9,14 +9,9 @@
 @* } *@
 @* else *@
 @* { *@
-<MudPaper Class="ma-2 pa-2">
+<MudPaper Class="ma-4 pa-2">
     <MudStack Row="true">
         <FilterStatus OwnerUserId="@OwnerUsername" Status="@Status"/>
-        <MudText Align="Align.Justify" Style="align-self: center">
-            @(Status is null
-                ? $"Total : {Response.Total}"
-                : $"Filtered : {Response.Filtered} / {Response.Total}")
-        </MudText>
         <MudSpacer/>
         <MudButton OnClick="OnSearch" EndIcon="@Icons.Filled.Search">Search</MudButton>
     </MudStack>
@@ -26,9 +21,14 @@
     <MangasContainer IsReadOnly="@IsReadOnly" Response="@Response.List"/>
 }
 
-<MudPaper Class="ma-2 pa-2">
+<MudPaper Class="ma-4 pa-2">
     <MudStack Row="true">
         <MudPagination Selected="@(Page ?? 1)" SelectedChanged="OnPageChange" Rectangular="true" Variant="Variant.Filled" Count="@PageCount" Class="my-4"/>
+        <MudText Align="Align.Justify" Style="align-self: center">
+            @(Status is null
+                ? $"Total : {Response.Total}"
+                : $"Filtered : {Response.Filtered} / {Response.Total}")
+        </MudText>
         <MudSpacer/>
         <MudSelect T="int" Label="Page Size" Disabled="true">
             @foreach (var size in _pageSizes)

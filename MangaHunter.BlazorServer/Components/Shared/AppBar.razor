@@ -1,10 +1,10 @@
 ﻿@using MangaHunter.BlazorServer.Common
 
 <MudAppBar Dense="true" Fixed="false">
-    @* <MudToolBar Style="width: 100%"> *@
-    <MudNavLink Href="/" Class="mx-1 logo">
+    <MudLink Href="/" Class="mx-1 logo">
         <MudImage Src="@Src" Width="100"/>
-    </MudNavLink>
+    </MudLink>
+    <MudButton Class="mx-1" IconClass="nav-menu__home--icon" StartIcon="@Icons.Material.Rounded.Home" Href="/home">Home</MudButton>
     <MudButton Class="mx-1" IconClass="nav-menu__search--icon" StartIcon="@Icons.Material.Rounded.Search" Href="search">Search</MudButton>
     <AuthorizeView>
         <Authorized>
@@ -14,15 +14,14 @@
         </Authorized>
     </AuthorizeView>
     <MudSpacer/>
-    @* <MudToggleIconButton Class="mr-3" *@
-    @*                      Color="@Color.Warning" *@
-    @*                      Icon="@Icons.Material.Filled.LightMode" *@
-    @*                      Toggled="@IsDarkMode" *@
-    @*                      ToggledChanged="@ToggleDarkMode" *@
-    @*                      ToggledColor="@Color.Default" *@
-    @*                      ToggledIcon="@Icons.Material.Filled.DarkMode"/> *@
+    <MudToggleIconButton Class="mr-3"
+                         Color="@Color.Warning"
+                         Icon="@Icons.Material.Filled.LightMode"
+                         Toggled="@IsDarkMode"
+                         ToggledChanged="@ToggleDarkMode"
+                         ToggledColor="@Color.Default"
+                         ToggledIcon="@Icons.Material.Filled.DarkMode"/>
     <AccesControl/>
-    @* </MudToolBar> *@
 </MudAppBar>
 
 @code{

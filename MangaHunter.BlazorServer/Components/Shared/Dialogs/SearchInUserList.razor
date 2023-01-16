@@ -4,7 +4,7 @@
         <MudText>Search in your list</MudText>
     </TitleContent>
     <DialogContent>
-        <MudPaper Class="ma-2 pa-2">
+        <MudPaper Elevation="0" Class="mx-4">
             <SearchContainer Search="Search" IsImmediate="true"/>
         </MudPaper>
         @if (SearchResult is not {Count:0})
@@ -16,6 +16,7 @@
     </DialogContent>
     <DialogActions>
         <MudText>Total - @Response.Count</MudText>
+        <MudSpacer/>
         <MudButton StartIcon="@Icons.Filled.Cancel" OnClick="Cancel">Cancel</MudButton>
     </DialogActions>
 </MudDialog>

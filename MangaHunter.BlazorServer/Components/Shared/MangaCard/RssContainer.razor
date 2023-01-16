@@ -4,10 +4,6 @@
 @using MangaHunter.BlazorServer.Common
 @inject IApiService ApiService
 <MudExpansionPanel Text="Latest Releases" IsExpandedChanged="ExpandedChanged">
-    @if (_isLoading)
-    {
-        <MudProgressCircular Color="Color.Default" Indeterminate="true"/>
-    }
     @if (RssMangaUpdates is not null && RssMangaUpdates.Channel.Item is not {Count:0})
     {
         var groups = RssMangaUpdates.Channel.Item.GroupBy(x => x.Description);
@@ -44,13 +40,11 @@
     {
         if (!_firstExpanded)
         {
-            _isLoading = true;
             var hunterResponse = await ApiService.GetMangaById(Username, MangadexId, new QueryParameters {HasMangaUpdatesRss = true});
             if (!hunterResponse.IsError)
             {
                 RssMangaUpdates = hunterResponse.Value.RssMangaUpdatesDto;
             }
-            _isLoading = false;
         }
         _firstExpanded = true;
     }

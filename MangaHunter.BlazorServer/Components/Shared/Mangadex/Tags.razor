@@ -5,8 +5,8 @@
     var groupBy = TagList.GroupBy(x => x.Attributes.Group);
     foreach (var group in groupBy)
     {
-        <div class="ma-2 pa-2">
-            <MudText>@group.Key.ToUpper()</MudText>
+        <MudPaper Elevation="0" Class="ma-2 pa-2">
+            <MudText Class="pa-2">@group.Key.ToUpper() : </MudText>
             @foreach (var tag in group)
             {
                 <TagChip
@@ -15,7 +15,7 @@
                     Tag="@tag"
                     Click="OnClick"/>
             }
-        </div>
+        </MudPaper>
     }
 }
 

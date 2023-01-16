@@ -1,0 +1,242 @@
+﻿@page "/home"
+
+
+<PageHeader Title="@($"Home")"/>
+
+
+@if (TodayRssDto.Results is not {Count:0})
+{
+    <MudTable Bordered="@true" Breakpoint="Breakpoint.Sm" Class="ma-4" Dense="@true"
+              Filter="new Func<Result, bool>(OnFilterFunc)" FixedHeader="@true" GroupBy="@_groupDefinition"
+              GroupHeaderStyle="background-color:var(--mud-palette-background-grey)" Hover="@true" Height="500px"
+              Items="@TodayRssDto.Results" LoadingProgressColor="Color.Info">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">
+                <MudLink Color="Color.Inherit" Underline="Underline.None" Href="https://api.mangaupdates.com/v1/releases/days">
+                    Today on Mangaupdates
+                </MudLink>
+            </MudText>
+            <MudSpacer/>
+            <MudTextField Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Class="mt-0"
+                          IconSize="Size.Medium" Placeholder="Search" @bind-Value="_searchString1"/>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel Enabled="true" SortBy="new Func<Result, object>(x => x.Record.ReleaseDate)">Release Date</MudTableSortLabel>
+            </MudTh>
+            <MudTh>Title</MudTh>
+            <MudTh>Chapter</MudTh>
+        </HeaderContent>
+        <GroupHeaderTemplate>
+            <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"{context.GroupName}: {CleanString(context.Key.ToString())}")</MudTh>
+        </GroupHeaderTemplate>
+        <RowTemplate Context="rowContext">
+            <MudTd DataLabel="ReleaseDate">@rowContext.Record.ReleaseDate</MudTd>
+            <MudTd DataLabel="Title">@CleanString(rowContext.Record.Title)</MudTd>
+            <MudTd DataLabel="Chapter">@rowContext.Record.Chapter</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+<AuthorizeView>
+    <Authorized>
+        <MudText Typo="Typo.h3" Class="ma-2 pa-2">Last Hunter</MudText>
+        @if (UserListWithPagination is not null or {Total:0})
+        {
+            <MudGrid Spacing="2" Justify="Justify.Center" Class="pa-2">
+                @foreach (var hunterResponse in UserListWithPagination.List)
+                {
+                    <MudItem xs="12" sm="6" md="4">
+                        <MangaCardContainer HunterResponse="hunterResponse" IsReadOnly="false"/>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    </Authorized>
+</AuthorizeView>
+
+<MudText Typo="Typo.h3" Class="ma-2 pa-2">Most followed on Mangadex</MudText>
+@if (MostFollowsMangadex is not null or {Count:0})
+{
+    <MudGrid Spacing="2" Justify="Justify.Center" Class="pa-2">
+        @foreach (var hunterResponse in MostFollowsMangadex)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MangaCardContainer IsSearchResult="true" HunterResponse="hunterResponse" IsReadOnly="false"/>
+            </MudItem>
+        }
+    </MudGrid>
+}
+}
+<style>
+    .mud-table-container{
+        border-radius: 12px;
+    }
+    .mud-table-sticky-header * .mud-table-root .mud-table-head * .mud-table-cell:last-child {
+        border-radius: 0;
+    }
+    .mud-table-sticky-header * .mud-table-root .mud-table-head * .mud-table-cell:first-child {
+            border-radius: 0;
+    }
+</style>
+
+@* <MudExpansionPanel Text="Debugging stuffs"> *@
+@*     <div>Response.Count @ResponseDebug.Count</div> *@
+@*     <MudButton Disabled="@disabled" OnClick="FetchDataDebug">FetchData</MudButton> *@
+@*     <MudButton Disabled="@disabled" OnClick="FetchNewIds">FetchNewIds</MudButton> *@
+@*     <MudButton Disabled="@disabled" OnClick="DeleteNull">DeleteNull</MudButton> *@
+@* </MudExpansionPanel> *@
+
+@* @if (ResponseDebug is not {Count:0}) *@
+@* { *@
+@*     <MudGrid> *@
+@*         @foreach (var hunterResponse in ResponseDebug) *@
+@*         { *@
+@*             <MudItem md="4"> *@
+@*                 <div> *@
+@*                     <MudLink Href="@($"https://mangadex.org/title/{hunterResponse.HunterDto.MangadexId}")"> *@
+@*                         @hunterResponse.HunterDto.MangadexId *@
+@*                     </MudLink> *@
+@*                 </div> *@
+@*                 <div>@hunterResponse.HunterDto.BakaId</div> *@
+@*             </MudItem> *@
+@*         } *@
+@*     </MudGrid> *@
+@* } *@
+
+@code {
+
+    [Inject]
+    protected IApiService ApiService { get; set; }
+
+    [Inject]
+    protected ISnackbar Snackbar { get; set; }
+
+    [Inject]
+    protected NavigationManagerHandler NavigationManagerHandler { get; set; }
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    private List<HunterResponse> ResponseDebug { get; set; } = new();
+    private List<HunterResponse> MostFollowsMangadex { get; set; } = new();
+    private HunterResponseWithPagination UserListWithPagination { get; set; } = new();
+    private TodayRssDto TodayRssDto { get; set; } = new();
+    private string _searchString1 = "";
+    private static string CleanString(string src) => src.Replace("&#039;", "'").Replace("&quot;", "\"");
+
+    private TableGroupDefinition<Result> _groupDefinition = new()
+    {
+        GroupName = "Group",
+        Indentation = true,
+        Expandable = true,
+        IsInitiallyExpanded = false,
+        Selector = e => e.Record.Groups.First().Name
+    };
+
+    
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (UserState.IsAuthenticated)
+        {
+            var userListWithPagination = await ApiService.GetUserListWithPagination(UserState.Username, new QueryParameters
+            {
+                Page = 1,
+                Size = 3,
+                HasMangadex = true,
+                HasMangaUpdates = true,
+            });
+
+            if (!userListWithPagination.IsError)
+            {
+                UserListWithPagination = userListWithPagination.Value;
+            }
+        }
+
+        var mostFollowsMangadex = await ApiService.Search(new SearchQueryParameters {Amount = 3});
+        if (!mostFollowsMangadex.IsError)
+        {
+            MostFollowsMangadex = mostFollowsMangadex.Value;
+        }
+
+        var todayRss = await ApiService.GetTodayRss();
+        if (!todayRss.IsError)
+        {
+            TodayRssDto = todayRss.Value;
+        }
+    }
+
+    private bool OnFilterFunc(Result element) => FilterFunc(element, _searchString1);
+
+    private static bool FilterFunc(Result element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Record.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Record.Groups.First().Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+    private async Task MakeRequest()
+    {
+        const string username = "Ecchi";
+        var result = await ApiService.AddManga(username, new HunterDto
+        {
+            MangadexId = new Guid("b1461071-bfbb-43e7-a5b6-a7ba5904649f"),
+            Status = ReadingStatusDto.WantToRead,
+            Username = username
+        });
+        if (result.IsError)
+        {
+            Snackbar.Add("Error", Severity.Error);
+            Snackbar.Add(result.FirstError.Description, Severity.Error);
+        }
+        else
+        {
+            Snackbar.Add("Good", Severity.Success);
+        }
+    }
+    
+    private async Task FetchDataDebug()
+    {
+        var parms = new QueryParameters {HasMangadex = false, HasMangaUpdates = false};
+        var result = await ApiService.GetUserList(UserState.Username, parms);
+        if (!result.IsError)
+        {
+            ResponseDebug = result.Value.Where(hunterResponse => hunterResponse.HunterDto.BakaId is 0).ToList();
+        }
+    }
+
+    private async Task DeleteNull()
+    {
+        foreach (var hunterResponse in ResponseDebug.Where(hunterResponse => hunterResponse.MangadexDto is null))
+        {
+            var mangadexId = hunterResponse.HunterDto!.MangadexId.ToString();
+            var parameters = new QueryParameters {HasMangadex = true, HasMangaUpdates = false};
+            var result = await ApiService.GetMangaById(UserState.Username, mangadexId, parameters);
+            if (result.IsError)
+                break;
+            if (result.Value.MangadexDto is null)
+            {
+                await ApiService.DeleteManga(UserState.Username, mangadexId: mangadexId);
+            }
+            await Task.Delay(500);
+        }
+    }
+
+    private async Task FetchNewIds()
+    {
+        foreach (var hunterResponse in ResponseDebug)
+        {
+            var newId = await ApiService.GetNewMangaUpdatesId(UserState.Username, hunterResponse.HunterDto.MangadexId.ToString());
+            if (newId.IsError)
+                continue;
+            hunterResponse.HunterDto.BakaId = newId.Value;
+            await ApiService.UpdateManga(UserState.Username, hunterResponse.HunterDto);
+            StateHasChanged();
+            await Task.Delay(500);
+        }
+    }
+
+}

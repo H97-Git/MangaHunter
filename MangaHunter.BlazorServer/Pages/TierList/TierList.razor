@@ -10,7 +10,7 @@ else
     <MudStack Row="true">
         <PageHeader Title="@TierLisResponse.TierList.Title"/>
         <MudSpacer/>
-        <MudText Typo="Typo.h5">Tierlist of @TierLisResponse.TierList.UserName</MudText>
+        <MudText Typo="Typo.h5" Class="ma-2 pa-2">Tierlist of @TierLisResponse.TierList.UserName</MudText>
     </MudStack>
 }
 <TierListToolBar AddTier="AddTier" AddMangas="AddMangas" DeleteTierList="DeleteTierList" SaveTierList="SaveTierList" ToggleEditMode="ToggleEditMode"/>
@@ -36,7 +36,7 @@ else
                 Identifier="@DeleteIdentifier"
                 T="DropItem">
                 <ChildContent>
-                    <MudIcon Size="Size.Large" Icon="@Icons.Filled.Delete"/>
+                    <MudIcon Class="ma-2" Size="Size.Medium" Icon="@Icons.Filled.Delete"/>
                 </ChildContent>
             </MudDropZone>
         </MudPaper>

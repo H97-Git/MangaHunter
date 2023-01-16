@@ -12,7 +12,7 @@
         @*     ThemingDrawerOpen="IsThemingDrawerOpen" *@
         @*     ThemingDrawerOpenChanged="DrawerThemeToggle"/> *@
         @* <TButton OnClick="@(() => IsThemingDrawerOpen = true)"/> *@
-        <MudMainContent>
+        <MudMainContent Style="padding-top: 30px">
             <MudContainer>
                 @Body
             </MudContainer>
@@ -26,7 +26,7 @@
     protected NavigationManagerHandler NavigationManagerHandler { get; set; }
 
     private UserState UserState { get; } = new();
-    private bool IsDarkMode { get; set; } = true;
+    private bool IsDarkMode { get; set; } = false;
     private void ToggleDarkMode() => IsDarkMode = !IsDarkMode;
 
     private bool IsThemingDrawerOpen { get; set; }

@@ -2,19 +2,19 @@
 <MudStack AlignItems="AlignItems.Center" Row="true">
 
 </MudStack>
-<MudCardHeader Style="padding: 0px">
+<MudCardHeader Style="padding: 8px">
     <CardHeaderAvatar>
         <FlagIcon OriginalLanguage="@Mangadex.OriginalLanguage"/>
     </CardHeaderAvatar>
     <CardHeaderContent>
-        <MudNavLink Href="@($"manga/{Mangadex.Id}")">
-            <MudTooltip Arrow="true" Placement="Placement.Top" Text="@Mangadex.Title.EnglishOrDefault">
-                <MudText Class="trim" Typo="Typo.h6">
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@Mangadex.Title.EnglishOrDefault">
+            <MudText Class="trim" Typo="Typo.h6">
+                <MudLink Color="Color.Inherit" Href="@($"manga/{Mangadex.Id}")">
                     @Mangadex.Title.EnglishOrDefault
-                </MudText>
-                <MudText Typo="Typo.caption">@Mangadex.PublicationDemographic</MudText>
-            </MudTooltip>
-        </MudNavLink>
+                </MudLink>
+            </MudText>
+            <MudText Typo="Typo.caption">@Mangadex.PublicationDemographic</MudText>
+        </MudTooltip>
     </CardHeaderContent>
     <CardHeaderActions>
 

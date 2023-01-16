@@ -2,11 +2,7 @@
 
 <AuthorizeView>
     <Authorized>
-        <MudStack Row="true" Class="my-2">
-            <PageHeader Title="TierList"/>
-            <MudSpacer/>
-            <MudButton Variant="Variant.Filled" Color="Color.Inherit" StartIcon="@Icons.Material.Outlined.Add" OnClick="OnAdd">Add</MudButton>
-        </MudStack>
+        <PageHeader Title="TierList"/>
         <MudTable Style="cursor: pointer"
                   Breakpoint="Breakpoint.Sm"
                   Hover="true"
@@ -27,6 +23,10 @@
                 <MudTd DataLabel="Code">@rowContext.ShareCode</MudTd>
             </RowTemplate>
         </MudTable>
+        <MudStack Row="true" Class="my-2">
+            <MudSpacer/>
+            <MudButton Variant="Variant.Filled" Color="Color.Inherit" StartIcon="@Icons.Material.Outlined.Add" OnClick="OnAdd">Add</MudButton>
+        </MudStack>
     </Authorized>
     <NotAuthorized>
         <div>

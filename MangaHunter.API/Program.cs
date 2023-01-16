@@ -30,31 +30,33 @@ try
         builder.Services
             .AddPresentation(builder.Configuration)
             .AddApplication()
-            .AddInfrastructures(builder.Configuration,builder.Environment);
+            .AddInfrastructures(builder.Configuration, builder.Environment);
     }
 
     var app = builder.Build();
     {
-        using(var scope = app.Services.CreateScope())
+        using (var scope = app.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             dbContext.Database.EnsureCreated();
         }
+
         app.UseSwagger();
         app.UseSwaggerUI();
         if (app.Environment.IsDevelopment())
         {
             app.UseHsts();
+            app.UseForwardedHeaders(new ForwardedHeadersOptions()
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+            app.UseExceptionHandler("/error");
         }
 
-        app.UseForwardedHeaders(new ForwardedHeadersOptions()
-        {
-            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-        });
-        app.UseExceptionHandler("/error");
         //app.UseHttpsRedirection();
         //app.UseAuthentication();
         //app.UseAuthorization();
+        
         app.UseCors();
         app.MapControllers();
         app.Run();
