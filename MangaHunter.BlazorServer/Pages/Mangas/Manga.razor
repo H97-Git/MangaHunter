@@ -1,4 +1,5 @@
 @page "/manga/{MangaId}"
+@using ImgProxy
 
 <PageHeader Title="@($"Manga {MangaId}")"/>
 
@@ -13,7 +14,7 @@
                     <MudText Typo="Typo.caption">@HunterResponse.MangadexDto.PublicationDemographic</MudText>
                 </MudTooltip>
             </MudStack>
-            <MudImage Height="500" Src="@HunterResponse.MangadexDto.CoverArt?.Thumbnail512Px.ToString()"></MudImage>
+            <MudImage Height="500" Src="@Src"></MudImage>
             <MudStack Row="true">
                 <TagsMenu Mangadex="@HunterResponse.MangadexDto"/>
                 <MudSpacer/>
@@ -58,7 +59,6 @@
 }
 
 @code{
-
     [Inject]
     protected IApiService ApiService { get; set; }
 
@@ -78,7 +78,14 @@
     public string MangaId { get; set; } = string.Empty;
 
     private HunterResponse HunterResponse { get; set; } = new();
+        const string salt = "68656C6C6F";
+        const string key = "736563726574";
 
+    private string Src => ImgProxy(HunterResponse.MangadexDto?.CoverArt?.Thumbnail512Px.ToString());
+    private static string ImgProxy(string? src) => ImgProxyBuilder.New
+        .WithEndpoint("https://cdn.mangahunter.org")
+        .WithCredentials(key, salt)
+        .Build(src, encode: true);
     protected override async Task OnParametersSetAsync()
     {
         await FetchResponse(UserState.Username, MangaId);

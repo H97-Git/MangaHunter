@@ -11,23 +11,20 @@
 </MudTooltip>
 
 @code {
-    [Inject]
-    protected IWebHostEnvironment Environment { get; set; }
-    
     [Parameter]
     public string? Class { get; set; }
 
     [Parameter]
     public MangadexDto? Mangadex { get; set; }
 
-    private string Src => ImgProxy(Mangadex?.CoverArt?.Thumbnail512Px.ToString());
-
     protected override bool ShouldRender() => Mangadex is not null;
+    
+    private string Src => ImgProxy(Mangadex?.CoverArt?.Thumbnail512Px.ToString());
         const string salt = "68656C6C6F";
         const string key = "736563726574";
 
     private string ImgProxy(string? src) => ImgProxyBuilder.New
-        .WithEndpoint(Environment.IsProduction() ? "https://cdn.mangahunter.org" : "http://localhost:8080")
+        .WithEndpoint("https://cdn.mangahunter.org")
         .WithCredentials(key, salt)
         .Build(src, encode: true);
 }
