@@ -41,23 +41,23 @@ try
             dbContext.Database.EnsureCreated();
         }
 
-        app.UseSwagger();
-        app.UseSwaggerUI();
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseHsts();
-        }
-
+        app.UseHsts();
         app.UseForwardedHeaders(new ForwardedHeadersOptions()
         {
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
         });
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
         app.UseExceptionHandler("/error");
 
         //app.UseHttpsRedirection();
         //app.UseAuthentication();
         //app.UseAuthorization();
-        
+
         app.UseCors();
         app.MapControllers();
         app.Run();
