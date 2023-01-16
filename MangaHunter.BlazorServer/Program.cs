@@ -63,7 +63,7 @@ try
                             return Task.CompletedTask;
                         }
 
-                        var uriBuilder = new UriBuilder(context.ProtocolMessage?.RedirectUri)
+                        var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri)
                         {
                             Scheme = scheme, Port = port
                         };
@@ -73,6 +73,10 @@ try
                     },
                     OnRedirectToIdentityProviderForSignOut = context =>
                     {
+                        if (context.ProtocolMessage.RedirectUri == null)
+                        {
+                            return Task.CompletedTask;
+                        }
                         var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri)
                         {
                             Scheme = scheme, Port = port
