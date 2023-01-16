@@ -4,6 +4,7 @@ using MangaHunter.BlazorServer.Common.Services;
 using MangaHunter.BlazorServer.Common.Services.HttpClients;
 
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.HttpOverrides;
 
 using MudBlazor.Services;
@@ -37,12 +38,6 @@ try
         builder.Services.AddMudServices();
         builder.Services.AddMemoryCache();
 
-        builder.Services.ConfigureApplicationCookie(options =>
-        {
-            options.Cookie.SameSite = SameSiteMode.Lax;
-            options.Cookie.HttpOnly = true;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        });
         builder.Services
             .AddAuth0WebAppAuthentication(options =>
             {
@@ -65,10 +60,10 @@ try
                     {
                         var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri)
                         {
-                            Scheme = scheme,Port = port
+                            Scheme = scheme, Port = port
                         };
                         context.ProtocolMessage.RedirectUri = uriBuilder.ToString();
-                      return Task.CompletedTask;
+                        return Task.CompletedTask;
                     },
                 };
             });
@@ -78,7 +73,12 @@ try
         //     options.UseRefreshTokens = true;
         // });
 
-
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        });
         builder.Services.AddHttpClient();
         // builder.Services.AddHttpContextAccessor();
         // builder.Services.AddScoped<TokenHandler>();
@@ -111,6 +111,18 @@ try
         app.UseStaticFiles();
         app.UseRouting();
 
+        app.UseCookiePolicy(options:new CookiePolicyOptions()
+        {
+            MinimumSameSitePolicy = SameSiteMode.None,
+            Secure = CookieSecurePolicy.Always,
+            HttpOnly = HttpOnlyPolicy.Always,
+            OnAppendCookie = context =>
+            {
+                Log.Debug($"CookieName : {context.CookieName}");
+                Log.Debug($"CookieOptions.SameSite : {context.CookieOptions.SameSite.ToString()}");
+                Log.Debug($"CookieValue : {context.CookieValue}");
+            } 
+        });
         app.UseAuthentication();
         app.UseAuthorization();
 
