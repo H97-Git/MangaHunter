@@ -46,12 +46,13 @@ try
         if (app.Environment.IsDevelopment())
         {
             app.UseHsts();
-            app.UseForwardedHeaders(new ForwardedHeadersOptions()
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
-            app.UseExceptionHandler("/error");
         }
+
+        app.UseForwardedHeaders(new ForwardedHeadersOptions()
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        });
+        app.UseExceptionHandler("/error");
 
         //app.UseHttpsRedirection();
         //app.UseAuthentication();
