@@ -39,7 +39,7 @@ try
 
         builder.Services.ConfigureApplicationCookie(options =>
         {
-            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SameSite = SameSiteMode.Lax;
             options.Cookie.HttpOnly = true;
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
