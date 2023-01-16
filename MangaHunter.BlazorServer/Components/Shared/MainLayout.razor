@@ -39,11 +39,11 @@
         if (user.Identity is {IsAuthenticated:true})
         {
             UserState.LogIn(state.User.Claims.ToList());
-            if (!UserState.IsEmailVerified)
-            {
-                var returnUri = QueryHelpers.AddQueryString("auth/logout", "returnUrl", "/check_email");
-                NavigationManagerHandler.NavigateTo(returnUri);
-            }
+            // if (!UserState.IsEmailVerified)
+            // {
+            //     var returnUri = QueryHelpers.AddQueryString("auth/logout", "returnUrl", "/check_email");
+            //     NavigationManagerHandler.NavigateTo(returnUri);
+            // }
         }
     }
 
