@@ -1,5 +1,6 @@
 using Auth0.AspNetCore.Authentication;
 
+using MangaHunter.BlazorServer.Common;
 using MangaHunter.BlazorServer.Common.Services;
 using MangaHunter.BlazorServer.Common.Services.HttpClients;
 
@@ -47,59 +48,18 @@ try
                 options.Scope = "openid profile email";
                 options.OpenIdConnectEvents = new OpenIdConnectEvents
                 {
-                    OnRedirectToIdentityProvider = context =>
-                    {
-                        var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri)
-                        {
-                            Scheme = scheme, Port = port
-                        };
-                        context.ProtocolMessage.RedirectUri = uriBuilder.ToString();
-                        return Task.CompletedTask;
-                    },
-                    OnSignedOutCallbackRedirect = context =>
-                    {
-                        if (context.ProtocolMessage?.RedirectUri == null)
-                        {
-                            return Task.CompletedTask;
-                        }
-
-                        var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri)
-                        {
-                            Scheme = scheme, Port = port
-                        };
-                        context.ProtocolMessage.RedirectUri = uriBuilder.ToString();
-
-                        return Task.CompletedTask;
-                    },
-                    OnRedirectToIdentityProviderForSignOut = context =>
-                    {
-                        if (context.ProtocolMessage.RedirectUri == null)
-                        {
-                            return Task.CompletedTask;
-                        }
-
-                        var uriBuilder = new UriBuilder(context.ProtocolMessage.RedirectUri)
-                        {
-                            Scheme = scheme, Port = port
-                        };
-                        context.ProtocolMessage.RedirectUri = uriBuilder.ToString();
-
-                        return Task.CompletedTask;
-                    },
+                    OnRedirectToIdentityProvider = context => OpenIdEvents.EnsureHttps(context, scheme, port),
+                    OnSignedOutCallbackRedirect = context => OpenIdEvents.EnsureHttps(context, scheme, port),
+                    OnRedirectToIdentityProviderForSignOut =
+                        context => OpenIdEvents.EnsureHttps(context, scheme, port),
                 };
-            });
-        // .WithAccessToken(options =>
-        // {
-        //     options.Audience = builder.Configuration["Auth0:Audience"];
-        //     options.UseRefreshTokens = true;
-        // });
-
-        builder.Services.ConfigureApplicationCookie(options =>
+            })
+        .WithAccessToken(options =>
         {
-            options.Cookie.SameSite = SameSiteMode.None;
-            options.Cookie.HttpOnly = true;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Audience = builder.Configuration["Auth0:Audience"];
+            options.UseRefreshTokens = true;
         });
+
         builder.Services.AddHttpClient();
         // builder.Services.AddHttpContextAccessor();
         // builder.Services.AddScoped<TokenHandler>();
@@ -142,12 +102,6 @@ try
             MinimumSameSitePolicy = SameSiteMode.None,
             Secure = CookieSecurePolicy.Always,
             HttpOnly = HttpOnlyPolicy.Always,
-            OnAppendCookie = context =>
-            {
-                Log.Debug($"CookieName : {context.CookieName}");
-                Log.Debug($"CookieOptions.SameSite : {context.CookieOptions.SameSite.ToString()}");
-                Log.Debug($"CookieValue : {context.CookieValue}");
-            }
         });
         app.UseAuthentication();
         app.UseAuthorization();

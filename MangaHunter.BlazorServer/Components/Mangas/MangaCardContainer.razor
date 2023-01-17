@@ -31,7 +31,10 @@
             <MudDivider Class="ma-2"/>
             @if (!IsSearchResult)
             {
-                <MangaUpdatesContainer Username="@Username" MangadexId="@HunterResponse.HunterDto.MangadexId.ToString()"/>
+                <MangaUpdatesContainer
+                    MangadexId="@HunterResponse.HunterDto.MangadexId.ToString()"
+                    MangaUpdatesDto="@HunterResponse.MangaUpdatesDto"
+                    Username="@Username"/>
                 <RssContainer Username="@Username" MangadexId="@HunterResponse.HunterDto.MangadexId.ToString()"/>
             }
             else
@@ -82,10 +85,13 @@
     public HunterResponse HunterResponse { get; set; }
 
     [Parameter]
-    public bool IsReadOnly { get; set; }
+    public string Class { get; set; } = "";
 
     [Parameter]
-    public string Class { get; set; } = "";
+    public bool IsLandingPage { get; set; }
+
+    [Parameter]
+    public bool IsReadOnly { get; set; }
 
     [Parameter]
     public bool IsSearchResult { get; set; }
@@ -95,6 +101,16 @@
 
     [Parameter]
     public EventCallback<HunterResponse> OnDeleteUi { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (IsLandingPage)
+        {
+            IsSearchResult = false;
+            IsReadOnly = true;
+        }
+        base.OnParametersSet();
+    }
 
     private string Username => string.IsNullOrEmpty(UserState.Username) ? HunterResponse.HunterDto?.Username! : UserState.Username;
         const string salt = "68656C6C6F";

@@ -1,5 +1,6 @@
 ﻿@page "/home"
-
+@using Auth0.ManagementApi
+@inject IManagementApiClient ManagementApiClient
 
 <PageHeader Title="@($"Home")"/>
 
@@ -37,24 +38,24 @@
         </RowTemplate>
     </MudTable>
 
-<AuthorizeView>
-    <Authorized>
-        <MudText Typo="Typo.h3" Class="ma-2 pa-2">Last Hunter</MudText>
-        @if (UserListWithPagination is not null or {Total:0})
-        {
-            <MudGrid Spacing="2" Justify="Justify.Center" Class="pa-2">
-                @foreach (var hunterResponse in UserListWithPagination.List)
-                {
-                    <MudItem xs="12" sm="6" md="4">
-                        <MangaCardContainer HunterResponse="hunterResponse" IsReadOnly="false"/>
-                    </MudItem>
-                }
-            </MudGrid>
-        }
-    </Authorized>
-</AuthorizeView>
+    <AuthorizeView>
+        <Authorized>
+            <MudText Typo="Typo.h3" Class="ma-2 pa-2">Last Hunter</MudText>
+            @if (UserListWithPagination is not null or {Total:0})
+            {
+                <MudGrid Spacing="2" Justify="Justify.Center" Class="pa-2">
+                    @foreach (var hunterResponse in UserListWithPagination.List)
+                    {
+                        <MudItem xs="12" sm="6" md="4">
+                            <MangaCardContainer HunterResponse="hunterResponse" IsReadOnly="false"/>
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
+        </Authorized>
+    </AuthorizeView>
 
-<MudText Typo="Typo.h3" Class="ma-2 pa-2">Most followed on Mangadex</MudText>
+    <MudText Typo="Typo.h3" Class="ma-2 pa-2">Most followed on Mangadex</MudText>
 @if (MostFollowsMangadex is not null or {Count:0})
 {
     <MudGrid Spacing="2" Justify="Justify.Center" Class="pa-2">
@@ -85,7 +86,9 @@
 @*     <MudButton Disabled="@disabled" OnClick="FetchNewIds">FetchNewIds</MudButton> *@
 @*     <MudButton Disabled="@disabled" OnClick="DeleteNull">DeleteNull</MudButton> *@
 @* </MudExpansionPanel> *@
-
+<MudButton OnClick="FetchDataUser">FetchDataUser</MudButton>
+<span>@UserState.UserIdFull</span>
+<span>@UserState.UserId</span>
 @* @if (ResponseDebug is not {Count:0}) *@
 @* { *@
 @*     <MudGrid> *@
@@ -133,7 +136,6 @@
         Selector = e => e.Record.Groups.First().Name
     };
 
-    
 
     protected override async Task OnParametersSetAsync()
     {
@@ -178,6 +180,7 @@
             return true;
         return false;
     }
+
     private async Task MakeRequest()
     {
         const string username = "Ecchi";
@@ -197,7 +200,7 @@
             Snackbar.Add("Good", Severity.Success);
         }
     }
-    
+
     private async Task FetchDataDebug()
     {
         var parms = new QueryParameters {HasMangadex = false, HasMangaUpdates = false};
@@ -206,6 +209,11 @@
         {
             ResponseDebug = result.Value.Where(hunterResponse => hunterResponse.HunterDto.BakaId is 0).ToList();
         }
+    }
+
+    private async Task FetchDataUser()
+    {
+        var t = await ManagementApiClient.Users.GetAsync(UserState.UserId);
     }
 
     private async Task DeleteNull()

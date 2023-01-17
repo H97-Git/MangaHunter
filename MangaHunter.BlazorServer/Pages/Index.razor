@@ -14,7 +14,7 @@
             {
                 <MudCarouselItem Transition="Transition.Fade">
                     <div class="d-flex" style="height:100%">
-                        <MangaCardContainer Class="mx-auto my-auto" IsSearchResult="false" HunterResponse="@hunterResponse" IsReadOnly="true"/>
+                        <MangaCardContainer Class="mx-auto my-auto" HunterResponse="@hunterResponse" IsLandingPage="true"/>
                     </div>
                 </MudCarouselItem>
             }
@@ -47,8 +47,8 @@
             @ref="_dropContainer"
             T="DropItem">
             <ChildContent>
-                <TierContainer TierModel="@_tierRowDto" IsInEditMode="@false" RemoveTier="RemoveTier"/>
-                <TierContainer TierModel="@_tierRowDtoo" IsInEditMode="@false" RemoveTier="RemoveTier"/>
+                <TierContainer TierModel="@_firstTierRowDto" IsInEditMode="@false"/>
+                <TierContainer TierModel="@_secondTierRowDto" IsInEditMode="@false"/>
             </ChildContent>
             <ItemRenderer>
                 <MangaCover Class="ma-2 rounded-lg"
@@ -58,7 +58,7 @@
     }
 
     <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="ma-2" FullWidth="true" Href="auth/register">Sign Up Now</MudButton>
-   
+
 </MudStack>
 
 @code {
@@ -66,32 +66,32 @@
     [Inject]
     protected IApiService ApiService { get; set; }
 
-    private string Src => false ? "logo-dark.png" : "logo-light.png";
+    static string Src => false ? "logo-dark.png" : "logo-light.png";
 
-    private List<HunterResponse> HunterResponses { get; set; } = new();
-    private MudDropContainer<DropItem> _dropContainer;
+    List<HunterResponse> HunterResponses { get; set; } = new();
+    MudDropContainer<DropItem> _dropContainer;
 
-    private static readonly Guid Identifier = Guid.NewGuid();
+    static readonly Guid Identifier = Guid.NewGuid();
 
-    private bool AutoCycle = true;
-    private int CarouselIndex = 0;
+    bool AutoCycle = true;
+    int CarouselIndex = 0;
 
-    private static List<Guid> MangaIds = new()
+    static List<Guid> MangaIds = new()
     {
         new Guid("a1c7c817-4e59-43b7-9365-09675a149a6f"),
         new Guid("6a468761-5bd6-4de0-a0cb-47cb456ac2e0"),
         new Guid("8892dc05-867f-4fff-823b-47210a6746bb"),
     };
 
-    private static List<DropItem> _dropItems = new();
+    static List<DropItem> _dropItems = new();
 
-    private readonly TierRowDto _tierRowDto = new()
+    readonly TierRowDto _firstTierRowDto = new()
     {
         Title = "SS",
         Identifier = Identifier,
     };
 
-    private readonly TierRowDto _tierRowDtoo = new()
+    readonly TierRowDto _secondTierRowDto = new()
     {
         Title = "D",
         Identifier = Guid.NewGuid(),
@@ -110,7 +110,7 @@
         }
     }
 
-    private static void ItemUpdated(MudItemDropInfo<DropItem> dropItem)
+    static void ItemUpdated(MudItemDropInfo<DropItem> dropItem)
     {
         dropItem.Item.Identifier = dropItem.DropzoneIdentifier;
     }
@@ -121,12 +121,8 @@
             new QueryParameters
             {
                 HasMangadex = true,
+                HasMangaUpdates = true,
             });
         return !mangaById.IsError ? mangaById.Value : new HunterResponse();
     }
-
-    private void RemoveTier()
-    {
-    }
-
 }
