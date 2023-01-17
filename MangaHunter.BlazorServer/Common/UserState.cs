@@ -8,24 +8,12 @@ public class UserState
 {
     public UserState()
     {
-        Theme = new MudTheme
-        {
-            LayoutProperties = new LayoutProperties
-            {
-                DefaultBorderRadius = "12px",
-                AppbarHeight = "60px",
-            },
-            Typography = new Typography
-            {
-                Default = new Default {FontFamily = new[] {"Montserrat"}, FontSize = "0.9rem",}
-            },
-            Palette = this.LightPalette,
-            PaletteDark = this.DarkPalette,
-        };
+        
     }
 
     public string Username { get; private set; } = "";
-    private string UserId { get; set; } = "";
+    public string UserId { get; set; } = "";
+    public string UserIdFull { get; set; } = "";
     public string Picture { get; private set; } = "";
     public bool IsAuthenticated { get; private set; }
     public bool IsEmailVerified { get; private set; }
@@ -37,6 +25,10 @@ public class UserState
             .Select(c => c.Value)
             .FirstOrDefault() ?? string.Empty;
 
+        UserIdFull = claims
+            .Where(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"))
+            .Select(c => c.Value).FirstOrDefault()!;
+        
         UserId = claims
             .Where(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"))
             .Select(c => c.Value).FirstOrDefault()
@@ -52,59 +44,4 @@ public class UserState
         IsAuthenticated = true;
     }
 
-    public Palette LightPalette { get; } = new()
-    {
-        Primary = "#7e6fff",
-        Secondary = "#503dff",
-        Tertiary = "#494cfc",
-        
-        Surface = "#DEE2E6",
-        Background = "#d6d6d6",
-        BackgroundGrey = "#CED4DA", // MangaUpdateTable Scan Groups
-        AppbarBackground = "#7e6fff",
-        
-        TextPrimary = "#212529",
-        
-        Info = "#4a86ff",
-        Success = "#3dcb6c",
-        Warning = "#ffb545",
-        Error = "#ff3f5f",
-        // Dark = null,
-
-        LinesDefault = "#7e6fff",
-        TableLines = "#33323e",
-        Divider = "#6C757D",
-    };
-
-    public Palette DarkPalette { get; } = new()
-    {
-        Primary = "#7e6fff",
-        Secondary = "#503dff",
-        Tertiary = "#494cfc",
-        
-        Surface = "#343A40",
-        Background = "#212529",
-        BackgroundGrey = "#495057",
-        AppbarBackground = "#343A40",
-        
-        TextPrimary = "#F8F9FA",
-        TextSecondary = "#dcd8d8",
-        
-        Info = "#4a86ff",
-        Success = "#3dcb6c",
-        Warning = "#ffb545",
-        Error = "#ff3f5f",
-        // Dark = null,
-
-        LinesDefault = "#7e6fff",
-        TableLines = "#33323e",
-        Divider = "#6C757D",
-    };
-
-    public MudTheme Theme { get; set; }
-
-    public static ThemeManagerModel ThemeManager { get; set; } = new()
-    {
-        IsDarkMode = true, PrimaryColor = Colors.Indigo.Default
-    };
 }

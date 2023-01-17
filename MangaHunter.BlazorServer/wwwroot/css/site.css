@@ -23,24 +23,24 @@
 }
 
 .nav-menu__home--icon {
-    color: #de3939;
+    color: #d20f39;
 }
 
 .nav-menu__search--icon {
-    color: #39ded0;
+    color: #8839ef;
 }
 
 .nav-menu__mangas--icon {
-    color: #6046b9;
+    color: #df8e1d;
 }
 
 .nav-menu__tierlist--icon {
-    color: #3edc39;
+    color: #dc8a78;
 }
 
-.nav-menu__import--icon {
-    color: #8522ff;
-}
+/*.nav-menu__import--icon {*/
+/*    color: #8522ff;*/
+/*}*/
 
 .mud-nav-link-no-padding a {
     padding: 0;
