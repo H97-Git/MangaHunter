@@ -23,24 +23,38 @@
 }
 
 .nav-menu__home--icon {
-    color: #d20f39;
+    color: var(--mud-palette-error);
 }
 
 .nav-menu__search--icon {
-    color: #8839ef;
+    color: var(--mud-palette-secondary);
 }
 
 .nav-menu__mangas--icon {
-    color: #df8e1d;
+    color: var(--mud-palette-tertiary);
 }
 
 .nav-menu__tierlist--icon {
-    color: #dc8a78;
+    color: var(--mud-palette-success);
 }
 
 /*.nav-menu__import--icon {*/
 /*    color: #8522ff;*/
 /*}*/
+
+.not-found {
+    width: 560px;
+    height: 225px;
+    margin-right: 225px;
+}
+
+.not-found-border {
+    fill: var(--mud-palette-surface)
+}
+
+.not-found-fill {
+    fill: var(--mud-palette-text-primary)
+}
 
 .mud-nav-link-no-padding a {
     padding: 0;
