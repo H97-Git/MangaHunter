@@ -1,12 +1,14 @@
 using Auth0.AspNetCore.Authentication;
 
 using MangaHunter.BlazorServer.Common;
+using MangaHunter.BlazorServer.Common.PrerenderCache;
 using MangaHunter.BlazorServer.Common.Services;
 using MangaHunter.BlazorServer.Common.Services.HttpClients;
 
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Http;
 
 using MudBlazor.Services;
 
@@ -28,9 +30,10 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    var builder = WebApplication.CreateBuilder(args);
+   var builder = WebApplication.CreateBuilder(args);
     //string scheme = builder.Environment.IsProduction() ? "https" : "http";
     const string scheme = "https";
+    
     int port = builder.Environment.IsProduction() ? -1 : 7000;
     {
         builder.Host.UseSerilog();
@@ -44,7 +47,6 @@ try
             {
                 options.Domain = builder.Configuration["Auth0:Domain"]!;
                 options.ClientId = builder.Configuration["Auth0:ClientId"]!;
-                options.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
                 options.Scope = "openid profile email";
                 options.OpenIdConnectEvents = new OpenIdConnectEvents
                 {
@@ -53,13 +55,7 @@ try
                     OnRedirectToIdentityProviderForSignOut =
                         context => OpenIdEvents.EnsureHttps(context, scheme, port),
                 };
-            })
-        .WithAccessToken(options =>
-        {
-            options.Audience = builder.Configuration["Auth0:Audience"];
-            options.UseRefreshTokens = true;
-        });
-
+            });
         builder.Services.AddHttpClient();
         // builder.Services.AddHttpContextAccessor();
         // builder.Services.AddScoped<TokenHandler>();
@@ -72,9 +68,10 @@ try
         //             .Add(httpMessageHandlerBuilder.Services.GetRequiredService<TokenHandler>());
         //     });
         // });
-        builder.Services.AddScoped<NavigationManagerHandler>();
-        builder.Services.AddScoped<IApiService, ApiService>();
         builder.Services.AddScoped<IApiClient, ApiClient>();
+        builder.Services.AddScoped<IApiService, ApiService>();
+        builder.Services.AddScoped<IPrerenderCache, PrerenderCache>();
+        builder.Services.AddScoped<NavigationManagerHandler>();
     }
 
     var app = builder.Build();
