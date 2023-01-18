@@ -1,0 +1,69 @@
+@page "/users/{Username}/settings"
+@using Auth0.ManagementApi.Models
+@inject ISnackbar Snackbar
+@inject IManagementApiService ManagementApiService
+@inject NavigationManagerHandler NavigationManagerHandler
+<PageHeader Title="Settings"/>
+
+<img alt="catppuccin" src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/logos/exports/1544x1544_circle.png" height="56"/>
+<MudSelect Label="Choose a theme : " AnchorOrigin="Origin.BottomCenter" ValueChanged="OnThemeChange" T="Palette">
+    <MudSelectItem Value="Palettes.Latte">
+        <img alt="sunflower" src="https://github.githubassets.com/images/icons/emoji/unicode/1f33b.png" height="14" class="mr-1"/> Latte
+    </MudSelectItem>
+    <MudSelectItem Value="Palettes.Frappe">
+        <img alt="potted_plant" src="https://github.githubassets.com/images/icons/emoji/unicode/1fab4.png" height="14" class="mr-1"/> Frappé
+    </MudSelectItem>
+    <MudSelectItem Value="Palettes.Macchiato">
+        <img alt="hibiscus" src="https://github.githubassets.com/images/icons/emoji/unicode/1f33a.png" height="14" class="mr-1"/> Macchiato
+    </MudSelectItem>
+    <MudSelectItem Value="Palettes.Mocha">
+        <img alt="herb" src="https://github.githubassets.com/images/icons/emoji/unicode/1f33f.png" height="14" class="mr-1"/> Mocha
+    </MudSelectItem>
+</MudSelect>
+
+<MudButton OnClick="UpdateUser">Update</MudButton>
+
+@code {
+
+    [Parameter]
+    public string? Username { get; set; }
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (UserState is not {IsAuthenticated:true})
+        {
+            NavigationManagerHandler.NavigateTo("/home");
+        }
+
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnThemeChange(Palette palette)
+    {
+        UserState.Theme.Palette = palette;
+    }
+
+    private async Task UpdateUser()
+    {
+        var result = await ManagementApiService.UpdateUser(UserState.UserId, new UserUpdateRequest
+        {
+            UserMetadata = new UserMetaData
+            {
+                PaletteName = Palettes.GetStringFromPalette(UserState.Theme.Palette)
+            }
+        });
+        if (!result.IsError)
+        {
+            Snackbar.Add("Good", Severity.Success);
+            NavigationManagerHandler.Reload();
+        }
+        else
+        {
+            Snackbar.Add("Bad", Severity.Error);
+        }
+    }
+
+}

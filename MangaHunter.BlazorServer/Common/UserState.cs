@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 
 using MudBlazor;
 
@@ -6,42 +7,41 @@ namespace MangaHunter.BlazorServer.Common;
 
 public class UserState
 {
-    public UserState()
-    {
-        
-    }
-
+    public string UserId { get; private set; } = "";
     public string Username { get; private set; } = "";
-    public string UserId { get; set; } = "";
-    public string UserIdFull { get; set; } = "";
     public string Picture { get; private set; } = "";
-    public bool IsAuthenticated { get; private set; }
+    // public UserData? UserData { get; set; }
     public bool IsEmailVerified { get; private set; }
+    public bool IsAuthenticated { get; private set; }
 
-    public void LogIn(List<Claim> claims)
+    public void MapFromClaims(List<Claim> claims)
     {
-        Username = claims
-            .Where(c => c.Type.Equals("username"))
-            .Select(c => c.Value)
-            .FirstOrDefault() ?? string.Empty;
-
-        UserIdFull = claims
-            .Where(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"))
-            .Select(c => c.Value).FirstOrDefault()!;
-        
         UserId = claims
             .Where(c => c.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"))
-            .Select(c => c.Value).FirstOrDefault()
-            !.Split("|")[1];
-
+            .Select(c => c.Value).First();
+        Username = claims
+            .Where(c => c.Type.Equals("https://mangahunter.org/claims/username"))
+            .Select(c => c.Value)
+            .First();
         Picture = claims.Where(c => c.Type.Equals("picture"))
             .Select(c => c.Value)
-            .FirstOrDefault() ?? string.Empty;
-
+            .First();
+        // UserData = JsonSerializer.Deserialize<UserData>(claims
+        //     .Where(c => c.Type.Equals("https://mangahunter.org/claims/user_metadata"))
+        //     .Select(c => c.Value)
+        //     .First());
         IsEmailVerified =
             claims.Where(c => c.Type.Equals("email_verified")).Select(c => c.Value).FirstOrDefault() is "true";
-
         IsAuthenticated = true;
     }
 
+    public MudTheme Theme { get; } = new()
+    {
+        LayoutProperties = new LayoutProperties {DefaultBorderRadius = "12px", AppbarHeight = "60px"},
+        Typography = new Typography
+        {
+            Default = new Default {FontFamily = new[] {"Montserrat", "Ubuntu", "Roboto"}, FontSize = "0.9rem",}
+        },
+        Palette = Palettes.Latte
+    };
 }
