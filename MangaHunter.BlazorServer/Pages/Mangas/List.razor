@@ -1,61 +1,29 @@
-@page "/users/{OwnerUsername}/mangas"
 @page "/users/{OwnerUsername}/mangas/{Status}"
-@* @implements IDisposable *@
+@page "/users/{OwnerUsername}/mangas"
+@using MangaHunter.BlazorServer.Common.PrerenderCache
+@inject IApiService ApiService
+@inject IPrerenderCache PrerenderCache
+
 
 <PageHeader Title="@($"Mangas list of @{OwnerUsername}")"/>
-@* @if (IsLoading) *@
-@* { *@
-@*     <span>Loading ...</span> *@
-@* } *@
-@* else *@
-@* { *@
-<MudPaper Class="ma-4 pa-2">
-    <MudStack Row="true">
-        <FilterStatus OwnerUserId="@OwnerUsername" Status="@Status"/>
-        <MudSpacer/>
-        <MudButton OnClick="OnSearch" EndIcon="@Icons.Filled.Search">Search</MudButton>
-    </MudStack>
-</MudPaper>
-@if (Response.List is not {Count:0})
-{
-    <MangasContainer IsReadOnly="@IsReadOnly" Response="@Response.List"/>
-}
+<ListHeader Status="@Status" OwnerUsername="@OwnerUsername"/>
 
-<MudPaper Class="ma-4 pa-2">
-    <MudStack Row="true">
-        <MudPagination Selected="@(Page ?? 1)" SelectedChanged="OnPageChange" Rectangular="true" Variant="Variant.Filled" Count="@PageCount" Class="my-4"/>
-        <MudText Align="Align.Justify" Style="align-self: center">
-            @(Status is null
-                ? $"Total : {Response.Total}"
-                : $"Filtered : {Response.Filtered} / {Response.Total}")
-        </MudText>
-        <MudSpacer/>
-        <MudSelect T="int" Label="Page Size" Disabled="true">
-            @foreach (var size in _pageSizes)
-            {
-                <MudSelectItem Value="@size"/>
-            }
-        </MudSelect>
+@if (_isLoading)
+{
+    <MudStack Justify="@Justify.Center" AlignItems="@AlignItems.Center" Class="mx-auto">
+        <MudProgressLinear Class="my-7" Indeterminate="true" Rounded="true" Size="Size.Large" Striped="true"/>
     </MudStack>
-</MudPaper>
-@* } *@
+}
+else
+{
+    if (Response.List is not {Count:0})
+    {
+        <MangasContainer IsReadOnly="@IsReadOnly" Response="@Response.List"/>
+    }
+}
+<ListActions Page="Page" Response="Response" Status="@Status" />
 
 @code{
-
-    [Inject]
-    protected IApiService ApiService { get; set; }
-
-    [Inject]
-    protected NavigationManagerHandler NavigationManagerHandler { get; set; }
-
-    [Inject]
-    protected ISnackbar Snackbar { get; set; }
-
-    [Inject]
-    protected IDialogService DialogService { get; set; }
-
-    // [Inject]
-    // protected PersistentComponentState ApplicationState { get; set; }
 
     [CascadingParameter]
     protected UserState UserState { get; set; }
@@ -72,79 +40,34 @@
     [SupplyParameterFromQuery(Name = "p")]
     public int? Page { get; set; }
 
-    private static readonly int[] _pageSizes = {9, 27, 36, 45, 99};
-    private static int PageSize => 36;
-    private int PageCount => (Status is null ? Response.Total : Response.Filtered + PageSize - 1) / PageSize;
-
-    private string StateKey => $"response.page{Page}.size{PageSize}";
-    // private bool IsLoading { get; set; }
+    private static int PageSize { get; set; } = 36; 
+    private bool _isLoading { get; set; } = false;
     private HunterResponseWithPagination Response { get; set; } = new();
 
-    // private PersistingComponentStateSubscription Subscription { get; set; }
-
-    // protected override void OnInitialized()
-    // {
-    //     Subscription = ApplicationState.RegisterOnPersisting(Persist);
-    // }
-
-    private void OnPageChange(int i)
+   
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (Page == i || i == 1)
-            return;
-        Page = i;
-        NavigationManagerHandler.NavigateToPage(i);
+        await FetchResponse();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-    // IsLoading = true;
-        if (OwnerUsername is not null)
-        {
-            await FetchResponse();
-        }
-    // IsLoading = false;
     }
 
     private async Task FetchResponse()
     {
-        // if (ApplicationState.TryTakeFromJson<HunterResponseWithPagination>(StateKey, out var stored))
-        // {
-        //     if (stored is not null)
-        //     {
-        //         Response = stored;
-        //         return;
-        //     }
-        // }
-
+        _isLoading = true;
         var queryParametersMangadex = new QueryParameters {Page = Page ?? 1, Size = PageSize, Status = Status, HasMangadex = true};
 
-        var result = await ApiService.GetUserListWithPagination(OwnerUsername, queryParametersMangadex);
+        var result =
+            await PrerenderCache
+                .GetOrAdd($"{OwnerUsername}.{Page}.{queryParametersMangadex.Status}", () => ApiService
+                    .GetUserListWithPagination(OwnerUsername, queryParametersMangadex));
         if (!result.IsError)
         {
             Response = result.Value;
         }
+        _isLoading = false;
     }
-
-    private async Task OnSearch()
-    {
-        var parameters = new DialogParameters {["Username"] = UserState.Username};
-        var dialog = await DialogService.ShowAsync<SearchInUserList>("Search Manga", parameters);
-        var result = await dialog.Result;
-        if (!result.Cancelled)
-        {
-            Snackbar.Add("Succeeded", Severity.Success);
-        }
-    }
-
-    // private Task Persist()
-    // {
-    //     ApplicationState.PersistAsJson(StateKey, Response);
-    //     return Task.CompletedTask;
-    // }
-    //
-    // public void Dispose()
-    // {
-    //     Subscription.Dispose();
-    // }
 
 }

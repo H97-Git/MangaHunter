@@ -1,0 +1,77 @@
+@if (TodayRssDto.Results is not {Count:0})
+{
+    <MudTable Bordered="true" Breakpoint="Breakpoint.Sm" Class="ma-4" Dense="true"
+              Filter="new Func<Result, bool>(OnFilterFunc)" FixedHeader="true" GroupBy="_groupDefinition"
+              GroupHeaderStyle="background-color:var(--mud-palette-background-grey)" Hover="true" Height="500px"
+              Items="TodayRssDto.Results" LoadingProgressColor="Color.Info">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">
+                <MudLink Color="Color.Inherit" Underline="Underline.None" Href="https://api.mangaupdates.com/v1/releases/days">
+                    Today on Mangaupdates
+                </MudLink>
+            </MudText>
+            <MudSpacer/>
+            <MudTextField Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Class="mt-0"
+                          IconSize="Size.Medium" Placeholder="Search" @bind-Value="_searchString"/>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel Enabled="true" SortBy="new Func<Result, object>(x => x.Record.ReleaseDate)">Release Date</MudTableSortLabel>
+            </MudTh>
+            <MudTh>Title</MudTh>
+            <MudTh>Chapter</MudTh>
+        </HeaderContent>
+        <GroupHeaderTemplate>
+            <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"{context.GroupName}: {CleanString(context.Key.ToString())}")</MudTh>
+        </GroupHeaderTemplate>
+        <RowTemplate Context="rowContext">
+            <MudTd DataLabel="ReleaseDate">@rowContext.Record.ReleaseDate</MudTd>
+            <MudTd DataLabel="Title">@CleanString(rowContext.Record.Title)</MudTd>
+            <MudTd DataLabel="Chapter">@rowContext.Record.Chapter</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+}
+<style>
+    .mud-table-container{
+        border-radius: 12px;
+    }
+    .mud-table-sticky-header * .mud-table-root .mud-table-head * .mud-table-cell:last-child {
+        border-radius: 0;
+    }
+    .mud-table-sticky-header * .mud-table-root .mud-table-head * .mud-table-cell:first-child {
+            border-radius: 0;
+    }
+</style>
+
+@code{
+
+    [Parameter]
+    public TodayRssDto TodayRssDto { get; set; }
+
+    private string _searchString = "";
+
+    private TableGroupDefinition<Result> _groupDefinition = new()
+    {
+        GroupName = "Group",
+        Indentation = true,
+        Expandable = true,
+        IsInitiallyExpanded = false,
+        Selector = e => e.Record.Groups.First().Name
+    };
+
+    private static string CleanString(string src) => src.Replace("&#039;", "'").Replace("&quot;", "\"");
+    private bool OnFilterFunc(Result element) => FilterFunc(element, _searchString);
+
+    private static bool FilterFunc(Result element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Record.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Record.Groups.First().Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+}

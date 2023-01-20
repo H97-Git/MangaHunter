@@ -1,0 +1,29 @@
+<MudStack Row="true">
+    <MudCarousel AutoCycle="AutoCycle"
+                 AutoCycleTime="TimeSpan.FromSeconds(CarouselCycleTime)"
+                 Class="mud-width-full"
+                 ShowBullets="false"
+                 ShowArrows="false"
+                 SelectedIndex="CarouselIndex"
+                 Style="height:880px;" TData="@RenderFragment">
+        @foreach (var hunterResponse in HunterResponses)
+        {
+            <MudCarouselItem Transition="Transition.Fade">
+                <div class="d-flex" style="height:100%">
+                    <MangaCard Class="mx-auto my-auto" HunterResponse="@hunterResponse" IsLandingPage="true"/>
+                </div>
+            </MudCarouselItem>
+        }
+    </MudCarousel>
+    <MudText Typo="Typo.h3" Class="my-auto">Never miss a chapter of your favorite series</MudText>
+</MudStack>
+
+@code{
+
+    [Parameter]
+    public List<HunterResponse> HunterResponses { get; set; }
+
+    bool AutoCycle = true;
+    int CarouselIndex = 0;
+    int CarouselCycleTime = 5;
+}

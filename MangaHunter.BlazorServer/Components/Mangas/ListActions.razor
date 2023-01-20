@@ -1,0 +1,57 @@
+@inject NavigationManagerHandler NavigationManagerHandler
+
+<MudPaper Class="ma-4 pa-2">
+    <MudStack Row="true">
+        <MudPagination Class="my-4"
+                       Count="PageCount"
+                       Rectangular="true"
+                       Selected="@(Page ?? 1)"
+                       SelectedChanged="OnPageChange"
+                       Variant="Variant.Filled"/>
+        <MudSpacer/>
+        <MudText Align="Align.Justify" Style="align-self: center">
+            @(Status is null
+                ? $"Total : {Response.Total}"
+                : $"Filtered : {Response.Filtered} / {Response.Total}")
+        </MudText>
+        <MudSpacer/>
+        <MudSelect Disabled="true" Label="Page Size" T="int" ValueChanged="OnPageSizeChange">
+            @foreach (var size in _pageSizes)
+            {
+                <MudSelectItem Value="@size"/>
+            }
+        </MudSelect>
+    </MudStack>
+</MudPaper>
+
+
+@code {
+
+    [Parameter]
+    public HunterResponseWithPagination Response { get; set; }
+
+    [Parameter]
+    public string? Status { get; set; }
+
+    [Parameter]
+    public int? Page { get; set; }
+    [Parameter]
+    public static int PageSize { get; set; } = 36; // Study static vs non-static
+
+    private static readonly int[] _pageSizes = {9, 27, 36, 45, 99};
+    private int PageCount => (Status is null ? Response.Total : Response.Filtered + PageSize - 1) / PageSize;
+
+    private void OnPageChange(int i)
+    {
+        if (Page == i || i == 1)
+            return;
+        Page = i;
+        NavigationManagerHandler.NavigateToPage(i);
+    }
+
+    private static void OnPageSizeChange(int i)
+    {
+        PageSize = i;
+    }
+
+}

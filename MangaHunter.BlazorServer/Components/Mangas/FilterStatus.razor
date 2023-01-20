@@ -24,23 +24,23 @@
 @* </MudStack> *@
 
 <MudStack Row="true" Style="align-items: center">
-    <MudLink Href="@($"/users/{OwnerUserId}/mangas")" Underline="Underline.None">
+    <MudLink Href="@($"/users/{OwnerUsername}/mangas")" Underline="Underline.None">
         <MudChip Style="cursor:pointer" Color="Color.Transparent" Variant="Variant.Filled">All</MudChip>
     </MudLink>
     <MudText> / </MudText>
-    <MudLink Href="@($"/users/{OwnerUserId}/mangas/wanttoread")" Underline="Underline.None">
+    <MudLink Href="@($"/users/{OwnerUsername}/mangas/wanttoread")" Underline="Underline.None">
         <MudChip Style="cursor:pointer" Color="Color.Warning" Variant="Variant.Filled">Want to read</MudChip>
     </MudLink>
     <MudText> / </MudText>
-    <MudLink Href="@($"/users/{OwnerUserId}/mangas/reading")" Underline="Underline.None">
+    <MudLink Href="@($"/users/{OwnerUsername}/mangas/reading")" Underline="Underline.None">
         <MudChip Style="cursor:pointer" Color="Color.Info" Variant="Variant.Filled">Reading</MudChip>
     </MudLink>
     <MudText> / </MudText>
-    <MudLink Href="@($"/users/{OwnerUserId}/mangas/read")" Underline="Underline.None">
+    <MudLink Href="@($"/users/{OwnerUsername}/mangas/read")" Underline="Underline.None">
        <MudChip Style="cursor:pointer" Color="Color.Success" Variant="Variant.Filled">Read</MudChip>
     </MudLink>
     <MudText> / </MudText>
-    <MudLink Href="@($"/users/{OwnerUserId}/mangas/dropped")" Underline="Underline.None">
+    <MudLink Href="@($"/users/{OwnerUsername}/mangas/dropped")" Underline="Underline.None">
         <MudChip Style="cursor:pointer" Color="Color.Error" Variant="Variant.Filled">Dropped</MudChip>
     </MudLink>
 </MudStack>
@@ -48,7 +48,7 @@
 @code {
 
     [Parameter]
-    public string OwnerUserId { get; set; }
+    public string OwnerUsername { get; set; }
 
     [Parameter]
     public string Status { get; set; }

@@ -4,30 +4,39 @@
     <MudLink Href="/" Class="mx-1 logo">
         <MudImage Src="@Src" Width="100"/>
     </MudLink>
-    <MudButton Class="mx-1" IconClass="nav-menu__home--icon" StartIcon="@Icons.Material.Rounded.Home" Href="/home">Home</MudButton>
-    <MudButton Class="mx-1" IconClass="nav-menu__search--icon" StartIcon="@Icons.Material.Rounded.Search" Href="search">Search</MudButton>
+    <MudButton Class="mx-1"
+               Href="/dashboard"
+               IconClass="nav-menu__home--icon"
+               StartIcon="@Icons.Material.Rounded.Home"
+               Style="line-height: initial">
+        Home
+    </MudButton>
+    <MudButton Class="mx-1"
+               Href="search"
+               IconClass="nav-menu__search--icon"
+               StartIcon="@Icons.Material.Rounded.Search"
+               Style="line-height: initial">
+        Search
+    </MudButton>
     <AuthorizeView>
         <Authorized>
-            <MudButton Class="mx-1" IconClass="nav-menu__mangas--icon" StartIcon="@Icons.Material.Rounded.MenuBook" Href="@($"users/{UserState.Username}/mangas")">Mangas</MudButton>
-            <MudButton Class="mx-1" IconClass="nav-menu__tierlist--icon" StartIcon="@Icons.Material.Rounded.ViewList" Href="@($"users/{UserState.Username}/tierlist")">Tier List</MudButton>
-            @* <MudButton Class="mx-1" IconClass="nav-menu__import--icon" StartIcon="@Icons.Material.Rounded.CloudUpload" Href="@($"users/{UserState.Username}/import")">Import</MudButton> *@
+            <MudButton Class="mx-1"
+                       Href="@($"users/{UserState.Username}/mangas")"
+                       IconClass="nav-menu__mangas--icon"
+                       StartIcon="@Icons.Material.Rounded.MenuBook"
+                       Style="line-height: initial">
+                Mangas
+            </MudButton>
+            <MudButton Class="mx-1"
+                       Href="@($"users/{UserState.Username}/tierlist")"
+                       IconClass="nav-menu__tierlist--icon"
+                       StartIcon="@Icons.Material.Rounded.ViewList"
+                       Style="line-height: initial">
+                Tier List
+            </MudButton>
         </Authorized>
     </AuthorizeView>
     <MudSpacer/>
-    <MudSelect T="string" Label="Theme" AnchorOrigin="Origin.BottomCenter" ValueChanged="ChangeTheme">
-        <MudSelectItem Value="@("Latte")">
-            <img alt="sunflower" src="https://github.githubassets.com/images/icons/emoji/unicode/1f33b.png" height="14" class="mr-1"/> Latte
-        </MudSelectItem>
-        <MudSelectItem Value="@("Frappé")">
-            <img alt="sunflower" src="https://github.githubassets.com/images/icons/emoji/unicode/1fab4.png" height="14" class="mr-1"/> Frappé
-        </MudSelectItem>
-        <MudSelectItem Value="@("Macchiato")">
-            <img alt="sunflower" src="https://github.githubassets.com/images/icons/emoji/unicode/1f33a.png" height="14" class="mr-1"/> Macchiato
-        </MudSelectItem>
-        <MudSelectItem Value="@("Mocha")">
-            <img alt="sunflower" src="https://github.githubassets.com/images/icons/emoji/unicode/1f33f.png" height="14" class="mr-1"/> Mocha
-        </MudSelectItem>
-    </MudSelect>
     <AccesControl/>
 </MudAppBar>
 
@@ -38,9 +47,6 @@
 
     [Parameter]
     public bool IsDarkMode { get; set; }
-
-    [Parameter]
-    public EventCallback<string> ChangeTheme { get; set; }
 
     private string Src => !IsDarkMode ? "logo-dark.png" : "logo-light.png";
 }

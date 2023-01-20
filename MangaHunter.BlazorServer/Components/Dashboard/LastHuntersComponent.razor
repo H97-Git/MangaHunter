@@ -1,0 +1,23 @@
+<AuthorizeView>
+    <Authorized>
+        <MudText Typo="Typo.h3" Class="ma-2 pa-2">Last Hunter</MudText>
+        @if (UserListWithPagination is not null or {Total:0})
+        {
+            <MudGrid Spacing="2" Justify="Justify.Center" Class="pa-2">
+                @foreach (var hunterResponse in UserListWithPagination.List)
+                {
+                    <MudItem xs="12" sm="6" md="4">
+                        <MangaCard HunterResponse="hunterResponse" IsReadOnly="false"/>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public HunterResponseWithPagination UserListWithPagination { get; set; }
+
+}

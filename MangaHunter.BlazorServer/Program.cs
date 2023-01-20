@@ -8,7 +8,6 @@ using MangaHunter.BlazorServer.Common.Services.HttpClients;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.Http;
 
 using MudBlazor.Services;
 
@@ -31,9 +30,8 @@ Log.Logger = new LoggerConfiguration()
 try
 {
    var builder = WebApplication.CreateBuilder(args);
-    //string scheme = builder.Environment.IsProduction() ? "https" : "http";
+   
     const string scheme = "https";
-    
     int port = builder.Environment.IsProduction() ? -1 : 7000;
     {
         builder.Host.UseSerilog();
@@ -70,6 +68,7 @@ try
         // });
         builder.Services.AddScoped<IApiClient, ApiClient>();
         builder.Services.AddScoped<IApiService, ApiService>();
+        builder.Services.AddScoped<IManagementApiService, ManagementApiService>();
         builder.Services.AddScoped<IPrerenderCache, PrerenderCache>();
         builder.Services.AddScoped<NavigationManagerHandler>();
     }

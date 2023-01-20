@@ -43,7 +43,7 @@
             </MudSelect>
             @if (HunterResponse.HunterDto.History is not {Count:0})
             {
-                <Timeline History="@HunterResponse.HunterDto.History"/>
+                <Timeline History="HunterResponse.HunterDto.History"/>
             }
             @if (HunterResponse.HunterDto.Status is not ReadingStatusDto.WantToRead)
             {

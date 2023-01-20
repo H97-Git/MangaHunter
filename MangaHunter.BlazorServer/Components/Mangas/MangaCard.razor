@@ -1,0 +1,59 @@
+@if (HunterResponse is not {HunterDto:null} and {MangadexDto:null})
+{
+    <EmptyContainer HunterResponse="HunterResponse" DeleteUi="OnDeleteUi"/>
+}
+
+@if (HunterResponse is not {HunterDto:null} and not {MangadexDto: null})
+{
+    <MudCard Outlined="true" Class="@Class">
+        <CardHeader Mangadex="HunterResponse.MangadexDto"/>
+        <CardContent
+            HunterResponse="HunterResponse"
+            IsSearchResult="IsSearchResult"/>
+        <CardActions
+            Add="Add"
+            HunterResponse="HunterResponse"
+            IsReadOnly="IsReadOnly"
+            IsSearchResult="IsSearchResult"
+            OnDeleteUi="OnDeleteUi"/>
+    </MudCard>
+}
+
+
+@code {
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; } = new();
+
+    [Parameter]
+    public HunterResponse HunterResponse { get; set; }
+
+    [Parameter]
+    public string Class { get; set; } = "";
+
+    [Parameter]
+    public bool IsLandingPage { get; set; }
+
+    [Parameter]
+    public bool IsReadOnly { get; set; }
+
+    [Parameter]
+    public bool IsSearchResult { get; set; }
+
+    [Parameter]
+    public EventCallback<HunterResponse> Add { get; set; }
+
+    [Parameter]
+    public EventCallback<HunterResponse> OnDeleteUi { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (IsLandingPage)
+        {
+            IsSearchResult = false;
+            IsReadOnly = true;
+        }
+        base.OnParametersSet();
+    }
+
+}

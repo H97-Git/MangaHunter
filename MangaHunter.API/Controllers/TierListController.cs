@@ -30,8 +30,7 @@ public class TierListController : ApiController
     [Route("/[controller]/{shareCode}")]
     public async Task<IActionResult> GetByShareCode(string shareCode)
     {
-        Log.Debug(
-            $"Anonymous user want Tierlist : {shareCode}.");
+        Log.Debug($"Anonymous user want Tierlist : {shareCode}.");
         var query = new GetByShareCodeQuery(shareCode);
         var result = await Mediator.Send(query);
         return result.Match(value => Ok(Mapper.Map<TierListResponse>(value)), Problem);
@@ -43,8 +42,7 @@ public class TierListController : ApiController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetByUserName(string username)
     {
-        Log.Debug(
-            $"User:{username} want all Tierlist.");
+        Log.Debug($"User:{username} want all Tierlist.");
 
         var query = new GetByUsernameQuery(username);
         var result = await Mediator.Send(query);
@@ -58,8 +56,7 @@ public class TierListController : ApiController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetById(string username, int id)
     {
-        Log.Debug(
-            $"User:{username} want Tierlist : {id}.");
+        Log.Debug($"User:{username} want Tierlist : {id}.");
         
         var query = new GetByIdQuery(id, username);
         var result = await Mediator.Send(query);

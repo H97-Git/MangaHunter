@@ -7,7 +7,7 @@ namespace MangaHunter.BlazorServer.Pages.Auth;
 
 public class Login : PageModel
 {
-    public async Task OnGet(string returnUrl = "/home")
+    public async Task OnGet(string returnUrl = "/dashboard")
     {
         var authPropertiesSignIn = new LoginAuthenticationPropertiesBuilder()
             .WithRedirectUri(returnUrl)

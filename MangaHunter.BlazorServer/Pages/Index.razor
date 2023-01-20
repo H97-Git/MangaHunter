@@ -2,63 +2,17 @@
 
 <MudStack AlignItems="AlignItems.Center">
     <MudImage Src="@Src" Width="400"/>
-    <MudStack Row="true">
-        <MudCarousel AutoCycle="@AutoCycle"
-                     AutoCycleTime="TimeSpan.FromSeconds(4)"
-                     Class="mud-width-full"
-                     ShowBullets="@false"
-                     ShowArrows="@false"
-                     SelectedIndex="@CarouselIndex"
-                     Style="height:880px;" TData="@RenderFragment">
-            @foreach (var hunterResponse in HunterResponses)
-            {
-                <MudCarouselItem Transition="Transition.Fade">
-                    <div class="d-flex" style="height:100%">
-                        <MangaCardContainer Class="mx-auto my-auto" HunterResponse="@hunterResponse" IsLandingPage="true"/>
-                    </div>
-                </MudCarouselItem>
-            }
-        </MudCarousel>
-        <MudText Typo="Typo.h3" Class="my-auto">Never miss a chapter of your favorite series</MudText>
-    </MudStack>
-
-    <MudStack Row="true" Justify="Justify.SpaceAround" Class="ma-4">
-        <MudText Typo="Typo.h3" Class="my-auto">Powered By</MudText>
-        <MudSpacer/>
-        <MudLink Href="https://mangadex.org">
-            <MudImage Class="rounded-lg" Src="ico/sites/mangadex.png" Width="200"/>
-        </MudLink>
-        <MudLink Href="https://mangaupdates.com">
-            <MudImage Src="ico/sites/manga-updates.svg" Height="200"/>
-        </MudLink>
-    </MudStack>
-
-    <MudText Typo="Typo.h3" Class="my-auto">Create your own Tierlists</MudText>
-    @if (HunterResponses is not {Count:0})
-    {
-        <MudDropContainer
-            ApplyDropClassesOnDragStarted="true"
-            CanDropClass="mud-border-success"
-            NoDropClass="mud-border-error"
-            Class="d-flex flex-column flex-wrap flex-grow-1 ma-2"
-            Items="_dropItems"
-            ItemDropped="ItemUpdated"
-            ItemsSelector="@((item, dropzone) => item.Identifier == dropzone)"
-            @ref="_dropContainer"
-            T="DropItem">
-            <ChildContent>
-                <TierContainer TierModel="@_firstTierRowDto" IsInEditMode="@false"/>
-                <TierContainer TierModel="@_secondTierRowDto" IsInEditMode="@false"/>
-            </ChildContent>
-            <ItemRenderer>
-                <MangaCover Class="ma-2 rounded-lg"
-                            Mangadex="@HunterResponses.Find(x => x.MangadexDto!.Id.Equals(context.MangadexId))!.MangadexDto"/>
-            </ItemRenderer>
-        </MudDropContainer>
-    }
-
-    <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="ma-2" FullWidth="true" Href="auth/register">Sign Up Now</MudButton>
-
+    <CarouselComponent HunterResponses="HunterResponses"/>
+    <PoweredByComponent/>
+    <TierlistDemoComponent HunterResponses="HunterResponses"/>
+    <MudButton
+        Class="ma-10"
+        Color="Color.Primary"
+        FullWidth="false"
+        Href="auth/register"
+        Variant="Variant.Filled">
+        Sign Up Now
+    </MudButton>
 </MudStack>
 
 @code {
@@ -69,50 +23,13 @@
     static string Src => false ? "logo-dark.png" : "logo-light.png";
 
     List<HunterResponse> HunterResponses { get; set; } = new();
-    MudDropContainer<DropItem> _dropContainer;
 
-    static readonly Guid Identifier = Guid.NewGuid();
-
-    bool AutoCycle = true;
-    int CarouselIndex = 0;
-
-    static List<Guid> MangaIds = new()
-    {
-        new Guid("a1c7c817-4e59-43b7-9365-09675a149a6f"),
-        new Guid("6a468761-5bd6-4de0-a0cb-47cb456ac2e0"),
-        new Guid("8892dc05-867f-4fff-823b-47210a6746bb"),
-    };
-
-    static List<DropItem> _dropItems = new();
-
-    readonly TierRowDto _firstTierRowDto = new()
-    {
-        Title = "SS",
-        Identifier = Identifier,
-    };
-
-    readonly TierRowDto _secondTierRowDto = new()
-    {
-        Title = "D",
-        Identifier = Guid.NewGuid(),
-    };
 
     protected override async Task OnParametersSetAsync()
     {
         HunterResponses.Add(await FetchData("a1c7c817-4e59-43b7-9365-09675a149a6f"));
         HunterResponses.Add(await FetchData("6a468761-5bd6-4de0-a0cb-47cb456ac2e0"));
         HunterResponses.Add(await FetchData("8892dc05-867f-4fff-823b-47210a6746bb"));
-
-        _dropItems.Clear();
-        foreach (var guid in MangaIds)
-        {
-            _dropItems.Add(new DropItem(guid, Identifier.ToString()));
-        }
-    }
-
-    static void ItemUpdated(MudItemDropInfo<DropItem> dropItem)
-    {
-        dropItem.Item.Identifier = dropItem.DropzoneIdentifier;
     }
 
     async Task<HunterResponse> FetchData(string guid)
@@ -125,4 +42,5 @@
             });
         return !mangaById.IsError ? mangaById.Value : new HunterResponse();
     }
+
 }

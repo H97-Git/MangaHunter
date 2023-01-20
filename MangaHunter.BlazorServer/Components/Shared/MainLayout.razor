@@ -1,26 +1,36 @@
-﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+﻿@using Newtonsoft.Json.Linq
 @inherits LayoutComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject ProtectedLocalStorage ProtectedLocalStorage
 @inject NavigationManagerHandler NavigationManagerHandler
-<MudThemeProvider Theme="_theme"/>
+@inject IManagementApiService ManagementApiService
+<MudThemeProvider Theme="UserState.Theme"/>
 <MudSnackbarProvider/>
 <MudDialogProvider/>
-<CascadingValue Value="@UserState">
-    <MudLayout>
-
-        <AppBar ChangeTheme="ChangeTheme"/>
-        <MudMainContent Style="padding-top: 30px">
-            <MudContainer>
+<MudLayout>
+    <CascadingValue Value="UserState">
+        <AppBar/>
+        <MudMainContent>
+            <MudContainer MaxWidth="MaxWidth">
+                @* <MudSelect Label="Choose MaxWidth : " AnchorOrigin="Origin.BottomCenter" @bind-Value="MaxWidth"> *@
+                @*     <MudSelectItem Value="MaxWidth.ExtraSmall"/> *@
+                @*     <MudSelectItem Value="MaxWidth.Small"/> *@
+                @*     <MudSelectItem Value="MaxWidth.Medium"/> *@
+                @*     <MudSelectItem Value="MaxWidth.Large"/> *@
+                @*     <MudSelectItem Value="MaxWidth.ExtraLarge"/> *@
+                @*     <MudSelectItem Value="MaxWidth.ExtraExtraLarge"/> *@
+                @*     <MudSelectItem Value="MaxWidth.False"/> *@
+                @* </MudSelect> *@
                 @Body
             </MudContainer>
             <Particles/>
         </MudMainContent>
-    </MudLayout>
-</CascadingValue>
+    </CascadingValue>
+</MudLayout>
 
 @code{
     private UserState UserState { get; } = new();
+
+    private MaxWidth MaxWidth { get; } = MaxWidth.Large;
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,7 +38,7 @@
         var user = state.User;
         if (user.Identity is {IsAuthenticated:true})
         {
-            UserState.LogIn(state.User.Claims.ToList());
+            UserState.MapFromClaims(state.User.Claims.ToList());
             if (!UserState.IsEmailVerified)
             {
                 var returnUri = QueryHelpers.AddQueryString("auth/logout", "returnUrl", "/check_email");
@@ -39,102 +49,26 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var result = await ProtectedLocalStorage.GetAsync<string>("theme");
-        if (result.Success && result.Value != null)
+        if (firstRender)
         {
-            await ChangeTheme(result.Value);
+            if (UserState.IsAuthenticated)
+            {
+                var user = await ManagementApiService.GetUser(UserState.UserId);
+                if (!user.IsError)
+                {
+                    try
+                    {
+                        var jObject = user.Value.UserMetadata as JObject;
+                        var userMetaData = jObject?.ToObject<UserMetaData>();
+                        UserState.Theme.Palette = Palettes.GetPaletteFromString(userMetaData?.PaletteName);
+                        StateHasChanged();
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e, e.Message);
+                    }
+                }
+            }
         }
     }
-
-    private async Task ChangeTheme(string theme)
-    {
-        _theme.Palette = theme switch
-        {
-            "Latte" => LattePalette,
-            "Frappé" => FrappePalette,
-            "Macchiato" => MacchiatoPalette,
-            "Mocha" => MochaPalette,
-            _ => LattePalette
-            };
-        await ProtectedLocalStorage.SetAsync("theme", theme);
-    }
-
-    private readonly MudTheme _theme = new()
-    {
-        LayoutProperties = new LayoutProperties
-        {
-            DefaultBorderRadius = "12px",
-            AppbarHeight = "60px",
-        },
-        Typography = new Typography
-        {
-            Default = new Default {FontFamily = new[] {"Montserrat", "Ubuntu", "Roboto"}, FontSize = "0.9rem",}
-        },
-        Palette = LattePalette,
-    };
-
-    private static Palette LattePalette { get; } = new()
-    {
-        Primary = "#1e66f5",
-        Secondary = "#ea76cb",
-        Tertiary = "#179299",
-        Surface = "#dce0e8",
-        Background = "#eff1f5",
-        BackgroundGrey = "#ccd0da", // MangaUpdateTable Scan Groups
-        AppbarBackground = "#1e66f5",
-        TextPrimary = "#4c4f69",
-        Info = "#7287fd",
-        Success = "#40a02b",
-        Warning = "#fe640b",
-        Error = "#e64553",
-    };
-
-    private static Palette FrappePalette { get; } = new()
-    {
-        Primary = "#8caaee",
-        Secondary = "#f4b8e4",
-        Tertiary = "#81c8be",
-        Surface = "#292c3c",
-        Background = "#303446",
-        BackgroundGrey = "#ccd0da", // MangaUpdateTable Scan Groups
-        AppbarBackground = "#8caaee",
-        TextPrimary = "#c6d0f5",
-        Info = "#babbf1",
-        Success = "#a6d189",
-        Warning = "#ef9f76",
-        Error = "#ea999c",
-    };
-
-    private static Palette MacchiatoPalette { get; } = new()
-    {
-        Primary = "#8aadf4",
-        Secondary = "#f5bde6",
-        Tertiary = "#8bd5ca",
-        Surface = "#1e2030",
-        Background = "#24273a",
-        BackgroundGrey = "#ccd0da", // MangaUpdateTable Scan Groups
-        AppbarBackground = "#8aadf4",
-        TextPrimary = "#cad3f5",
-        Info = "#b7bdf8",
-        Success = "#a6da95",
-        Warning = "#f5a97f",
-        Error = "#ee99a0",
-    };
-
-    private Palette MochaPalette { get; } = new()
-    {
-        Primary = "#89b4fa",
-        Secondary = "#f5c2e7",
-        Tertiary = "#94e2d5",
-        Surface = "#181825",
-        Background = "#1e1e2e",
-        BackgroundGrey = "#ccd0da", // MangaUpdateTable Scan Groups
-        AppbarBackground = "#89b4fa",
-        TextPrimary = "#cdd6f4",
-        Info = "#b4befe",
-        Success = "#a6e3a1",
-        Warning = "#fab387",
-        Error = "#eba0ac",
-    };
-
 }

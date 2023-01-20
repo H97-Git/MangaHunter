@@ -1,0 +1,19 @@
+@if (MostFollowsMangadex is not null or {Count:0})
+{
+    <MudText Typo="Typo.h3" Class="ma-2 pa-2">Most followed on Mangadex</MudText>
+    <MudGrid Spacing="2" Justify="Justify.Center" Class="pa-2">
+        @foreach (var hunterResponse in MostFollowsMangadex)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MangaCard IsSearchResult="true" HunterResponse="hunterResponse" IsReadOnly="false"/>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+
+    [Parameter]
+    public List<HunterResponse> MostFollowsMangadex { get; set; }
+
+}

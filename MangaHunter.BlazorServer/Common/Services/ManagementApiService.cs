@@ -22,6 +22,10 @@ public class ManagementApiService : IManagementApiService
     private readonly IConfiguration _configuration;
     private readonly HttpClient _tokenClient;
     private readonly ProtectedLocalStorage _protectedLocalStorage;
+    private readonly string _domain;
+    private string _audience;
+    private string _tokenApi;
+    private string _tokenKey = "Token";
 
     public ManagementApiService(IHttpClientFactory httpClientFactory, IConfiguration configuration,
         ProtectedLocalStorage protectedLocalStorage)
@@ -29,14 +33,18 @@ public class ManagementApiService : IManagementApiService
         _configuration = configuration;
         _protectedLocalStorage = protectedLocalStorage;
         _tokenClient = httpClientFactory.CreateClient();
+        _domain = _configuration.GetSection("Auth0").GetValue<string>("Domain")!;
+        _audience = "https://" + _domain + _configuration.GetSection("Auth0").GetValue<string>("Audience");
+        _tokenApi = "https://" + _domain + _configuration.GetSection("Auth0").GetValue<string>("TokenApi");
     }
 
     private async Task<ErrorOr<Auth0TokenResponse>> GetOrFetchToken()
     {
-        var tokenFromLocalStorage = await _protectedLocalStorage.GetAsync<Auth0TokenResponse>("Token");
+        var tokenFromLocalStorage = await _protectedLocalStorage.GetAsync<Auth0TokenResponse>(_tokenKey);
         if (tokenFromLocalStorage.Success && tokenFromLocalStorage.Value is not null)
         {
             var token = tokenFromLocalStorage.Value;
+
             DateTime now = DateTime.UtcNow;
             DateTime expiresAt = now.AddSeconds(token.expires_in);
             if (now < expiresAt)
@@ -61,22 +69,18 @@ public class ManagementApiService : IManagementApiService
             new("grant_type", "client_credentials"),
             new("client_id", _configuration.GetSection("Auth0").GetValue<string>("ClientId")!),
             new("client_secret", _configuration.GetSection("Auth0").GetValue<string>("ClientSecret")!),
-            new("audience", _configuration.GetSection("Auth0").GetValue<string>("Audience")!)
+            new("audience", _audience)
         };
-        var req = new HttpRequestMessage(HttpMethod.Post,
-            _configuration.GetSection("Auth0").GetValue<string>("TokenApi"))
-        {
-            Content = new FormUrlEncodedContent(parameters)
-        };
+        var req = new HttpRequestMessage(HttpMethod.Post, _tokenApi) {Content = new FormUrlEncodedContent(parameters)};
         var res = await _tokenClient.SendAsync(req);
         var response = await res.Content.ReadAsStringAsync();
         var data = JsonConvert.DeserializeObject<Auth0TokenResponse>(response);
         if (data == null)
         {
-            return Error.Failure("");
+            return Error.Failure();
         }
 
-        await _protectedLocalStorage.SetAsync("Token", data);
+        await _protectedLocalStorage.SetAsync(_tokenKey, data);
         return data;
     }
 
@@ -88,8 +92,7 @@ public class ManagementApiService : IManagementApiService
             return token.Errors;
         }
 
-        return new ManagementApiClient(token.Value.access_token,
-            new Uri(_configuration.GetSection("Auth0").GetValue<string>("Audience")!));
+        return new ManagementApiClient(token.Value.access_token, new Uri(_audience));
     }
 
     public async Task<ErrorOr<User>> UpdateUser(string userId, UserUpdateRequest userUpdateRequest)
@@ -120,18 +123,10 @@ public class ManagementApiService : IManagementApiService
             return managementApiClient.Errors;
         }
 
-        try
-        {
-            var response = await managementApiClient.Value.Users.GetAsync(userId);
-            if (response is null)
-                return Error.NotFound();
-            return response;
-        }
-        catch (Exception e)
-        {
-            Log.Error("Failed to update user");
-            return Error.Failure(e.Message);
-        }
+        var response = await managementApiClient.Value.Users.GetAsync(userId);
+        if (response is null)
+            return Error.NotFound();
+        return response;
     }
 }
 

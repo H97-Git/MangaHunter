@@ -1,4 +1,8 @@
 @page "/search"
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService 
+@inject IApiService ApiService
+@inject NavigationManagerHandler NavigationManagerHandler
 
 <PageHeader Title="Search"/>
 
@@ -6,9 +10,9 @@
     @* SEARCH BAR *@
     <MudStack Row="true">
         <SearchContainer Search="OnSearchMangaDex"/>
+        @* TAGS PANEL *@
         <MudButton OnClick="OnOpenTags">Tags</MudButton>
     </MudStack>
-    @* TAGS PANEL *@
 </MudPaper>
 
 @* SEARCH RESULT *@
@@ -26,17 +30,6 @@
 
 @code {
 
-    [Inject]
-    protected IDialogService DialogService { get; set; }
-
-    [Inject]
-    protected NavigationManagerHandler NavigationManagerHandler { get; set; }
-
-    [Inject]
-    protected IApiService ApiService { get; set; }
-
-    [Inject]
-    protected ISnackbar Snackbar { get; set; }
 
     [CascadingParameter]
     protected UserState UserState { get; set; }
@@ -118,7 +111,7 @@
     private async Task OnOpenTags()
     {
         var parameters = new DialogParameters {["Included"] = IncludedTags, ["Excluded"] = ExcludedTags};
-        var dialog = await DialogService.ShowAsync<TagsContainer>("TagsContainer",parameters);
+        var dialog = await DialogService.ShowAsync<TagsContainer>("TagsContainer", parameters);
         var result = await dialog.Result;
         if (!result.Cancelled)
         {

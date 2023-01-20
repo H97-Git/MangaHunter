@@ -5,23 +5,27 @@
 @inject NavigationManagerHandler NavigationManagerHandler
 <PageHeader Title="Settings"/>
 
-<img alt="catppuccin" src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/logos/exports/1544x1544_circle.png" height="56"/>
-<MudSelect Label="Choose a theme : " AnchorOrigin="Origin.BottomCenter" ValueChanged="OnThemeChange" T="Palette">
-    <MudSelectItem Value="Palettes.Latte">
-        <img alt="sunflower" src="https://github.githubassets.com/images/icons/emoji/unicode/1f33b.png" height="14" class="mr-1"/> Latte
-    </MudSelectItem>
-    <MudSelectItem Value="Palettes.Frappe">
-        <img alt="potted_plant" src="https://github.githubassets.com/images/icons/emoji/unicode/1fab4.png" height="14" class="mr-1"/> Frappé
-    </MudSelectItem>
-    <MudSelectItem Value="Palettes.Macchiato">
-        <img alt="hibiscus" src="https://github.githubassets.com/images/icons/emoji/unicode/1f33a.png" height="14" class="mr-1"/> Macchiato
-    </MudSelectItem>
-    <MudSelectItem Value="Palettes.Mocha">
-        <img alt="herb" src="https://github.githubassets.com/images/icons/emoji/unicode/1f33f.png" height="14" class="mr-1"/> Mocha
-    </MudSelectItem>
-</MudSelect>
-
-<MudButton OnClick="UpdateUser">Update</MudButton>
+<MudStack Row="true" Class="my-16">
+    <MudImage Alt="catppuccin" Class="mr-1" Height="125" Src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/logos/exports/1544x1544_circle.png"/>
+    <MudSelect Label="Choose a theme : " AnchorOrigin="Origin.BottomCenter" ValueChanged="OnThemeChange" T="Palette">
+        <MudSelectItem Value="Palettes.Latte">
+            <MudImage Alt="sunflower" Class="mr-1" Height="14" Src="https://github.githubassets.com/images/icons/emoji/unicode/1f33b.png"/> Latte
+        </MudSelectItem>
+        <MudSelectItem Value="Palettes.Frappe">
+            <MudImage Alt="potted_plant" Class="mr-1" Height="14" Src="https://github.githubassets.com/images/icons/emoji/unicode/1fab4.png"/> Frappé
+        </MudSelectItem>
+        <MudSelectItem Value="Palettes.Macchiato">
+            <MudImage Alt="hibiscus" Class="mr-1" Height="14" Src="https://github.githubassets.com/images/icons/emoji/unicode/1f33a.png"/> Macchiato
+        </MudSelectItem>
+        <MudSelectItem Value="Palettes.Mocha">
+            <MudImage Alt="herb" Class="mr-1" Height="14" Src="https://github.githubassets.com/images/icons/emoji/unicode/1f33f.png"/> Mocha
+        </MudSelectItem>
+    </MudSelect>
+</MudStack>
+<MudStack Row="true" Class="my-2">
+    <MudSpacer/>
+    <MudButton StartIcon="@Icons.Material.Filled.Save" OnClick="UpdateUser">Update</MudButton>
+</MudStack>
 
 @code {
 
@@ -35,7 +39,7 @@
     {
         if (UserState is not {IsAuthenticated:true})
         {
-            NavigationManagerHandler.NavigateTo("/home");
+            NavigationManagerHandler.NavigateTo("/dashboard");
         }
 
         return base.OnAfterRenderAsync(firstRender);

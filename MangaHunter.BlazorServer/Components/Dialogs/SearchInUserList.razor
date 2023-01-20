@@ -4,20 +4,27 @@
         <MudText>Search in your list</MudText>
     </TitleContent>
     <DialogContent>
-        <MudPaper Elevation="0" Class="mx-4">
-            <SearchContainer Search="Search" IsImmediate="true"/>
-        </MudPaper>
-        @if (SearchResult is not {Count:0})
+        @if (_isLoading)
         {
-            <MudContainer Style="max-height: 660px;overflow: auto">
-                <MangasContainer IsReadOnly="@false" Response="@SearchResult"/>
-            </MudContainer>
+            <MudProgressCircular Indeterminate="true" Class="mx-auto"/>
+        }
+        else
+        {
+            <MudPaper Elevation="0" Class="mx-4">
+                <SearchContainer Search="@Search" IsImmediate="true"/>
+            </MudPaper>
+            if (SearchResult is not {Count:0})
+            {
+                <MudContainer Style="max-height: 660px;overflow: auto">
+                    <MangasContainer IsReadOnly="false" Response="SearchResult"/>
+                </MudContainer>
+            }
         }
     </DialogContent>
     <DialogActions>
         <MudText>Total - @Response.Count</MudText>
         <MudSpacer/>
-        <MudButton StartIcon="@Icons.Filled.Cancel" OnClick="Cancel">Cancel</MudButton>
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel" OnClick="Cancel">Cancel</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -31,7 +38,8 @@
 
     private List<HunterResponse> Response { get; set; } = new();
     private List<HunterResponse> SearchResult { get; set; } = new();
-
+    private bool _isLoading;
+    
     protected override async Task OnParametersSetAsync()
     {
         Response = await FetchResponse();
@@ -39,8 +47,10 @@
 
     private async Task<List<HunterResponse>> FetchResponse()
     {
+        _isLoading = true;
         var parms = new QueryParameters {HasMangadex = true};
         var result = await ApiService.GetUserList(Username, parms);
+        _isLoading = false;
         return !result.IsError ? result.Value : new List<HunterResponse>();
     }
 

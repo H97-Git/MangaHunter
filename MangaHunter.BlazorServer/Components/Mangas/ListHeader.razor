@@ -1,0 +1,33 @@
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudPaper Class="ma-4 pa-2">
+    <MudStack Row="true">
+        <FilterStatus OwnerUsername="@OwnerUsername" Status="@Status"/>
+        <MudSpacer/>
+        <MudButton OnClick="OnSearch" EndIcon="@Icons.Material.Filled.Search">Search</MudButton>
+    </MudStack>
+</MudPaper>
+
+@code {
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; }
+
+    [Parameter]
+    public string? OwnerUsername { get; set; }
+
+    [Parameter]
+    public string? Status { get; set; }
+
+    private async Task OnSearch()
+    {
+        var parameters = new DialogParameters {["Username"] = UserState.Username};
+        var dialog = await DialogService.ShowAsync<SearchInUserList>("Search Manga", parameters);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            Snackbar.Add("Succeeded", Severity.Success);
+        }
+    }
+}

@@ -31,4 +31,18 @@
     <ItemGroup>
       <ProjectReference Include="..\MangaHunter.Contracts\MangaHunter.Contracts.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\Shared\Dialogs\AddMangasToTierList.razor" />
+      <_ContentIncludedByDefault Remove="Components\Shared\Dialogs\ConfirmDelete.razor" />
+      <_ContentIncludedByDefault Remove="Components\Shared\Dialogs\SearchInUserList.razor" />
+      <_ContentIncludedByDefault Remove="Components\Shared\Dialogs\TagsContainer.razor" />
+      <_ContentIncludedByDefault Remove="Components\Shared\Dialogs\UpdateManga.razor" />
+    </ItemGroup>
+    <ItemGroup>
+      <AdditionalFiles Include="Components\Dialogs\AddMangasToTierList.razor" />
+      <AdditionalFiles Include="Components\Dialogs\ConfirmDelete.razor" />
+      <AdditionalFiles Include="Components\Dialogs\SearchInUserList.razor" />
+      <AdditionalFiles Include="Components\Dialogs\TagsContainer.razor" />
+      <AdditionalFiles Include="Components\Dialogs\UpdateManga.razor" />
+    </ItemGroup>
 </Project>

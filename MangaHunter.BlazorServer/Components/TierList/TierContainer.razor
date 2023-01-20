@@ -11,7 +11,7 @@
             <MudSpacer/>
             <MudIconButton OnClick="OnRemoveTier" Icon="@Icons.Material.Filled.Delete"/>
         </div>
-        <MudTextField @bind-Value="TierModel.SubTitle" Label="SubTitle" Variant="Variant.Text"></MudTextField>
+        <MudTextField @bind-Value="TierModel.SubTitle" Label="SubTitle" Variant="Variant.Text"/>
         <MudSelect @bind-Value="ColorHex" Label="Select tier color" OpenIcon="@Icons.Material.Outlined.ColorLens">
             @foreach (var item in MaterialColorShades)
             {
@@ -26,13 +26,16 @@
                 @* <MudText>@TierModel.Id</MudText> *@
                 @* <MudText>@TierModel.Identifier</MudText> *@
                 <MudText Typo="Typo.h4" Class="mt-4 pb-2">@TierModel.Title</MudText>
-                <MudText Typo="Typo.subtitle2" Class="mt-4 pb-2">@TierModel.SubTitle</MudText>
+                @if (!string.IsNullOrEmpty(TierModel.SubTitle))
+                {
+                    <MudText Typo="Typo.subtitle2" Class="mt-4 pb-2">@TierModel.SubTitle</MudText>
+                }
             </div>
-                <MudDropZone
-                    AllowReorder="true"
-                    CanDrop="@(_ => true)"
-                    Class="d-flex flex-wrap flex-grow-1 rounded-lg border-2 border-solid mud-border-lines-default"
-                    Identifier="@TierModel.Identifier.ToString()" T="DropItem"/>
+            <MudDropZone
+                AllowReorder="true"
+                CanDrop="@(_ => true)"
+                Class="d-flex flex-wrap flex-grow-1 rounded-lg border-2 border-solid mud-border-lines-default"
+                Identifier="@TierModel.Identifier.ToString()" T="DropItem"/>
         </div>
     }
 </MudPaper>

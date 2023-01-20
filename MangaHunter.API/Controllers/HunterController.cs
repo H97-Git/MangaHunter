@@ -66,9 +66,8 @@ public class HunterController : ApiController
     [HttpGet("{mangadexId}")]
     public async Task<IActionResult> GetById(string mangadexId, string username, [FromQuery] QueryParameters parameters)
     {
-        Log.Debug(
-            $"User:{username} want Id : {mangadexId}. \n" +
-            $" Mangadex : {parameters.HasMangadex} MangaUpdate : {parameters.HasMangaUpdates}.");
+        Log.Debug($"User:{username} want Id : {mangadexId}. \n" +
+                  $" Mangadex : {parameters.HasMangadex} MangaUpdate : {parameters.HasMangaUpdates}.");
 
         var query = new GetByIdQuery(MangadexId: mangadexId, Username: username, HasMangadex: parameters.HasMangadex,
             HasMangaUpdates: parameters.HasMangaUpdates, HasMangaUpdatesRss: parameters.HasMangaUpdatesRss);

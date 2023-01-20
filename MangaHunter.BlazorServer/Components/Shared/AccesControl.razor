@@ -11,8 +11,11 @@
                 <MudAvatar Image="@Picture"/>
             </ActivatorContent>
             <ChildContent>
-                <MudMenuItem Disabled="true">Profile</MudMenuItem>
-                <MudMenuItem Disabled="true">Theme</MudMenuItem>
+                @* <MudMenuItem Href="@("/dashboard")">Dashboard</MudMenuItem> *@
+                @* <MudMenuItem Href="@("/search")">Search</MudMenuItem> *@
+                @* <MudMenuItem Href="@($"users/{UserState.Username}/mangas")">Mangas</MudMenuItem> *@
+                @* <MudMenuItem Href="@($"users/{UserState.Username}/tierlist")">Tierlist</MudMenuItem> *@
+                <MudMenuItem Href="@($"users/{UserState.Username}/settings")">Settings</MudMenuItem>
                 <MudNavLink Href="auth/logout" Icon="@Icons.Material.Rounded.Logout">Sign Out</MudNavLink>
             </ChildContent>
         </MudMenu>

@@ -4,7 +4,7 @@
     Text="@Tag.Attributes.Name.En"
     Icon="@Icon"
     IconColor="Color.Primary"
-    Variant="@Variant.Outlined"
+    Variant="Variant.Outlined"
     OnClick="OnClick"/>
 
 @code {
@@ -22,7 +22,7 @@
     [Parameter]
     public bool IsExcluded { get; set; }
     
-    private string Icon => IsIncluded ? Icons.Rounded.Add : IsExcluded ? Icons.Rounded.Remove : "";
+    private string Icon => IsIncluded ? Icons.Material.Rounded.Add : IsExcluded ? Icons.Material.Rounded.Remove : "";
     private async Task OnClick()
     {
         await Click.InvokeAsync(Tag);

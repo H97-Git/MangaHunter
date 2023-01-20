@@ -24,6 +24,11 @@ public class NavigationManagerHandler
     {
         NavigationManager.NavigateTo(s);
     }
+
+    public void Reload()
+    {
+        NavigationManager.NavigateTo(NavigationManager.Uri);
+    }
     
     public bool UnauthorizedHandler(HttpStatusCode statusCode)
     {

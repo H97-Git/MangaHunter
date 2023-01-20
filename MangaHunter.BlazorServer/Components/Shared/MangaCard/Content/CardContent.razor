@@ -1,0 +1,57 @@
+@using ImgProxy
+
+<MudCardMedia Image="@ImgProxy(HunterResponse.MangadexDto.CoverArt?.Thumbnail512Px.ToString())"/>
+<MudCardContent>
+    <MudStack Row="true">
+        <StatusContainer Mangadex="HunterResponse.MangadexDto"/>
+        @if (!IsSearchResult)
+        {
+            <ReadingStatusContainer ReadingStatus="HunterResponse.HunterDto.Status"/>
+        }
+        <MudSpacer/>
+        <TagsMenu Mangadex="HunterResponse.MangadexDto"/>
+    </MudStack>
+    <MudDivider Class="ma-2"/>
+    @if (!IsSearchResult)
+    {
+        <MangaUpdatesContainer
+            MangadexId="@HunterResponse.HunterDto.MangadexId.ToString()"
+            MangaUpdatesDto="HunterResponse.MangaUpdatesDto"
+            Username="@Username"/>
+        <RssContainer Username="@Username" MangadexId="@HunterResponse.HunterDto.MangadexId.ToString()"/>
+    }
+    else
+    {
+        <MudExpansionPanel Text="Description">
+            @{
+                var description = HunterResponse.MangadexDto.Description.EnglishOrDefault;
+                var indexOf = description.IndexOf("---", StringComparison.Ordinal);
+                var index = indexOf is -1 ? description.Length : indexOf;
+            }
+            <MudText>@description[.. index]</MudText>
+        </MudExpansionPanel>
+    }
+</MudCardContent>
+
+@code{
+
+    [CascadingParameter]
+    protected UserState UserState { get; set; } = new();
+
+    [Parameter]
+    public HunterResponse HunterResponse { get; set; }
+
+    [Parameter]
+    public bool IsSearchResult { get; set; }
+
+    private string Username => string.IsNullOrEmpty(UserState.Username) ? HunterResponse.HunterDto?.Username! : UserState.Username;
+
+        const string salt = "68656C6C6F";
+        const string key = "736563726574";
+
+    private string ImgProxy(string? src) => ImgProxyBuilder.New
+        .WithEndpoint("https://cdn.mangahunter.org")
+        .WithCredentials(key, salt)
+        .Build(src, encode: true);
+
+}

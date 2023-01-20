@@ -1,5 +1,6 @@
 @page "/manga/{MangaId}"
 @using ImgProxy
+@inject IApiService ApiService
 
 <PageHeader Title="@($"Manga {MangaId}")"/>
 
@@ -8,17 +9,17 @@
     <MudStack Row="true">
         <MudStack>
             <MudStack Row="true">
-                <FlagIcon OriginalLanguage="@HunterResponse.MangadexDto.OriginalLanguage"/>
-                <MudTooltip Arrow="true" Placement="Placement.Top" Text="@HunterResponse.MangadexDto.Title.EnglishOrDefault">
+                <FlagIcon OriginalLanguage="HunterResponse.MangadexDto.OriginalLanguage"/>
+                <MudTooltip Arrow="true" Placement="Placement.Top" Text="HunterResponse.MangadexDto.Title.EnglishOrDefault">
                     <MudText Class="trim" Typo="Typo.h6">@HunterResponse.MangadexDto.Title.EnglishOrDefault</MudText>
                     <MudText Typo="Typo.caption">@HunterResponse.MangadexDto.PublicationDemographic</MudText>
                 </MudTooltip>
             </MudStack>
-            <MudImage Height="500" Src="@Src"></MudImage>
+            <MudImage Height="500" Src="Src"></MudImage>
             <MudStack Row="true">
-                <TagsMenu Mangadex="@HunterResponse.MangadexDto"/>
+                <TagsMenu Mangadex="HunterResponse.MangadexDto"/>
                 <MudSpacer/>
-                <IconSites Mangadex="@HunterResponse.MangadexDto"/>
+                <IconSites Mangadex="HunterResponse.MangadexDto"/>
             </MudStack>
         </MudStack>
         <MudStack>
@@ -26,9 +27,9 @@
                 <StatusContainer Mangadex="HunterResponse.MangadexDto"/>
                 @if (HunterResponse.HunterDto != null)
                 {
-                    <ReadingStatusContainer ReadingStatus="@HunterResponse.HunterDto.Status"/>
+                    <ReadingStatusContainer ReadingStatus="HunterResponse.HunterDto.Status"/>
                 }
-                <MangaUpdatesContainer Username="@UserState.Username" MangadexId="@HunterResponse.HunterDto?.MangadexId.ToString()"/>
+                <MangaUpdatesContainer Username="@UserState.Username" MangadexId="HunterResponse.HunterDto?.MangadexId.ToString()"/>
             </MudStack>
             <MudStack>
                 <MudText Typo="Typo.h5">Description</MudText>
@@ -40,36 +41,25 @@
                 <MudText Typo="Typo.body1">@description[.. index]</MudText>
                 <MudStack>
                     <MudContainer>
-                        <RssContainer Username="@UserState.Username" MangadexId="@HunterResponse.HunterDto.MangadexId.ToString()"/>
+                        <RssContainer Username="@UserState.Username" MangadexId="HunterResponse.HunterDto.MangadexId.ToString()"/>
                     </MudContainer>
                     <MudContainer>
                         <MudExpansionPanel Text="@($"Readings history : {HunterResponse.HunterDto.History.Count}")">
                             @if (HunterResponse.HunterDto!.History is not {Count:0})
                             {
-                                <Timeline History="@HunterResponse.HunterDto.History"/>
+                                <Timeline History="HunterResponse.HunterDto.History"/>
                             }
                         </MudExpansionPanel>
                     </MudContainer>
                 </MudStack>
                 <MudSpacer/>
-                <CardActions IsSearchResult="false" HunterResponse="@HunterResponse"/>
+                <CardActions IsSearchResult="false" HunterResponse="HunterResponse"/>
             </MudStack>
         </MudStack>
     </MudStack>
 }
 
 @code{
-    [Inject]
-    protected IApiService ApiService { get; set; }
-
-    [Inject]
-    protected NavigationManagerHandler NavigationManagerHandler { get; set; }
-
-    [Inject]
-    protected ISnackbar Snackbar { get; set; }
-
-    [Inject]
-    protected IDialogService DialogService { get; set; }
 
     [CascadingParameter]
     protected UserState UserState { get; set; }
@@ -82,10 +72,12 @@
         const string key = "736563726574";
 
     private string Src => ImgProxy(HunterResponse.MangadexDto?.CoverArt?.Thumbnail512Px.ToString());
+
     private static string ImgProxy(string? src) => ImgProxyBuilder.New
         .WithEndpoint("https://cdn.mangahunter.org")
         .WithCredentials(key, salt)
         .Build(src, encode: true);
+
     protected override async Task OnParametersSetAsync()
     {
         await FetchResponse(UserState.Username, MangaId);

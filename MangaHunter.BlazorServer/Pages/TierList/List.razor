@@ -1,4 +1,7 @@
-@page "/users/{UserName}/TierList"
+@page "/users/{UserName}/tierlist"
+@inject NavigationManager NavigationManager
+@inject IApiService ApiService
+@inject ISnackbar Snackbar
 
 <AuthorizeView>
     <Authorized>
@@ -6,7 +9,7 @@
         <MudTable Style="cursor: pointer"
                   Breakpoint="Breakpoint.Sm"
                   Hover="true"
-                  Items="@TierListModels"
+                  Items="TierListModels"
                   LoadingProgressColor="Color.Info"
                   T="TierListDto"
                   OnRowClick="RowClickEvent">
@@ -38,27 +41,18 @@
 
 @code {
 
-    [Inject]
-    protected NavigationManager NavigationManager { get; set; }
-
-    [Inject]
-    protected IApiService ApiService { get; set; }
-
-    [Inject]
-    protected ISnackbar Snackbar { get; set; }
 
     [CascadingParameter]
     protected UserState UserState { get; set; }
 
     [Parameter]
-    public string UserName { get; set; }
+    public string Username { get; set; }
 
-    private List<TierListDto>? TierListModels { get; set; }
+    private List<TierListDto> TierListModels { get; set; } = new();
 
     private void RowClickEvent(TableRowClickEventArgs<TierListDto> tableRowClickEventArgs)
     {
-        var id = tableRowClickEventArgs.Item.ShareCode;
-        NavigationManager.NavigateTo($"users/{UserState.Username}/TierList/{id}");
+        NavigationManager.NavigateTo($"users/{UserState.Username}/tierlist/{tableRowClickEventArgs.Item.ShareCode}");
     }
 
     protected override async Task OnInitializedAsync()
@@ -71,22 +65,22 @@
         var tierListModel = new TierListDto {CreatorName = UserState.Username, UserName = UserState.Username, Title = "New Tierlist"};
 
         var result = await ApiService.AddTierList(UserState.Username, tierListModel);
-        if (result.IsError)
-        {
-            Snackbar.Add("Failed", Severity.Error);
-            Snackbar.Add(result.FirstError.Description, Severity.Error);
-        }
-        else
+        if (!result.IsError)
         {
             Snackbar.Add("Succeeded", Severity.Success);
             await FetchData();
             StateHasChanged();
         }
+        else
+        {
+            Snackbar.Add("Failed", Severity.Error);
+            Snackbar.Add(result.FirstError.Description, Severity.Error);
+        }
     }
 
     private async Task FetchData()
     {
-        TierListModels = new List<TierListDto>();
+        TierListModels.Clear();
 
         var result = await ApiService.GetUserTierList(UserState.Username);
         if (!result.IsError)

@@ -1,0 +1,40 @@
+@if (!IsReadOnly)
+{
+    <MudCardActions>
+        @if (IsSearchResult)
+        {
+            <CardTools Add="Add" DeleteUi="OnDeleteUi" HunterResponse="HunterResponse" IsSearchResult="IsSearchResult"/>
+            <MudSpacer/>
+            <IconSites Mangadex="HunterResponse.MangadexDto"/>
+        }
+        else
+        {
+            <IconSites Mangadex="HunterResponse.MangadexDto"/>
+            <MudSpacer/>
+            <CardTools Add="Add" DeleteUi="OnDeleteUi" HunterResponse="HunterResponse" IsSearchResult="IsSearchResult"/>
+        }
+    </MudCardActions>
+}
+else
+{
+    <MudCardActions>
+        <IconSites Mangadex="HunterResponse.MangadexDto"/>
+    </MudCardActions>
+}
+
+@code{
+    [Parameter]
+    public HunterResponse HunterResponse { get; set; }
+
+    [Parameter]
+    public bool IsReadOnly { get; set; }
+
+    [Parameter]
+    public bool IsSearchResult { get; set; }
+    
+    [Parameter]
+    public EventCallback<HunterResponse> Add { get; set; }
+
+    [Parameter]
+    public EventCallback<HunterResponse> OnDeleteUi { get; set; }
+}

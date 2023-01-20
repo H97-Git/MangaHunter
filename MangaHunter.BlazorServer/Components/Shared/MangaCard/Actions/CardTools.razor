@@ -1,18 +1,19 @@
 @using MudBlazor
 @using MangaHunter.BlazorServer.Common.Services
-@using MangaHunter.BlazorServer.Components.Shared.Dialogs
+@using MangaHunter.BlazorServer.Components.Dialogs
 @using MangaHunter.BlazorServer.Common
 @using MangaHunter.Contracts.Common
 @using MangaHunter.Contracts.Hunter
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IApiService ApiService
+
 @if (IsSearchResult)
 {
     <AuthorizeView>
         <Authorized>
-            <MudButton OnClick="OnAdd" StartIcon="@Icons.Rounded.PlaylistAdd"
-                       Color="Color.Surface" Variant="@Variant.Filled">
+            <MudButton OnClick="OnAdd" StartIcon="@Icons.Material.Rounded.PlaylistAdd"
+                       Color="Color.Surface" Variant="Variant.Filled">
                 Add
             </MudButton>
         </Authorized>
@@ -22,13 +23,13 @@ else
 {
     <MudSpacer/>
     <MudTooltip Arrow="true" Placement="Placement.Top" Text="Edit">
-        <MudIconButton Icon="@Icons.Rounded.Edit" OnClick="OnUpdate"/>
-    </MudTooltip>
-    <MudTooltip Arrow="true" Placement="Placement.Top" Text="Delete">
-        <MudIconButton Icon="@Icons.Rounded.Delete" OnClick="OnDelete"/>
+        <MudIconButton Icon="@Icons.Material.Rounded.Edit" Color="Color.Primary" OnClick="OnUpdate"/>
     </MudTooltip>
     <MudTooltip Arrow="true" Placement="Placement.Top" Text="View History">
-        <MudIconButton Icon="@Icons.Rounded.History" OnClick="OnHistory"/>
+        <MudIconButton Icon="@Icons.Material.Rounded.History" Color="Color.Secondary" OnClick="OnHistory"/>
+    </MudTooltip>
+    <MudTooltip Arrow="true" Placement="Placement.Top" Text="Delete">
+        <MudIconButton Icon="@Icons.Material.Rounded.Delete" Color="Color.Error" OnClick="OnDelete"/>
     </MudTooltip>
     @* <MudExpansionPanel Text="@($"Readings history : {HunterResponse.HunterDto.History.Count}")"> *@
     @*     @if (HunterResponse.HunterDto!.History is not {Count:0}) *@

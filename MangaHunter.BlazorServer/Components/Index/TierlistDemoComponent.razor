@@ -1,0 +1,75 @@
+<MudText Typo="Typo.h3" Class="my-auto">Create your own Tierlists</MudText>
+<MudText Typo="Typo.body2" Class="my-auto">Here a demo</MudText>
+@if (HunterResponses is not {Count:0})
+{
+    <MudDropContainer
+        ApplyDropClassesOnDragStarted="true"
+        CanDropClass="mud-border-success"
+        NoDropClass="mud-border-error"
+        Class="d-flex flex-column flex-wrap flex-grow-1 ma-2"
+        Items="_dropItems"
+        ItemDropped="ItemUpdated"
+        ItemsSelector="@((item, dropzone) => item.Identifier == dropzone)"
+        @ref="_dropContainer"
+        T="DropItem">
+        <ChildContent>
+            <TierContainer TierModel="_firstTierRowDto" IsInEditMode="false"/>
+            <TierContainer TierModel="_secondTierRowDto" IsInEditMode="false"/>
+        </ChildContent>
+        <ItemRenderer>
+            <MangaCover Class="ma-2 rounded-lg"
+                        Mangadex="@HunterResponses.Find(x => x.MangadexDto!.Id.Equals(context.MangadexId))!.MangadexDto"/>
+        </ItemRenderer>
+    </MudDropContainer>
+}
+
+@code{
+
+    [Parameter]
+    public List<HunterResponse> HunterResponses { get; set; }
+
+    MudDropContainer<DropItem> _dropContainer;
+
+    static readonly Guid Identifier = Guid.NewGuid();
+
+    static List<Guid> MangaIds = new()
+    {
+        new Guid("a1c7c817-4e59-43b7-9365-09675a149a6f"),
+        new Guid("6a468761-5bd6-4de0-a0cb-47cb456ac2e0"),
+        new Guid("8892dc05-867f-4fff-823b-47210a6746bb"),
+    };
+
+    static List<DropItem> _dropItems = new();
+
+    readonly TierRowDto _firstTierRowDto = new()
+    {
+        Title = "SS",
+        Identifier = Identifier,
+    };
+
+    readonly TierRowDto _secondTierRowDto = new()
+    {
+        Title = "D",
+        Identifier = Guid.NewGuid(),
+    };
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _dropItems.Clear();
+        foreach (var guid in MangaIds)
+        {
+            _dropItems.Add(new DropItem(guid, Identifier.ToString()));
+        }
+    }
+
+    static void ItemUpdated(MudItemDropInfo<DropItem> dropItem)
+    {
+        for (int i = 0; i < UPPER; i++)
+        {
+            
+        }
+        dropItem.Item.Identifier = dropItem.DropzoneIdentifier;
+    }
+
+}

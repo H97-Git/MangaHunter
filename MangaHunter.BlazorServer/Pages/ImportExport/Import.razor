@@ -1,5 +1,6 @@
 @page "/users/{Username}/Import"
 @using Newtonsoft.Json
+@inject IApiService ApiService
 
 <PageHeader Title="Import"/>
 
@@ -96,8 +97,6 @@ else
 
 @code {
 
-    [Inject]
-    protected IApiService ApiService { get;set; }
 
     [Parameter]
     public string Username { get; set; }

@@ -1,4 +1,5 @@
 @page "/Export"
+@inject IApiService ApiService
 <MudButton Variant="Variant.Filled"
            Color="Color.Primary"
            OnClick="ExportTierLists"
@@ -6,8 +7,6 @@
     Export Tierlists
 </MudButton>
 @code {
-    [Inject]
-    IApiService ApiService { get; set; }
     [CascadingParameter]
     protected UserState UserState { get; set; }
 

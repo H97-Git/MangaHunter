@@ -1,7 +1,8 @@
 using System.Text.Json;
 
-using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+
+using Serilog;
 
 namespace MangaHunter.BlazorServer.Common.PrerenderCache;
 
@@ -21,13 +22,11 @@ public class PrerenderCache : IPrerenderCache
         _js = js ?? throw new ArgumentNullException(nameof(js));
     }
 
-    public Dictionary<string, object> Items { get; set; } = new();
+    private Dictionary<string, object> Items { get; set; } = new();
 
     private bool _isLoaded;
 
-    [Inject] public IJSRuntime JS { get; set; }
-
-    public bool IsRunningOnServer => _js.GetType().Name == "UnsupportedJavaScriptRuntime";
+    private bool IsRunningOnServer => _js.GetType().Name == "UnsupportedJavaScriptRuntime";
 
     public async Task<TResult> GetOrAdd<TResult>(string key, Func<Task<TResult>> factory)
     {
@@ -35,34 +34,39 @@ public class PrerenderCache : IPrerenderCache
         {
             var res = await factory();
 
-            Items[key] = res;
+            if (res != null)
+            {
+                Items[key] = res;
+            }
 
             return res;
         }
 
-        await LoadAsync();
-
-        if (Items.Remove(key, out var item))
+        try
         {
-            Console.WriteLine("From cache");
-
-            var json = JsonSerializer.Serialize(item);
-
-            return JsonSerializer.Deserialize<TResult>(json);
+            await LoadFromJsAsync();
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, e.Message);
+            return await factory();
         }
 
-        Console.WriteLine("From factory");
-        return await factory();
+        if (!Items.Remove(key, out var item))
+        {
+            return await factory();
+        }
+
+        var json = JsonSerializer.Serialize(item);
+        return JsonSerializer.Deserialize<TResult>(json)!;
     }
 
-    public async Task LoadAsync()
+    private async Task LoadFromJsAsync()
     {
         if (!_isLoaded)
         {
             Items = await _js.InvokeAsync<Dictionary<string, object>>("prerenderCache.load");
             _isLoaded = true;
-
-            Console.WriteLine($"Loaded cache ({Items.Count} items).");
         }
     }
 
