@@ -1,7 +1,9 @@
 @page "/"
 
 <MudStack AlignItems="AlignItems.Center">
-    <MudImage Src="@Src" Width="400"/>
+    <MudPaper Class="pa-4">
+        <MudImage Src="@Src" Width="400"/>
+    </MudPaper>
     <CarouselComponent HunterResponses="HunterResponses"/>
     <PoweredByComponent/>
     <TierlistDemoComponent HunterResponses="HunterResponses"/>
