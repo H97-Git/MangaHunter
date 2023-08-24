@@ -1,7 +1,7 @@
 using ErrorOr;
 
-using MangaDexSharp.Parameters.Manga;
-using MangaDexSharp.Resources;
+using MangaDexSharpOld.Parameters.Manga;
+using MangaDexSharpOld.Resources;
 
 using MangaHunter.Application.Common.Interfaces.Services;
 using MangaHunter.Domain.Common;
@@ -78,27 +78,28 @@ public class CachedMangadexService : IMangadexService
         return coverList.Value.Adapt<List<CoverArtSerializable>>();
     }
 
-    public async Task<ErrorOr<MangaSerializable>> GetByGuid(Guid mangaId)
+    public async Task<ErrorOr<MangaDexSharp.Manga>> GetByGuid(Guid mangaId)
     {
         string key = $"mangadex.{mangaId}";
         var cached = await _distributedCache.GetStringAsync(key);
         if (!string.IsNullOrEmpty(cached))
         {
             Log.Debug($"key {key} found in cache");
-            return JsonConvert.DeserializeObject<MangaSerializable>(cached, CachingOptions.JsonSerializerSettings)!;
+            return JsonConvert.DeserializeObject<MangaDexSharp.Manga>(cached, CachingOptions.JsonSerializerSettings)!;
         }
 
         Log.Debug($"Get a new value for {key}");
-        ErrorOr<Manga> manga = await _decorated.GetByGuid(mangaId);
+        ErrorOr<MangaDexSharp.Manga> manga = await _decorated.GetByGuid(mangaId);
         if (manga.IsError)
         {
-            return manga.Adapt<MangaSerializable>();
+            // return manga.Adapt<MangaSerializable>();
+            return new ErrorOr<MangaDexSharp.Manga>();
         }
 
-        await _distributedCache.SetStringAsync(key,
-            JsonConvert.SerializeObject(manga.Value, CachingOptions.JsonSerializerSettings),
-            CachingOptions.CacheEntryOptionsMangadex);
-        return manga.Value.Adapt<MangaSerializable>();
+        var json = JsonConvert.SerializeObject(manga.Value, CachingOptions.JsonSerializerSettings);
+        await _distributedCache.SetStringAsync(key, json, CachingOptions.CacheEntryOptionsMangadex);
+
+        return manga;
     }
 
     public async Task<ErrorOr<List<MangaSerializable>>> GetListByGuids(List<Guid> mangaIds)

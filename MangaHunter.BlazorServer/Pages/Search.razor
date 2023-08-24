@@ -50,7 +50,7 @@
 
     private List<Guid> ExcludedTags { get; set; } = new();
 
-    private List<HunterResponse>? Responses { get; set; }
+    private List<HunterResponseNew>? Responses { get; set; }
 
     private void OnSearchMangaDex(string query)
     {
@@ -83,7 +83,7 @@
         }
     }
 
-    private async Task AddToListFromSearch(HunterResponse hunterResponse)
+    private async Task AddToListFromSearch(HunterResponseNew hunterResponse)
     {
         var hunterDto = hunterResponse.HunterDto!;
         hunterDto.Username = UserState.Username;

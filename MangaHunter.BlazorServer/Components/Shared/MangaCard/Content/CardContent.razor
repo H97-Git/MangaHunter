@@ -40,7 +40,8 @@
 
     [Parameter]
     public HunterResponse HunterResponse { get; set; }
-
+    [Parameter]
+    public HunterResponseNew HunterResponseNew { get; set; }
     [Parameter]
     public bool IsSearchResult { get; set; }
 
@@ -50,7 +51,8 @@
         const string key = "736563726574";
 
     private string ImgProxy(string? src) => ImgProxyBuilder.New
-        .WithEndpoint("https://cdn.mangahunter.org")
+        // .WithEndpoint("https://cdn.mangahunter.org")
+        .WithEndpoint("http://localhost:8080")
         .WithCredentials(key, salt)
         .Build(src, encode: true);
 

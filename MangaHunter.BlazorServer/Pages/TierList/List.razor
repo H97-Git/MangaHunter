@@ -3,8 +3,8 @@
 @inject IApiService ApiService
 @inject ISnackbar Snackbar
 
-<AuthorizeView>
-    <Authorized>
+@* <AuthorizeView> *@
+    @* <Authorized> *@
         <PageHeader Title="TierList"/>
         <MudTable Style="cursor: pointer"
                   Breakpoint="Breakpoint.Sm"
@@ -30,13 +30,13 @@
             <MudSpacer/>
             <MudButton Variant="Variant.Filled" Color="Color.Inherit" StartIcon="@Icons.Material.Outlined.Add" OnClick="OnAdd">Add</MudButton>
         </MudStack>
-    </Authorized>
-    <NotAuthorized>
-        <div>
-            <span>Nothing here !</span>
-        </div>
-    </NotAuthorized>
-</AuthorizeView>
+    @* </Authorized> *@
+    @* <NotAuthorized> *@
+    @*     <div> *@
+    @*         <span>Nothing here !</span> *@
+    @*     </div> *@
+    @* </NotAuthorized> *@
+@* </AuthorizeView> *@
 
 
 @code {

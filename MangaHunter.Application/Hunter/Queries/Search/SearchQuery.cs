@@ -1,6 +1,6 @@
 using ErrorOr;
 
-using MangaDexSharp.Parameters.Manga;
+using MangaDexSharpOld.Parameters.Manga;
 
 using MediatR;
 

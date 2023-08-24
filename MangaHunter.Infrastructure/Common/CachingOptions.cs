@@ -6,9 +6,11 @@ namespace MangaHunter.Infrastructure.Common;
 
 public static class CachingOptions
 {
-    public static JsonSerializerSettings JsonSerializerSettings => new()
+    public static JsonSerializerSettings JsonSerializerSettings => new ()
     {
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        TypeNameHandling = TypeNameHandling.Auto,
+        NullValueHandling = NullValueHandling.Ignore,
     };
 
     private static TimeSpan AbsoluteExpirationRepository => TimeSpan.FromSeconds(5);

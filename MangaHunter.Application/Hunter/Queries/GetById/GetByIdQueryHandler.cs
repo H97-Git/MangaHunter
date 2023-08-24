@@ -10,7 +10,7 @@ using MediatR;
 
 namespace MangaHunter.Application.Hunter.Queries.GetById;
 
-public class GetByIdQueryHandler : IRequestHandler<GetByIdQuery, ErrorOr<HunterResult>>
+public class GetByIdQueryHandler : IRequestHandler<GetByIdQuery, ErrorOr<HunterResultNEW>>
 {
     private readonly IMangadexService _mangadex;
     private readonly IMangaUpdatesService _mangaUpdates;
@@ -24,7 +24,7 @@ public class GetByIdQueryHandler : IRequestHandler<GetByIdQuery, ErrorOr<HunterR
         _repository = repository;
     }
 
-    public async Task<ErrorOr<HunterResult>> Handle(GetByIdQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<HunterResultNEW>> Handle(GetByIdQuery request, CancellationToken cancellationToken)
     {
         var hunter = await _repository.GetByMangaId(new Guid(request.MangadexId), request.Username);
         if (hunter is null)
@@ -32,8 +32,11 @@ public class GetByIdQueryHandler : IRequestHandler<GetByIdQuery, ErrorOr<HunterR
             return Errors.Hunter.NotFound;
         }
 
-        var result = new HunterResult {Hunter = hunter};
-        switch (request.HasMangadex)
+        var result = new HunterResultNEW {Hunter = hunter};
+        await GetMangadex(hunter, result);
+        return result;
+        /*
+         switch (request.HasMangadex)
         {
             case true when !request.HasMangaUpdates && !request.HasMangaUpdatesRss:
                 await GetMangadex(hunter, result);
@@ -59,7 +62,7 @@ public class GetByIdQueryHandler : IRequestHandler<GetByIdQuery, ErrorOr<HunterR
                 return result;
             default:
                 return result;
-        }
+        }*/
     }
 
     private async Task GetRss(Domain.Entities.Hunter hunter, HunterResult result)
@@ -82,7 +85,7 @@ public class GetByIdQueryHandler : IRequestHandler<GetByIdQuery, ErrorOr<HunterR
         }
     }
 
-    private async Task GetMangadex(Domain.Entities.Hunter hunter, HunterResult result)
+    private async Task GetMangadex(Domain.Entities.Hunter hunter, HunterResultNEW result)
     {
         var manga = await _mangadex.GetByGuid(hunter.MangadexId);
         if (manga.IsError)
@@ -90,13 +93,12 @@ public class GetByIdQueryHandler : IRequestHandler<GetByIdQuery, ErrorOr<HunterR
             return;
         }
 
-        (MangaSerializable, CoverArtSerializable) mangadex = new() {Item1 = manga.Value};
-        var coverArt = await _mangadex.GetCover(manga.Value.MainCoverArtId);
-        if (!coverArt.IsError)
-        {
-            mangadex.Item2 = coverArt.Value;
-        }
+        // var coverArt = await _mangadex.GetCover(manga.Value.MainCoverArtId);
+        // if (!coverArt.IsError)
+        // {
+        //     mangadex.Item2 = coverArt.Value;
+        // }
 
-        result.Mangadex = mangadex;
+        result.Mangadex = manga.Value;
     }
 }

@@ -41,15 +41,17 @@ public class CreateCommandHandler : IRequestHandler<CreateCommand, ErrorOr<Domai
 
     private async Task<long?> GetMangaUpdatesIdUnsafe(Guid mangadexId)
     {
-        ErrorOr<MangaSerializable> mangadex = await _mangadex.GetByGuid(mangadexId);
+        ErrorOr<MangaDexSharp.Manga> mangadex = await _mangadex.GetByGuid(mangadexId);
         if (mangadex.IsError)
         {
             return null;
         }
 
-        ErrorOr<MangaUpdates> mangaUpdates =
+        return null;
+
+        /*ErrorOr<MangaUpdates> mangaUpdates =
             await _mangaUpdates.GetMangaUpdatesUnsafe(mangadex.Value.Links.MangaUpdates);
 
-        return !mangaUpdates.IsError ? mangaUpdates.Value.SeriesId : null;
+        return !mangaUpdates.IsError ? mangaUpdates.Value.SeriesId : null;*/
     }
 }

@@ -3,28 +3,28 @@
     <MudCardActions>
         @if (IsSearchResult)
         {
-            <CardTools Add="Add" DeleteUi="OnDeleteUi" HunterResponse="HunterResponse" IsSearchResult="IsSearchResult"/>
+            <CardTools Add="Add" DeleteUi="OnDeleteUi" HunterResponse="HunterResponseNew" IsSearchResult="IsSearchResult"/>
             <MudSpacer/>
-            <IconSites Mangadex="HunterResponse.MangadexDto"/>
+            <IconSites MangadexNew="HunterResponseNew.MangadexDto"/>
         }
         else
         {
-            <IconSites Mangadex="HunterResponse.MangadexDto"/>
+            <IconSites MangadexNew="HunterResponseNew.MangadexDto"/>
             <MudSpacer/>
-            <CardTools Add="Add" DeleteUi="OnDeleteUi" HunterResponse="HunterResponse" IsSearchResult="IsSearchResult"/>
+            <CardTools Add="Add" DeleteUi="OnDeleteUi" HunterResponse="HunterResponseNew" IsSearchResult="IsSearchResult"/>
         }
     </MudCardActions>
 }
 else
 {
     <MudCardActions>
-        <IconSites Mangadex="HunterResponse.MangadexDto"/>
+        <IconSites MangadexNew="HunterResponseNew.MangadexDto"/>
     </MudCardActions>
 }
 
 @code{
     [Parameter]
-    public HunterResponse HunterResponse { get; set; }
+    public HunterResponseNew HunterResponseNew { get; set; }
 
     [Parameter]
     public bool IsReadOnly { get; set; }
@@ -33,8 +33,8 @@ else
     public bool IsSearchResult { get; set; }
     
     [Parameter]
-    public EventCallback<HunterResponse> Add { get; set; }
+    public EventCallback<HunterResponseNew> Add { get; set; }
 
     [Parameter]
-    public EventCallback<HunterResponse> OnDeleteUi { get; set; }
+    public EventCallback<HunterResponseNew> OnDeleteUi { get; set; }
 }

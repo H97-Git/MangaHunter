@@ -11,12 +11,12 @@ public interface IApiService
 {
     Task<ErrorOr<List<HunterResponse>>> GetUserList(string username, QueryParameters parameters);
     Task<ErrorOr<HunterResponseWithPagination>> GetUserListWithPagination(string username, QueryParameters parameters);
-    Task<ErrorOr<HunterResponse>> GetMangaById(string username, string mangadexId, QueryParameters parameters);
+    Task<ErrorOr<HunterResponseNew>> GetMangaById(string username, string mangadexId, QueryParameters parameters);
     Task<ErrorOr<long>> GetNewMangaUpdatesId(string username, string mangadexId);
     Task<ErrorOr<HunterDto>> AddManga(string username, HunterDto hunterDto);
     Task<ErrorOr<HunterDto>> UpdateManga(string username, HunterDto hunterDto);
     Task<ErrorOr<Deleted>> DeleteManga(string username, string mangadexId);
-    Task<ErrorOr<List<HunterResponse>>> Search(SearchQueryParameters parameters);
+    Task<ErrorOr<List<HunterResponseNew>>> Search(SearchQueryParameters parameters);
     Task<ErrorOr<TodayRssDto>> GetTodayRss();
     Task<ErrorOr<List<TierListDto>>> GetUserTierList(string username);
     Task<ErrorOr<TierListResponse>> GetTierListById(string code);
@@ -65,7 +65,7 @@ public class ApiService : IApiService
         return await _apiClient.GetRequest<HunterResponseWithPagination>(uri);
     }
 
-    public async Task<ErrorOr<HunterResponse>> GetMangaById(string userId, string mangadexId,
+    public async Task<ErrorOr<HunterResponseNew>> GetMangaById(string userId, string mangadexId,
         QueryParameters parameters)
     {
         var hasMangadex = $"hasMangadex={parameters.HasMangadex}";
@@ -73,7 +73,7 @@ public class ApiService : IApiService
         var hasMangaUpdatesRss = $"hasMangaUpdatesRss={parameters.HasMangaUpdatesRss}";
 
         return await _apiClient
-            .GetRequest<HunterResponse>(
+            .GetRequest<HunterResponseNew>(
                 $"user/{userId}/Hunter/{mangadexId}?{hasMangadex}&{hasMangaUpdates}&{hasMangaUpdatesRss}");
     }
 
@@ -101,7 +101,7 @@ public class ApiService : IApiService
             .DeleteRequest($"user/{userId}/Hunter/delete/{mangadexId}");
     }
 
-    public async Task<ErrorOr<List<HunterResponse>>> Search(SearchQueryParameters parameters)
+    public async Task<ErrorOr<List<HunterResponseNew>>> Search(SearchQueryParameters parameters)
     {
         return await _apiClient
             .SearchRequest("search", parameters);

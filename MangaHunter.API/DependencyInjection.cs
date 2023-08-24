@@ -33,7 +33,7 @@ public static class DependencyInjection
         services.AddEndpointsApiExplorer();
         services.AddMappings();
         services.AddSwagger();
-        services.AddAuth0(configuration);
+        // services.AddAuth0(configuration);
         services.AddHttpClient();
 
         return services;
@@ -61,26 +61,26 @@ public static class DependencyInjection
     {
         services.AddSwaggerGen(options =>
         {
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description =
-                    "Enter 'Bearer' [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOiX....\""
-            });
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference {Id = "Bearer", Type = ReferenceType.SecurityScheme}
-                    },
-                    Array.Empty<string>()
-                }
-            });
+            // options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            // {
+            //     Name = "Authorization",
+            //     Type = SecuritySchemeType.ApiKey,
+            //     Scheme = "Bearer",
+            //     BearerFormat = "JWT",
+            //     In = ParameterLocation.Header,
+            //     Description =
+            //         "Enter 'Bearer' [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOiX....\""
+            // });
+            // options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            // {
+            //     {
+            //         new OpenApiSecurityScheme
+            //         {
+            //             Reference = new OpenApiReference {Id = "Bearer", Type = ReferenceType.SecurityScheme}
+            //         },
+            //         Array.Empty<string>()
+            //     }
+            // });
             options.SwaggerDoc("v1", new OpenApiInfo {Title = "Manga Hunter", Version = "v1", Description = "",});
             options.CustomSchemaIds(type => type.ToString());
 

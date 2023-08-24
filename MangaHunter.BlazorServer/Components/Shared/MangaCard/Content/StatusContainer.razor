@@ -1,4 +1,5 @@
 @using MangaHunter.Contracts.Common
+@using MangaHunter.Contracts.Mangadex.Models.Manga
 @switch (Mangadex.Status)
 {
     case MangaStatus.None:
@@ -33,7 +34,8 @@
 
     [Parameter]
     public MangadexDto Mangadex { get; set; }
-
+    [Parameter]
+    public MangaDto MangadexNew { get; set; }
     private string TooltipText()
     {
         if (!string.IsNullOrEmpty(Mangadex.LastChapter) && string.IsNullOrEmpty(Mangadex.LastVolume))

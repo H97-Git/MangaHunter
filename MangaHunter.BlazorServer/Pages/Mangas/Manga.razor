@@ -11,20 +11,20 @@
             <MudStack Row="true">
                 <FlagIcon OriginalLanguage="HunterResponse.MangadexDto.OriginalLanguage"/>
                 <MudTooltip Arrow="true" Placement="Placement.Top" Text="HunterResponse.MangadexDto.Title.EnglishOrDefault">
-                    <MudText Class="trim" Typo="Typo.h6">@HunterResponse.MangadexDto.Title.EnglishOrDefault</MudText>
-                    <MudText Typo="Typo.caption">@HunterResponse.MangadexDto.PublicationDemographic</MudText>
+                    <MudText Class="trim" Typo="Typo.h6">@HunterResponse.MangadexDto.Attributes.Title.ToString()</MudText>
+                    <MudText Typo="Typo.caption">PublicationDemographic</MudText>
                 </MudTooltip>
             </MudStack>
             <MudImage Height="500" Src="Src"></MudImage>
             <MudStack Row="true">
-                <TagsMenu Mangadex="HunterResponse.MangadexDto"/>
+                <TagsMenu MangadexNew="HunterResponse.MangadexDto"/>
                 <MudSpacer/>
-                <IconSites Mangadex="HunterResponse.MangadexDto"/>
+                <IconSites MangadexNew="HunterResponse.MangadexDto"/>
             </MudStack>
         </MudStack>
         <MudStack>
             <MudStack Row="true">
-                <StatusContainer Mangadex="HunterResponse.MangadexDto"/>
+                <StatusContainer MangadexNew="HunterResponse.MangadexDto"/>
                 @if (HunterResponse.HunterDto != null)
                 {
                     <ReadingStatusContainer ReadingStatus="HunterResponse.HunterDto.Status"/>
@@ -34,7 +34,7 @@
             <MudStack>
                 <MudText Typo="Typo.h5">Description</MudText>
                 @{
-                    var description = HunterResponse.MangadexDto.Description.EnglishOrDefault;
+                    var description = HunterResponse.MangadexDto.Attributes.Description.ToString();
                     var indexOf = description.IndexOf("---", StringComparison.Ordinal);
                     var index = indexOf is -1 ? description.Length : indexOf;
                 }
@@ -53,7 +53,7 @@
                     </MudContainer>
                 </MudStack>
                 <MudSpacer/>
-                <CardActions IsSearchResult="false" HunterResponse="HunterResponse"/>
+                <CardActions IsSearchResult="false" HunterResponseNew="HunterResponse"/>
             </MudStack>
         </MudStack>
     </MudStack>
@@ -67,11 +67,11 @@
     [Parameter]
     public string MangaId { get; set; } = string.Empty;
 
-    private HunterResponse HunterResponse { get; set; } = new();
+    private HunterResponseNew HunterResponse { get; set; } = new();
         const string salt = "68656C6C6F";
         const string key = "736563726574";
 
-    private string Src => ImgProxy(HunterResponse.MangadexDto?.CoverArt?.Thumbnail512Px.ToString());
+    private string Src => ImgProxy("HunterResponse.MangadexDto?.CoverArt?.Thumbnail512Px.ToString()");
 
     private static string ImgProxy(string? src) => ImgProxyBuilder.New
         .WithEndpoint("https://cdn.mangahunter.org")

@@ -8,7 +8,7 @@ using LocalizedString = MangaHunter.Contracts.Common.LocalizedString;
 using MangaLinks = MangaHunter.Contracts.Common.MangaLinks;
 using MangaPublicationDemographic = MangaHunter.Contracts.Common.MangaPublicationDemographic;
 using MangaStatus = MangaHunter.Contracts.Common.MangaStatus;
-using Tag = MangaHunter.Contracts.Common.Tag;
+using Tag = MangaHunter.Contracts.Common.Tagg;
 
 namespace MangaHunter.API.Common.Mapping;
 

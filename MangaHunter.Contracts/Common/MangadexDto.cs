@@ -14,7 +14,7 @@ public class MangadexDto
     public MangaLinks Links { get; set; }
     public ContentRating ContentRating { get; set; }
     public MangaPublicationDemographic? PublicationDemographic { get; set; }
-    public IReadOnlyCollection<Tag> Tags { get; set; }
+    public IReadOnlyCollection<Tagg> Tags { get; set; }
     public int? Year { get; set; }
     public CoverArtDto? CoverArt { get; set; }
 }
@@ -185,7 +185,7 @@ public enum MangaPublicationDemographic
     None = 0
 }
 
-public class Tag
+public class Tagg
 {
     public TagGroup Group { get; set; }
     public LocalizedString Name { get; set; }

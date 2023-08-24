@@ -1,28 +1,39 @@
 using ErrorOr;
 
+using MangaDexSharpOld;
+using MangaDexSharpOld.Collections;
+using MangaDexSharpOld.Parameters.Cover;
+using MangaDexSharpOld.Parameters.Manga;
+using MangaDexSharpOld.Resources;
+
 using MangaDexSharp;
-using MangaDexSharp.Collections;
-using MangaDexSharp.Parameters.Cover;
-using MangaDexSharp.Parameters.Manga;
-using MangaDexSharp.Resources;
 
 using MangaHunter.Application.Common.Errors;
+using MangaHunter.Application.Common.Interfaces.Services;
 
 using Serilog;
+
+using Manga = MangaDexSharpOld.Resources.Manga;
 
 namespace MangaHunter.Infrastructure.Services;
 
 public class MangadexService
 {
+    private const int MaxCount = 100;
+    private readonly IMangaDex _md;
     private readonly MangaDexClient _client = new();
 
-    private const int MaxCount = 100;
+    public MangadexService(IMangaDex md)
+    {
+        this._md = md;
+    }
 
     public async Task<ErrorOr<CoverArt>> GetCover(Guid id)
     {
         try
         {
             return await _client.Cover.GetCover(id, null);
+            await _md.Cover.Get(id.ToString());
         }
         catch (Exception e)
         {
@@ -49,6 +60,7 @@ public class MangadexService
                     {
                         CoverIds = ids, Amount = ids.Count,
                     });
+                    // await _md.Cover.List(new CoverArtFilter() {MangaIds = ids});
                     coverArts.AddRange(collection);
                     previousCount += MaxCount;
                 }
@@ -69,13 +81,12 @@ public class MangadexService
         }
     }
 
-    public async Task<ErrorOr<Manga>> GetByGuid(Guid mangaId)
+    public async Task<ErrorOr<MangaDexSharp.Manga>> GetByGuid(Guid mangaId)
     {
         try
         {
-            var manga = await _client.Manga.ViewManga(mangaId);
-            return manga;
-            //Errors.Mangadex.NotFound
+            var manga = await this._md.Manga.Get(mangaId.ToString(), new[] {MangaIncludes.cover_art});
+            return manga.Result is "ok" ? manga.Data : Errors.Mangadex.NotFound;
         }
         catch (Exception e)
         {

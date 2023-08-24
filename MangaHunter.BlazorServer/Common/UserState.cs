@@ -8,11 +8,11 @@ namespace MangaHunter.BlazorServer.Common;
 public class UserState
 {
     public string UserId { get; private set; } = "";
-    public string Username { get; private set; } = "";
+    public string Username { get; private set; } = "ecchi";
     public string Picture { get; private set; } = "";
     // public UserData? UserData { get; set; }
     public bool IsEmailVerified { get; private set; }
-    public bool IsAuthenticated { get; private set; }
+    public bool IsAuthenticated { get; private set; } = true;
 
     public void MapFromClaims(List<Claim> claims)
     {

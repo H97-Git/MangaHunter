@@ -15,7 +15,7 @@
         @foreach (var hunterResponse in HunterResponses)
         {
             <MudItem xs="12" sm="6" md="4">
-                <MangaCard IsSearchResult="true" Add="Add" HunterResponse="hunterResponse"/>
+                <MangaCard IsSearchResult="true" Add="Add" HunterResponseNew="hunterResponse"/>
             </MudItem>
         }
     </MudGrid>
@@ -24,15 +24,14 @@
 @code {
 
     [Parameter]
-    public List<HunterResponse>? HunterResponses { get; set; }
-
+    public List<HunterResponseNew>? HunterResponses { get; set; }
     
     [Parameter]
-    public EventCallback<HunterResponse> Add { get; set; }
+    public EventCallback<HunterResponseNew> Add { get; set; }
     
     private bool IsContentLoading { get; set; } = false;
     
-    private async Task OnAdd(HunterResponse hunterResponse)
+    private async Task OnAdd(HunterResponseNew hunterResponse)
     {
         await Add.InvokeAsync(hunterResponse);
     }

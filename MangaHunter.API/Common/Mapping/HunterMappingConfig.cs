@@ -1,6 +1,6 @@
-using MangaDexSharp.Parameters.Enums;
-using MangaDexSharp.Parameters.Manga;
-using MangaDexSharp.Parameters.Order.Manga;
+using MangaDexSharpOld.Parameters.Enums;
+using MangaDexSharpOld.Parameters.Manga;
+using MangaDexSharpOld.Parameters.Order.Manga;
 
 using MangaHunter.Application.Hunter;
 using MangaHunter.Contracts.Common;
@@ -21,13 +21,13 @@ public class HunterMappingConfig : IRegister
     {
         config.NewConfig<PaginationParameters, QueryParameters>();
 
-        config.NewConfig<SearchQueryParameters, GetMangaListParameters>()
+        config.NewConfig<SearchQueryParameters, MangaDexSharpOld.Parameters.Manga.GetMangaListParameters>()
             .MapWith(src => R(src));
 
         config.NewConfig<(MangaSerializable?, CoverArtSerializable?), MangadexDto?>()
             .MapWith(src => ReadFromMangadex(src));
 
-        config.NewConfig<MangaDexSharp.Objects.MangaLinks, MangaLinks>();
+        config.NewConfig<MangaDexSharpOld.Objects.MangaLinks, MangaLinks>();
 
         config.NewConfig<Hunter, HunterResponse>()
             .Map(dest => dest.HunterDto, src => src);
@@ -35,6 +35,12 @@ public class HunterMappingConfig : IRegister
         config.NewConfig<HunterResultWithPagination, HunterResponseWithPagination>();
 
         config.NewConfig<HunterResult, HunterResponse>()
+            .Map(dest => dest.HunterDto, src => src.Hunter)
+            .Map(dest => dest.MangadexDto, src => src.Mangadex) // Tuple to MangadexDto
+            .Map(dest => dest.MangaUpdatesDto, src => src.MangaUpdates)
+            .Map(dest => dest.RssMangaUpdatesDto, src => src.RssMangaUpdates);
+
+        config.NewConfig<HunterResultNEW, HunterResponseNew>()
             .Map(dest => dest.HunterDto, src => src.Hunter)
             .Map(dest => dest.MangadexDto, src => src.Mangadex) // Tuple to MangadexDto
             .Map(dest => dest.MangaUpdatesDto, src => src.MangaUpdates)

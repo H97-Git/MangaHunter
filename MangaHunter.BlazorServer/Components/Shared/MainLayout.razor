@@ -34,41 +34,41 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = state.User;
-        if (user.Identity is {IsAuthenticated:true})
-        {
-            UserState.MapFromClaims(state.User.Claims.ToList());
-            if (!UserState.IsEmailVerified)
-            {
-                var returnUri = QueryHelpers.AddQueryString("auth/logout", "returnUrl", "/check_email");
-                NavigationManagerHandler.NavigateTo(returnUri);
-            }
-        }
+        // var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        // var user = state.User;
+        // if (user.Identity is {IsAuthenticated:true})
+        // {
+        //     UserState.MapFromClaims(state.User.Claims.ToList());
+        //     if (!UserState.IsEmailVerified)
+        //     {
+        //         var returnUri = QueryHelpers.AddQueryString("auth/logout", "returnUrl", "/check_email");
+        //         NavigationManagerHandler.NavigateTo(returnUri);
+        //     }
+        // }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            if (UserState.IsAuthenticated)
-            {
-                var user = await ManagementApiService.GetUser(UserState.UserId);
-                if (!user.IsError)
-                {
-                    try
-                    {
-                        var jObject = user.Value.UserMetadata as JObject;
-                        var userMetaData = jObject?.ToObject<UserMetaData>();
-                        UserState.Theme.Palette = Palettes.GetPaletteFromString(userMetaData?.PaletteName);
-                        StateHasChanged();
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e, e.Message);
-                    }
-                }
-            }
+            // if (UserState.IsAuthenticated)
+            // {
+            //     var user = await ManagementApiService.GetUser(UserState.UserId);
+            //     if (!user.IsError)
+            //     {
+            //         try
+            //         {
+            //             var jObject = user.Value.UserMetadata as JObject;
+            //             var userMetaData = jObject?.ToObject<UserMetaData>();
+            //             UserState.Theme.Palette = Palettes.GetPaletteFromString(userMetaData?.PaletteName);
+            //             StateHasChanged();
+            //         }
+            //         catch (Exception e)
+            //         {
+            //             Log.Error(e, e.Message);
+            //         }
+            //     }
+            // }
         }
     }
 }

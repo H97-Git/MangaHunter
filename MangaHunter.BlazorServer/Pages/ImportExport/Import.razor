@@ -1,110 +1,110 @@
 @page "/users/{Username}/Import"
-@using Newtonsoft.Json
-@inject IApiService ApiService
-
-<PageHeader Title="Import"/>
-
-<InputFile id="fileInput" OnChange="LoadFile" hidden/>
-<MudButton HtmlTag="label"
-           Variant="Variant.Filled"
-           Color="Color.Primary"
-           StartIcon="@Icons.Filled.CloudUpload"
-           for="fileInput">
-    Upload Files
-</MudButton>
-
-@if (!IsLoading)
-{
-    if (Json is not null)
-    {
-        <MudExpansionPanel Text="Not founds :" Class="m-1 p-1">
-            @foreach (var item in NotFounds)
-            {
-                <MudText Typo="Typo.body1">@item</MudText>
-            }
-        </MudExpansionPanel>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Levenshtein">
-            Levenshtein Distance
-        </MudButton>
-        <MudStack Row="@true">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Dist(0)">
-                Distance 0
-            </MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => Dist(1)">
-                Distance 1
-            </MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="() => Dist(2)">
-                Distance 2
-            </MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="() => Dist(3)">
-                Distance 3
-            </MudButton>
-        </MudStack>
-        <MudExpansionPanel Text="Already in list :" Class="m-1 p-1">
-            @foreach (var group in AlreadyIn.GroupBy(x => x.LevDist))
-            {
-                <MudText>@group.Key - @group.Count()</MudText>
-                @foreach (var item in group)
-                {
-                    <MudText Typo="Typo.body1">@item.MangadexTitle - @item.EntryName : @item.LevDist </MudText>
-                }
-            }
-        </MudExpansionPanel>
-        @if (HunterSearchResult.Any())
-        {
-            <SearchResultContainer Add="() => Task.CompletedTask" HunterResponses="HunterSearchResult"/>
-        }
-        <MudTable Items="@Json.Entries" Dense="true" Hover="true" Bordered="true" Striped="true" @bind-SelectedItem="Selected">
-            <ToolBarContent>
-                <MudText Typo="Typo.h6">Anime Planet List : @Json.Entries.Count</MudText>
-            </ToolBarContent>
-            <HeaderContent>
-                <MudTh>Name</MudTh>
-                <MudTh>Status</MudTh>
-                <MudTh>Vol</MudTh>
-                <MudTh>Ch</MudTh>
-                <MudTh>
-                    <MudTableSortLabel SortBy="new Func<Entry, object>(x => x.Started)">Started</MudTableSortLabel>
-                </MudTh>
-                <MudTh>
-                    <MudTableSortLabel SortBy="new Func<Entry, object>(x => x.Completed)">Completed</MudTableSortLabel>
-                </MudTh>
-                <MudTh>Action</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Name">@context.Name</MudTd>
-                <MudTd DataLabel="Status">@context.Status</MudTd>
-                <MudTd DataLabel="Vol">@context.Vol</MudTd>
-                <MudTd DataLabel="Ch">@context.Ch</MudTd>
-                <MudTd DataLabel="Started">@context.Started</MudTd>
-                <MudTd DataLabel="Completed">@context.Completed</MudTd>
-                <MudTd>
-                    <MudFab Color="Color.Primary" StartIcon="@Icons.Rounded.Search" OnClick="() => GetMangas(context)">Search</MudFab>
-                    <MudFab Color="Color.Secondary" StartIcon="@Icons.Rounded.CloudOff" OnClick="() => NotFound(context.Name)">Not Found</MudFab>
-                    <MudFab Color="Color.Tertiary" StartIcon="@Icons.Rounded.Delete" OnClick="() => Json.Entries.Remove(context)">Not Found</MudFab>
-                </MudTd>
-            </RowTemplate>
-            <PagerContent>
-                <MudTablePager/>
-            </PagerContent>
-        </MudTable>
-    }
-}
-else
-{
-    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large"/>
+@* @using Newtonsoft.Json *@
+@* @inject IApiService ApiService *@
+@* *@
+@* <PageHeader Title="Import"/> *@
+@* *@
+@* <InputFile id="fileInput" OnChange="LoadFile" hidden/> *@
+@* <MudButton HtmlTag="label" *@
+@*            Variant="Variant.Filled" *@
+@*            Color="Color.Primary" *@
+@*            StartIcon="@Icons.Filled.CloudUpload" *@
+@*            for="fileInput"> *@
+@*     Upload Files *@
+@* </MudButton> *@
+@* *@
+@* @if (!IsLoading) *@
+@* { *@
+@*     if (Json is not null) *@
+@*     { *@
+@*         <MudExpansionPanel Text="Not founds :" Class="m-1 p-1"> *@
+@*             @foreach (var item in NotFounds) *@
+@*             { *@
+@*                 <MudText Typo="Typo.body1">@item</MudText> *@
+@*             } *@
+@*         </MudExpansionPanel> *@
+@*         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Levenshtein"> *@
+@*             Levenshtein Distance *@
+@*         </MudButton> *@
+@*         <MudStack Row="@true"> *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => Dist(0)"> *@
+@*                 Distance 0 *@
+@*             </MudButton> *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => Dist(1)"> *@
+@*                 Distance 1 *@
+@*             </MudButton> *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="() => Dist(2)"> *@
+@*                 Distance 2 *@
+@*             </MudButton> *@
+@*             <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="() => Dist(3)"> *@
+@*                 Distance 3 *@
+@*             </MudButton> *@
+@*         </MudStack> *@
+@*         <MudExpansionPanel Text="Already in list :" Class="m-1 p-1"> *@
+@*             @foreach (var group in AlreadyIn.GroupBy(x => x.LevDist)) *@
+@*             { *@
+@*                 <MudText>@group.Key - @group.Count()</MudText> *@
+@*                 @foreach (var item in group) *@
+@*                 { *@
+@*                     <MudText Typo="Typo.body1">@item.MangadexTitle - @item.EntryName : @item.LevDist </MudText> *@
+@*                 } *@
+@*             } *@
+@*         </MudExpansionPanel> *@
+@*         @if (HunterSearchResult.Any()) *@
+@*         { *@
+@*             <SearchResultContainer Add="() => Task.CompletedTask" HunterResponses="HunterSearchResult"/> *@
+@*         } *@
+@*         <MudTable Items="@Json.Entries" Dense="true" Hover="true" Bordered="true" Striped="true" @bind-SelectedItem="Selected"> *@
+@*             <ToolBarContent> *@
+@*                 <MudText Typo="Typo.h6">Anime Planet List : @Json.Entries.Count</MudText> *@
+@*             </ToolBarContent> *@
+@*             <HeaderContent> *@
+@*                 <MudTh>Name</MudTh> *@
+@*                 <MudTh>Status</MudTh> *@
+@*                 <MudTh>Vol</MudTh> *@
+@*                 <MudTh>Ch</MudTh> *@
+@*                 <MudTh> *@
+@*                     <MudTableSortLabel SortBy="new Func<Entry, object>(x => x.Started)">Started</MudTableSortLabel> *@
+@*                 </MudTh> *@
+@*                 <MudTh> *@
+@*                     <MudTableSortLabel SortBy="new Func<Entry, object>(x => x.Completed)">Completed</MudTableSortLabel> *@
+@*                 </MudTh> *@
+@*                 <MudTh>Action</MudTh> *@
+@*             </HeaderContent> *@
+@*             <RowTemplate> *@
+@*                 <MudTd DataLabel="Name">@context.Name</MudTd> *@
+@*                 <MudTd DataLabel="Status">@context.Status</MudTd> *@
+@*                 <MudTd DataLabel="Vol">@context.Vol</MudTd> *@
+@*                 <MudTd DataLabel="Ch">@context.Ch</MudTd> *@
+@*                 <MudTd DataLabel="Started">@context.Started</MudTd> *@
+@*                 <MudTd DataLabel="Completed">@context.Completed</MudTd> *@
+@*                 <MudTd> *@
+@*                     <MudFab Color="Color.Primary" StartIcon="@Icons.Rounded.Search" OnClick="() => GetMangas(context)">Search</MudFab> *@
+@*                     <MudFab Color="Color.Secondary" StartIcon="@Icons.Rounded.CloudOff" OnClick="() => NotFound(context.Name)">Not Found</MudFab> *@
+@*                     <MudFab Color="Color.Tertiary" StartIcon="@Icons.Rounded.Delete" OnClick="() => Json.Entries.Remove(context)">Not Found</MudFab> *@
+@*                 </MudTd> *@
+@*             </RowTemplate> *@
+@*             <PagerContent> *@
+@*                 <MudTablePager/> *@
+@*             </PagerContent> *@
+@*         </MudTable> *@
+@*     } *@
+@* } *@
+@* else *@
+@* { *@
+@*     <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large"/> *@
 }
 
 @code {
 
 
-    [Parameter]
+    /*[Parameter]
     public string Username { get; set; }
 
     private AnimePlanet? Json { get; set; }
     private Entry? Selected { get; set; }
-    private List<HunterResponse> HunterSearchResult { get; } = new();
-    private List<HunterResponse> HunterResponses { get; set; } = new();
+    private List<HunterResponseNew> HunterSearchResult { get; } = new();
+    private List<HunterResponseNew> HunterResponses { get; set; } = new();
     private List<string> NotFounds { get; } = new();
     private List<KeyValueLevDist> AlreadyIn { get; set; } = new();
 
@@ -192,6 +192,6 @@ else
     // await ApiService.AddManga(mangaModel);
     }
 
-    public record KeyValueLevDist(string MangadexTitle, string EntryName, int LevDist);
+    public record KeyValueLevDist(string MangadexTitle, string EntryName, int LevDist);*/
 
 }

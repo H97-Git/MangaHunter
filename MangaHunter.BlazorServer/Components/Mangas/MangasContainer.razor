@@ -23,7 +23,7 @@
     [Parameter]
     public bool IsReadOnly { get; set; }
 
-    private void OnDeleteUi(HunterResponse hunterResponse)
+    private void OnDeleteUi(HunterResponseNew hunterResponse)
     {
         var mm = Response.Find(x => x.HunterDto.MangadexId.Equals(hunterResponse.HunterDto.MangadexId));
         if (mm != null)

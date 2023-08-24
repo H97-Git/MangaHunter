@@ -1,18 +1,18 @@
-@if (HunterResponse is not {HunterDto:null} and {MangadexDto:null})
+@if (HunterResponseNew is not {HunterDto:null} and {MangadexDto:null})
 {
-    <EmptyContainer HunterResponse="HunterResponse" DeleteUi="OnDeleteUi"/>
+    <EmptyContainer HunterResponseNew="HunterResponseNew" DeleteUi="OnDeleteUi"/>
 }
 
-@if (HunterResponse is not {HunterDto:null} and not {MangadexDto: null})
+@if (HunterResponseNew is not {HunterDto:null} and not {MangadexDto: null})
 {
     <MudCard Outlined="true" Class="@Class">
-        <CardHeader Mangadex="HunterResponse.MangadexDto"/>
+        <CardHeader MangadexNewDto="HunterResponseNew.MangadexDto"/>
         <CardContent
-            HunterResponse="HunterResponse"
+            HunterResponseNew="HunterResponseNew"
             IsSearchResult="IsSearchResult"/>
         <CardActions
             Add="Add"
-            HunterResponse="HunterResponse"
+            HunterResponseNew="HunterResponseNew"
             IsReadOnly="IsReadOnly"
             IsSearchResult="IsSearchResult"
             OnDeleteUi="OnDeleteUi"/>
@@ -24,10 +24,9 @@
 
     [CascadingParameter]
     protected UserState UserState { get; set; } = new();
-
+    
     [Parameter]
-    public HunterResponse HunterResponse { get; set; }
-
+    public HunterResponseNew HunterResponseNew { get; set; }
     [Parameter]
     public string Class { get; set; } = "";
 
@@ -41,10 +40,10 @@
     public bool IsSearchResult { get; set; }
 
     [Parameter]
-    public EventCallback<HunterResponse> Add { get; set; }
+    public EventCallback<HunterResponseNew> Add { get; set; }
 
     [Parameter]
-    public EventCallback<HunterResponse> OnDeleteUi { get; set; }
+    public EventCallback<HunterResponseNew> OnDeleteUi { get; set; }
 
     protected override void OnParametersSet()
     {

@@ -1,4 +1,4 @@
-using Auth0.AspNetCore.Authentication;
+// using Auth0.AspNetCore.Authentication;
 
 using MangaHunter.BlazorServer.Common;
 using MangaHunter.BlazorServer.Common.PrerenderCache;
@@ -40,20 +40,20 @@ try
         builder.Services.AddMudServices();
         builder.Services.AddMemoryCache();
 
-        builder.Services
-            .AddAuth0WebAppAuthentication(options =>
-            {
-                options.Domain = builder.Configuration["Auth0:Domain"]!;
-                options.ClientId = builder.Configuration["Auth0:ClientId"]!;
-                options.Scope = "openid profile email";
-                options.OpenIdConnectEvents = new OpenIdConnectEvents
-                {
-                    OnRedirectToIdentityProvider = context => OpenIdEvents.EnsureHttps(context, scheme, port),
-                    OnSignedOutCallbackRedirect = context => OpenIdEvents.EnsureHttps(context, scheme, port),
-                    OnRedirectToIdentityProviderForSignOut =
-                        context => OpenIdEvents.EnsureHttps(context, scheme, port),
-                };
-            });
+        // builder.Services
+            // .AddAuth0WebAppAuthentication(options =>
+            // {
+            //     options.Domain = builder.Configuration["Auth0:Domain"]!;
+            //     options.ClientId = builder.Configuration["Auth0:ClientId"]!;
+            //     options.Scope = "openid profile email";
+            //     options.OpenIdConnectEvents = new OpenIdConnectEvents
+            //     {
+            //         OnRedirectToIdentityProvider = context => OpenIdEvents.EnsureHttps(context, scheme, port),
+            //         OnSignedOutCallbackRedirect = context => OpenIdEvents.EnsureHttps(context, scheme, port),
+            //         OnRedirectToIdentityProviderForSignOut =
+            //             context => OpenIdEvents.EnsureHttps(context, scheme, port),
+            //     };
+            // });
         builder.Services.AddHttpClient();
         // builder.Services.AddHttpContextAccessor();
         // builder.Services.AddScoped<TokenHandler>();
@@ -99,8 +99,8 @@ try
             Secure = CookieSecurePolicy.Always,
             HttpOnly = HttpOnlyPolicy.Always,
         });
-        app.UseAuthentication();
-        app.UseAuthorization();
+        // app.UseAuthentication();
+        // app.UseAuthorization();
 
         app.MapBlazorHub();
         app.MapFallbackToPage("/_Host");

@@ -13,7 +13,7 @@ services:
 
   api:
     environment:
-      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - ASPNETCORE_URLS=${API_ASPNETCORE_URLS}
     image: "manga-hunter-api:1.0.0"
     depends_on:
       - redis

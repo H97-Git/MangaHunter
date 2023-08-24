@@ -4,28 +4,29 @@
 @using MangaHunter.BlazorServer.Common
 @using MudBlazor
 @inject NavigationManager NavigationManager
-<AuthorizeView>
-    <Authorized>
-        <MudMenu AnchorOrigin="Origin.BottomCenter">
-            <ActivatorContent>
-                <MudAvatar Image="@Picture"/>
-            </ActivatorContent>
-            <ChildContent>
-                @* <MudMenuItem Href="@("/dashboard")">Dashboard</MudMenuItem> *@
-                @* <MudMenuItem Href="@("/search")">Search</MudMenuItem> *@
-                @* <MudMenuItem Href="@($"users/{UserState.Username}/mangas")">Mangas</MudMenuItem> *@
-                @* <MudMenuItem Href="@($"users/{UserState.Username}/tierlist")">Tierlist</MudMenuItem> *@
-                <MudMenuItem Href="@($"users/{UserState.Username}/settings")">Settings</MudMenuItem>
-                <MudNavLink Href="auth/logout" Icon="@Icons.Material.Rounded.Logout">Sign Out</MudNavLink>
-            </ChildContent>
-        </MudMenu>
-    </Authorized>
-    <NotAuthorized>
-        <div>
-            <MudNavLink Href="@LoginUriWithReturnUrl()" Icon="@Icons.Material.Rounded.Login">Sign In</MudNavLink>
-        </div>
-    </NotAuthorized>
-</AuthorizeView>
+@* <AuthorizeView> *@
+@*     <Authorized> *@
+@*         <MudMenu AnchorOrigin="Origin.BottomCenter"> *@
+@*             <ActivatorContent> *@
+@*                 <MudAvatar Image="@Picture"/> *@
+@*             </ActivatorContent> *@
+@*             <ChildContent> *@
+@*                 $1$ <MudMenuItem Href="@("/dashboard")">Dashboard</MudMenuItem> #1# *@
+@*                 $1$ <MudMenuItem Href="@("/search")">Search</MudMenuItem> #1# *@
+@*                 $1$ <MudMenuItem Href="@($"users/{UserState.Username}/mangas")">Mangas</MudMenuItem> #1# *@
+@*                 $1$ <MudMenuItem Href="@($"users/{UserState.Username}/tierlist")">Tierlist</MudMenuItem> #1# *@
+@*                 <MudMenuItem Href="@($"users/{UserState.Username}/settings")">Settings</MudMenuItem> *@
+@*                 <MudNavLink Href="auth/logout" Icon="@Icons.Material.Rounded.Logout">Sign Out</MudNavLink> *@
+@*             </ChildContent> *@
+@*         </MudMenu> *@
+@*     </Authorized> *@
+@*     <NotAuthorized> *@
+         <div>
+@*             <MudNavLink Href="@LoginUriWithReturnUrl()" Icon="@Icons.Material.Rounded.Login">Sign In</MudNavLink> *@
+                <MudText>@UserState.Username</MudText>
+         </div>
+@*     </NotAuthorized> *@
+@* </AuthorizeView> *@
 
 @code {
 

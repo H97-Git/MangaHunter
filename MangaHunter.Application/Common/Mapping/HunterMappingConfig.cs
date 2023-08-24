@@ -1,4 +1,4 @@
-using MangaDexSharp.Resources;
+using MangaDexSharpOld.Resources;
 
 using MangaHunter.Application.Hunter;
 

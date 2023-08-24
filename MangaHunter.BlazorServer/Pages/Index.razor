@@ -4,9 +4,9 @@
     <MudPaper Class="pa-4">
         <MudImage Src="@Src" Width="400"/>
     </MudPaper>
-    <CarouselComponent HunterResponses="HunterResponses"/>
+    <CarouselComponent HunterResponsesNew="HunterResponses"/>
     <PoweredByComponent/>
-    <TierlistDemoComponent HunterResponses="HunterResponses"/>
+    @* <TierlistDemoComponent HunterResponses="HunterResponses"/> *@
     <MudButton
         Class="ma-10"
         Color="Color.Primary"
@@ -24,7 +24,7 @@
 
     static string Src => false ? "logo-dark.png" : "logo-light.png";
 
-    List<HunterResponse> HunterResponses { get; set; } = new();
+    List<HunterResponseNew> HunterResponses { get; set; } = new();
 
 
     protected override async Task OnParametersSetAsync()
@@ -34,7 +34,7 @@
         HunterResponses.Add(await FetchData("8892dc05-867f-4fff-823b-47210a6746bb"));
     }
 
-    async Task<HunterResponse> FetchData(string guid)
+    async Task<HunterResponseNew> FetchData(string guid)
     {
         var mangaById = await ApiService.GetMangaById("ecchi", guid,
             new QueryParameters
@@ -42,7 +42,7 @@
                 HasMangadex = true,
                 HasMangaUpdates = true,
             });
-        return !mangaById.IsError ? mangaById.Value : new HunterResponse();
+        return !mangaById.IsError ? mangaById.Value : new();
     }
 
 }

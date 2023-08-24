@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using Serilog;
+
 namespace MangaHunter.Infrastructure;
 
 public static class DependencyInjection
@@ -19,6 +21,7 @@ public static class DependencyInjection
         var isDevelopment = environment.IsDevelopment();
         var connectionString = configuration
             .GetConnectionString(isDevelopment ? "DataConnectionLocal" : "DataConnectionDocker");
+        Log.Debug($"{connectionString}");
         services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddDbContext<ApplicationDbContext>((sp, options) =>

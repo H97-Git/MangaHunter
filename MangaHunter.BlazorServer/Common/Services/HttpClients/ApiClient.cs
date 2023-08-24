@@ -13,7 +13,7 @@ public interface IApiClient
 {
     Task<ErrorOr<T>> GetRequest<T>(string uri);
     Task<ErrorOr<T>> PostRequest<T>(string uri, T? args);
-    Task<ErrorOr<List<HunterResponse>>> SearchRequest(string uri, SearchQueryParameters parameters);
+    Task<ErrorOr<List<HunterResponseNew>>> SearchRequest(string uri, SearchQueryParameters parameters);
     Task<ErrorOr<T>> PutRequest<T>(string uri, T? args);
     Task<ErrorOr<Deleted>> DeleteRequest(string uri);
 }
@@ -28,7 +28,7 @@ public class ApiClient : IApiClient
     {
         _navigationManagerHandler = navigationManagerHandler;
         _client = factory.CreateClient();
-        _client.BaseAddress = new Uri(!environment.IsDevelopment() ? "http://api/" : "http://localhost:4000/");
+        _client.BaseAddress = new Uri(!environment.IsDevelopment() ? "http://api:8676/" : "http://localhost:4000/");
     }
 
     // Todo : Learn cancellationToken
@@ -48,14 +48,14 @@ public class ApiClient : IApiClient
         return await SendHandleResponse<T>(httpRequestMessage);
     }
 
-    public async Task<ErrorOr<List<HunterResponse>>> SearchRequest(string uri, SearchQueryParameters parameters)
+    public async Task<ErrorOr<List<HunterResponseNew>>> SearchRequest(string uri, SearchQueryParameters parameters)
     {
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, uri)
         {
             Content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8,
                 "application/json")
         };
-        return await SendHandleResponse<List<HunterResponse>>(httpRequestMessage);
+        return await SendHandleResponse<List<HunterResponseNew>>(httpRequestMessage);
     }
 
     public async Task<ErrorOr<T>> PutRequest<T>(string uri, T? args)

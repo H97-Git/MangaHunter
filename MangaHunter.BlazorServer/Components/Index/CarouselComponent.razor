@@ -6,14 +6,15 @@
                  ShowArrows="false"
                  SelectedIndex="CarouselIndex"
                  Style="height:880px;" TData="@RenderFragment">
-        @foreach (var hunterResponse in HunterResponses)
+        @foreach (var hunterResponseNew in HunterResponsesNew)
         {
             <MudCarouselItem Transition="Transition.Fade">
                 <div class="d-flex" style="height:100%">
-                    <MangaCard Class="mx-auto my-auto" HunterResponse="@hunterResponse" IsLandingPage="true"/>
+                    <MangaCard Class="mx-auto my-auto" HunterResponseNew="@hunterResponseNew" IsLandingPage="true"/>
                 </div>
             </MudCarouselItem>
         }
+        
     </MudCarousel>
     <MudText Typo="Typo.h3" Class="my-auto">Never miss a chapter of your favorite series</MudText>
 </MudStack>
@@ -22,6 +23,9 @@
 
     [Parameter]
     public List<HunterResponse> HunterResponses { get; set; }
+
+    [Parameter]
+    public List<HunterResponseNew> HunterResponsesNew { get; set; }
 
     bool AutoCycle = true;
     int CarouselIndex = 0;

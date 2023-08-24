@@ -1,3 +1,8 @@
+using CardboardBox.Http;
+using CardboardBox.Json;
+
+using MangaDexSharp;
+
 using MangaHunter.API;
 using MangaHunter.Application;
 using MangaHunter.Infrastructure;
@@ -31,6 +36,10 @@ try
             .AddPresentation(builder.Configuration)
             .AddApplication()
             .AddInfrastructures(builder.Configuration, builder.Environment);
+        builder.Services
+            .AddMangaDex()
+            .AddJson()
+            .AddCardboardHttp();
     }
 
     var app = builder.Build();
@@ -46,11 +55,11 @@ try
         {
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
         });
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+        // if (app.Environment.IsDevelopment())
+        // {
+        // }
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
         app.UseExceptionHandler("/error");
 

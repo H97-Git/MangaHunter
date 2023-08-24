@@ -11,6 +11,7 @@
 </MudTooltip>
 
 @code {
+
     [Parameter]
     public string? Class { get; set; }
 
@@ -18,13 +19,15 @@
     public MangadexDto? Mangadex { get; set; }
 
     protected override bool ShouldRender() => Mangadex is not null;
-    
+
     private string Src => ImgProxy(Mangadex?.CoverArt?.Thumbnail512Px.ToString());
         const string salt = "68656C6C6F";
         const string key = "736563726574";
 
     private string ImgProxy(string? src) => ImgProxyBuilder.New
-        .WithEndpoint("https://cdn.mangahunter.org")
+    // .WithEndpoint("https://cdn.mangahunter.org")
+        .WithEndpoint("http://localhost:8080")
         .WithCredentials(key, salt)
         .Build(src, encode: true);
+
 }

@@ -37,14 +37,15 @@ public class GetNewMangaUpdatesIdHandler : IRequestHandler<GetNewMangaUpdatesIdQ
             return manga.FirstError;
         }
 
-        var mangaUpdates = await _mangaUpdates.GetMangaUpdatesUnsafe(manga.Value.Links.MangaUpdates);
+        return new ErrorOr<long?>();
+        /*var mangaUpdates = await _mangaUpdates.GetMangaUpdatesUnsafe(manga.Value.Links.MangaUpdates);
 
         if (mangaUpdates.IsError)
         {
             return mangaUpdates.FirstError;
         }
 
-        return mangaUpdates.Value.SeriesId;
+        return mangaUpdates.Value.SeriesId;*/
 
     }
 }

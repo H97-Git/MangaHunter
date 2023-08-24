@@ -12,7 +12,7 @@
     </MudCardContent>
 
     <MudCardActions>
-        <IconLink Href="@MangadexUri(HunterResponse.HunterDto!.MangadexId)" Src="mangadex.ico"/>
+        <IconLink Href="@MangadexUri(HunterResponseNew.HunterDto!.MangadexId)" Src="mangadex.ico"/>
         <MudSpacer/>
         <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="OnDelete">Delete</MudButton>
     </MudCardActions>
@@ -22,12 +22,11 @@
 
     [CascadingParameter]
     protected UserState UserState { get; set; }
-
+   
     [Parameter]
-    public HunterResponse HunterResponse { get; set; }
-
+    public HunterResponseNew HunterResponseNew { get; set; }
     [Parameter]
-    public EventCallback<HunterResponse> DeleteUi { get; set; }
+    public EventCallback<HunterResponseNew> DeleteUi { get; set; }
 
     private static string MangadexUri(Guid id) => $"https://mangadex.org/title/{id.ToString()}";
 
@@ -38,7 +37,7 @@
         if (isCancelled)
             return;
 
-        var result = await ApiService.DeleteManga(UserState.Username, HunterResponse.HunterDto!.MangadexId.ToString());
+        var result = await ApiService.DeleteManga(UserState.Username, HunterResponseNew.HunterDto!.MangadexId.ToString());
         if (result.IsError)
         {
             Snackbar.Add("Failed", Severity.Error);
@@ -46,7 +45,7 @@
         }
         else
         {
-            await DeleteUi.InvokeAsync(HunterResponse);
+            await DeleteUi.InvokeAsync(HunterResponseNew);
             Snackbar.Add("Succeeded", Severity.Success);
         }
     }

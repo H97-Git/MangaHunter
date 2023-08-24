@@ -1,5 +1,8 @@
-using MangaDexSharp.Parameters.Manga;
+using ErrorOr;
 
+using MangaDexSharpOld.Parameters.Manga;
+
+using MangaHunter.Application.Hunter;
 using MangaHunter.Application.Hunter.Commands.Create;
 using MangaHunter.Application.Hunter.Commands.Delete;
 using MangaHunter.Application.Hunter.Commands.Update;
@@ -73,7 +76,7 @@ public class HunterController : ApiController
             HasMangaUpdates: parameters.HasMangaUpdates, HasMangaUpdatesRss: parameters.HasMangaUpdatesRss);
         var result = await Mediator.Send(query);
 
-        return result.Match(value => Ok(Mapper.Map<HunterResponse>(value)), Problem);
+        return result.Match(value => Ok(Mapper.Map<HunterResponseNew>(value)), Problem);
     }
 
     [HttpGet("/[controller]/mangaupdatesid/{mangadexId}")]

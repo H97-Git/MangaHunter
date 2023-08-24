@@ -46,20 +46,20 @@ else
     protected UserState UserState { get; set; }
 
     [Parameter]
-    public HunterResponse HunterResponse { get; set; }
+    public HunterResponseNew HunterResponseNew { get; set; }
 
     [Parameter]
-    public EventCallback<HunterResponse> Add { get; set; }
+    public EventCallback<HunterResponseNew> Add { get; set; }
 
     [Parameter]
-    public EventCallback<HunterResponse> DeleteUi { get; set; }
+    public EventCallback<HunterResponseNew> DeleteUi { get; set; }
 
     [Parameter]
     public bool IsSearchResult { get; set; }
 
     private async Task OnAdd()
     {
-        await Add.InvokeAsync(HunterResponse);
+        await Add.InvokeAsync(HunterResponseNew);
     }
 
     private async Task OnDelete()
@@ -69,7 +69,7 @@ else
         if (isCancelled)
             return;
 
-        var result = await ApiService.DeleteManga(UserState.Username, HunterResponse.HunterDto.MangadexId.ToString());
+        var result = await ApiService.DeleteManga(UserState.Username, HunterResponseNew.HunterDto.MangadexId.ToString());
         if (result.IsError)
         {
             Snackbar.Add("Failed", Severity.Error);
@@ -77,14 +77,14 @@ else
         }
         else
         {
-            await DeleteUi.InvokeAsync(HunterResponse);
+            await DeleteUi.InvokeAsync(HunterResponseNew);
             Snackbar.Add("Succeeded", Severity.Success);
         }
     }
 
     private async Task OnUpdate()
     {
-        var parameters = new DialogParameters {[nameof(HunterResponse)] = HunterResponse, ["Username"] = UserState.Username};
+        var parameters = new DialogParameters {[nameof(HunterResponseNew)] = HunterResponseNew, ["Username"] = UserState.Username};
         var dialog = await DialogService.ShowAsync<UpdateManga>("Update Manga", parameters);
         var result = await dialog.Result;
         if (!result.Cancelled)
