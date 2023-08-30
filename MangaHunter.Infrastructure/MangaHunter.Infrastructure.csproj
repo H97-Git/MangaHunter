@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\MangaDexSharp\src\MangaDexSharp\MangaDexSharp.csproj" />
         <ProjectReference Include="..\MangaHunter.Application\MangaHunter.Application.csproj" />
     </ItemGroup>
 

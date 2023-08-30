@@ -1,20 +1,22 @@
 @using MangaHunter.Contracts.Common
+@using MangaHunter.Contracts.Mangadex.Models.Base
 @using MangaHunter.Contracts.Mangadex.Models.Manga
+
 <MudStack AlignItems="AlignItems.Center" Row="true">
 
 </MudStack>
 <MudCardHeader Style="padding: 8px">
     <CardHeaderAvatar>
-        <FlagIcon OriginalLanguage="@Mangadex.OriginalLanguage"/>
+        <FlagIcon OriginalLanguage="@MangadexDto.Data.Attributes.OriginalLanguage"/>
     </CardHeaderAvatar>
     <CardHeaderContent>
-        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@Mangadex.Title.EnglishOrDefault">
+        <MudTooltip Arrow="true" Placement="Placement.Top" Text="@MangadexDto.Data.Attributes.Title.ToString()">
             <MudText Class="trim" Typo="Typo.h6">
-                <MudLink Color="Color.Inherit" Href="@($"manga/{Mangadex.Id}")">
-                    @Mangadex.Title.EnglishOrDefault
+                <MudLink Color="Color.Inherit" Href="@($"manga/{MangadexDto.Data.Id}")">
+                    @title
                 </MudLink>
             </MudText>
-            <MudText Typo="Typo.caption">@Mangadex.PublicationDemographic</MudText>
+            <MudText Typo="Typo.caption">@MangadexDto.Data.Attributes.PublicationDemographic</MudText>
         </MudTooltip>
     </CardHeaderContent>
     <CardHeaderActions>
@@ -25,8 +27,7 @@
 @code {
 
     [Parameter]
-    public MangadexDto Mangadex { get; set; }
+    public MangaDexRoot<Manga> MangadexDto { get; set; }
 
-    [Parameter]
-    public MangaDto MangadexNewDto { get; set; }
+    private object title => MangadexDto.Data.Attributes.Title;
 }

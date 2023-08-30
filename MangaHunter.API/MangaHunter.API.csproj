@@ -45,7 +45,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\mangadex-sharp\src\MangaDexSharpOld\MangaDexSharpOld.csproj" />
-        <ProjectReference Include="..\..\MangaDexSharp\src\MangaDexSharp\MangaDexSharp.csproj" />
         <ProjectReference Include="..\MangaHunter.Contracts\MangaHunter.Contracts.csproj" />
         <ProjectReference Include="..\MangaHunter.Application\MangaHunter.Application.csproj" />
         <ProjectReference Include="..\MangaHunter.Infrastructure\MangaHunter.Infrastructure.csproj" />

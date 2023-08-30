@@ -8,13 +8,13 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\mangadex-sharp\src\MangaDexSharpOld\MangaDexSharpOld.csproj" />
-        <ProjectReference Include="..\..\MangaDexSharp\src\MangaDexSharp\MangaDexSharp.csproj" />
         <ProjectReference Include="..\MangaHunter.Domain\MangaHunter.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="11.7.1" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+        <PackageReference Include="MangaDexSharp" Version="1.0.17" />
         <PackageReference Include="Mapster" Version="7.3.0"/>
         <PackageReference Include="Mapster.DependencyInjection" Version="1.0.0"/>
         <PackageReference Include="MediatR" Version="12.1.1" />

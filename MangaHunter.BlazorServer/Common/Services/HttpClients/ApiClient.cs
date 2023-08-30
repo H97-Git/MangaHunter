@@ -1,11 +1,16 @@
 using System.Net;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using ErrorOr;
 
 using MangaHunter.Contracts.Hunter;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
+using Serilog;
 
 namespace MangaHunter.BlazorServer.Common.Services.HttpClients;
 
@@ -94,9 +99,30 @@ public class ApiClient : IApiClient
             return Error.Failure(description: await httpResponseMessage.Content.ReadAsStringAsync());
 
         var content = await httpResponseMessage.Content.ReadAsStringAsync();
-        var retVal = JsonConvert.DeserializeObject<T>(content);
-        return retVal is not null
+
+        try
+        {
+            var ob = System.Text.Json.JsonSerializer.Deserialize<T>(content);
+
+            T? retVal = JsonConvert.DeserializeObject<T>(
+                content,
+                new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    TypeNameHandling = TypeNameHandling.Objects,
+                    NullValueHandling = NullValueHandling.Ignore,
+                });
+            Console.WriteLine("");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        return Error.Failure("");
+
+        /*return retVal is not null
             ? retVal
-            : Error.Failure(description: $"Failed to deserialize stream to {nameof(T)}");
+            : Error.Failure(description: $"Failed to deserialize stream to {nameof(T)}");*/
     }
 }

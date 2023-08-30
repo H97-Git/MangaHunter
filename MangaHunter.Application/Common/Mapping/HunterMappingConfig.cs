@@ -1,10 +1,10 @@
+namespace MangaHunter.Application.Common.Mapping;
+
 using MangaDexSharpOld.Resources;
 
-using MangaHunter.Application.Hunter;
+using Hunter;
 
 using Mapster;
-
-namespace MangaHunter.Application.Common.Mapping;
 
 public class HunterMappingConfig : IRegister
 {
@@ -14,6 +14,9 @@ public class HunterMappingConfig : IRegister
             .MapWith(src => CreateHunterResult(src));
 
         config.NewConfig<Manga, HunterResult>()
+            .Map(dest => dest.Mangadex, src => src);
+
+        config.NewConfig<MangaDexSharp.MangaDexRoot<MangaDexSharp.Manga>, HunterResultNEW>()
             .Map(dest => dest.Mangadex, src => src);
     }
 

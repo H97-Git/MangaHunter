@@ -18,6 +18,7 @@
 </MudStack>
 
 @code {
+        private const string defaultUsername = "ecchi";
 
     [Inject]
     protected IApiService ApiService { get; set; }
@@ -26,6 +27,11 @@
 
     List<HunterResponseNew> HunterResponses { get; set; } = new();
 
+    private QueryParameters _parameters = new QueryParameters()
+    {
+        HasMangadex = true,
+        HasMangaUpdates = true,
+    };
 
     protected override async Task OnParametersSetAsync()
     {
@@ -36,13 +42,8 @@
 
     async Task<HunterResponseNew> FetchData(string guid)
     {
-        var mangaById = await ApiService.GetMangaById("ecchi", guid,
-            new QueryParameters
-            {
-                HasMangadex = true,
-                HasMangaUpdates = true,
-            });
-        return !mangaById.IsError ? mangaById.Value : new();
+        var mangaById = await ApiService.GetMangaById(defaultUsername, guid, _parameters);
+        return mangaById.IsError ? new() : mangaById.Value;
     }
 
 }

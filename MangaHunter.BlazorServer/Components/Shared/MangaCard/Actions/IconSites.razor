@@ -1,23 +1,22 @@
 @using MangaHunter.Contracts.Common
+@using MangaHunter.Contracts.Mangadex.Models.Base
 @using MangaHunter.Contracts.Mangadex.Models.Manga
-<MudStack Row="true" >
-    <IconLink Href="@MangadexUri(Mangadex.Id)" Src="mangadex.ico"/>
-    @if (Mangadex.Links.MangaUpdates is not null)
+<MudStack Row="true">
+    <IconLink Href="@MangadexUri(MangadexNew.Data.Id)" Src="mangadex.ico"/>
+    @if (MangadexNew.Data.Attributes.Links.ToString() is not null)
     {
-        <IconLink Href="@Mangadex.Links.MangaUpdates" Src="manga-updates.svg"/>
+        <IconLink Href="@MangadexNew.Data.Attributes.Links.ToString()" Src="manga-updates.svg"/>
     }
-    @if (Mangadex.Links.AnimePlanet is not null)
+    @if (MangadexNew.Data.Attributes.Links.ToString() is not null)
     {
-        <IconLink Href="@Mangadex.Links.AnimePlanet" Src="anime-planet.ico"/>
+        <IconLink Href="@MangadexNew.Data.Attributes.Links.ToString()" Src="anime-planet.ico"/>
     }
 </MudStack>
 
 @code {
 
     [Parameter]
-    public MangadexDto Mangadex { get; set; }
-    [Parameter]
-    public MangaDto MangadexNew { get; set; }
-    
-    private static string MangadexUri(Guid id) => $"https://mangadex.org/title/{id.ToString()}";
+    public MangaDexRoot<Manga> MangadexNew { get; set; }
+
+    private static string MangadexUri(string id) => $"https://mangadex.org/title/{id}";
 }

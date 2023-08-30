@@ -26,7 +26,7 @@ public class TierListMappingConfig : IRegister
 
         var mangadex = src.Mangas
             .ConvertAll(manga => (manga, src.CoverArts.Find(c => c.MangaId.Equals(manga.Id))))
-            .ConvertAll(tuple => tuple.Adapt<MangadexDto>());
+            .ConvertAll(tuple => tuple.Adapt<MangadexOldDto>());
 
         tierListResponse.MangadexDtos.AddRange(mangadex);
         

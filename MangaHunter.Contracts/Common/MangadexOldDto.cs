@@ -1,6 +1,6 @@
 namespace MangaHunter.Contracts.Common;
 
-public class MangadexDto
+public class MangadexOldDto
 {
     public Guid Id { get; set; }
     public LocalizedString Title { get; set; }

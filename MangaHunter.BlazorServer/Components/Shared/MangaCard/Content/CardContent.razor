@@ -1,15 +1,15 @@
 @using ImgProxy
 
-<MudCardMedia Image="@ImgProxy(HunterResponse.MangadexDto.CoverArt?.Thumbnail512Px.ToString())"/>
+<MudCardMedia Image="@ImgProxy("")"/>
 <MudCardContent>
     <MudStack Row="true">
-        <StatusContainer Mangadex="HunterResponse.MangadexDto"/>
+        <StatusContainer MangadexNew="HunterResponse.MangadexDto"/>
         @if (!IsSearchResult)
         {
             <ReadingStatusContainer ReadingStatus="HunterResponse.HunterDto.Status"/>
         }
         <MudSpacer/>
-        <TagsMenu Mangadex="HunterResponse.MangadexDto"/>
+        <TagsMenu MangadexNew="HunterResponse.MangadexDto"/>
     </MudStack>
     <MudDivider Class="ma-2"/>
     @if (!IsSearchResult)
@@ -24,7 +24,7 @@
     {
         <MudExpansionPanel Text="Description">
             @{
-                var description = HunterResponse.MangadexDto.Description.EnglishOrDefault;
+                var description = HunterResponse.MangadexDto.Data.Attributes.Description.ToString();
                 var indexOf = description.IndexOf("---", StringComparison.Ordinal);
                 var index = indexOf is -1 ? description.Length : indexOf;
             }
@@ -39,9 +39,8 @@
     protected UserState UserState { get; set; } = new();
 
     [Parameter]
-    public HunterResponse HunterResponse { get; set; }
-    [Parameter]
-    public HunterResponseNew HunterResponseNew { get; set; }
+    public HunterResponseNew HunterResponse { get; set; }
+
     [Parameter]
     public bool IsSearchResult { get; set; }
 
@@ -51,7 +50,7 @@
         const string key = "736563726574";
 
     private string ImgProxy(string? src) => ImgProxyBuilder.New
-        // .WithEndpoint("https://cdn.mangahunter.org")
+    // .WithEndpoint("https://cdn.mangahunter.org")
         .WithEndpoint("http://localhost:8080")
         .WithCredentials(key, salt)
         .Build(src, encode: true);

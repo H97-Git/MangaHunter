@@ -43,7 +43,7 @@
             var hunterResponse = await ApiService.GetMangaById(Username, MangadexId, new QueryParameters {HasMangaUpdatesRss = true});
             if (!hunterResponse.IsError)
             {
-                RssMangaUpdates = hunterResponse.Value.RssMangaUpdatesDto;
+                RssMangaUpdates = new RssMangaUpdatesDto(); // hunterResponse.Value.RssMangaUpdatesDto;
             }
         }
         _firstExpanded = true;

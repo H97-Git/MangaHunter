@@ -11,7 +11,7 @@
             <MudStack Row="true">
                 <FlagIcon OriginalLanguage="HunterResponse.MangadexDto.OriginalLanguage"/>
                 <MudTooltip Arrow="true" Placement="Placement.Top" Text="HunterResponse.MangadexDto.Title.EnglishOrDefault">
-                    <MudText Class="trim" Typo="Typo.h6">@HunterResponse.MangadexDto.Attributes.Title.ToString()</MudText>
+                    <MudText Class="trim" Typo="Typo.h6">@HunterResponse.MangadexDto.Data.Attributes.Title.ToString()</MudText>
                     <MudText Typo="Typo.caption">PublicationDemographic</MudText>
                 </MudTooltip>
             </MudStack>
@@ -34,7 +34,7 @@
             <MudStack>
                 <MudText Typo="Typo.h5">Description</MudText>
                 @{
-                    var description = HunterResponse.MangadexDto.Attributes.Description.ToString();
+                    var description = HunterResponse.MangadexDto.Data.Attributes.Description.ToString();
                     var indexOf = description.IndexOf("---", StringComparison.Ordinal);
                     var index = indexOf is -1 ? description.Length : indexOf;
                 }
@@ -91,7 +91,7 @@
         var result = await ApiService.GetMangaById(username, mangaId, parameters);
         if (!result.IsError)
         {
-            HunterResponse = result.Value;
+            HunterResponse = new HunterResponseNew(); // result.Value;
         }
     }
 

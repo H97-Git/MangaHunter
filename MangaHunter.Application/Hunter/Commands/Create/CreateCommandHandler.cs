@@ -41,7 +41,7 @@ public class CreateCommandHandler : IRequestHandler<CreateCommand, ErrorOr<Domai
 
     private async Task<long?> GetMangaUpdatesIdUnsafe(Guid mangadexId)
     {
-        ErrorOr<MangaDexSharp.Manga> mangadex = await _mangadex.GetByGuid(mangadexId);
+        var mangadex = await _mangadex.GetByGuid(mangadexId);
         if (mangadex.IsError)
         {
             return null;

@@ -40,9 +40,9 @@
     private int PageCount => (HunterResponse.Filtered + PageSize - 1) / PageSize;
 
     [Parameter]
-    public List<MangadexDto> MangadexToAdd { get; set; } = new();
+    public List<MangadexOldDto> MangadexToAdd { get; set; } = new();
 
-    private List<MangadexDto> _mangadexIn { get; set; } = new();
+    private List<MangadexOldDto> _mangadexIn { get; set; } = new();
 
     private QueryParameters QueryParameters => new() {Page = Page, Size = PageSize, HasMangadex = true, Status = "wanttoread", ExcludedStatus = true};
 
@@ -55,9 +55,9 @@
     [Parameter]
     public string Username { get; set; }
 
-    private string BorderClass(MangadexDto mangadexDto)
+    private string BorderClass(MangadexOldDto mangadexOldDto)
     {
-        var isIn = MangadexToAdd.Find(c => c.Id.Equals(mangadexDto.Id));
+        var isIn = MangadexToAdd.Find(c => c.Id.Equals(mangadexOldDto.Id));
         return isIn is null ? "rounded-lg" : "border-solid border-4 mud-border-success rounded-lg";
     }
 
@@ -95,16 +95,16 @@
         MudDialog.Cancel();
     }
 
-    private void OnAddToList(MangadexDto mangadexDto)
+    private void OnAddToList(MangadexOldDto mangadexOldDto)
     {
-        var isIn = MangadexToAdd.Find(c => c.Id.Equals(mangadexDto.Id));
+        var isIn = MangadexToAdd.Find(c => c.Id.Equals(mangadexOldDto.Id));
         if (isIn is null)
         {
-            MangadexToAdd.Add(mangadexDto);
+            MangadexToAdd.Add(mangadexOldDto);
         }
         else
         {
-            MangadexToAdd.Remove(mangadexDto);
+            MangadexToAdd.Remove(mangadexOldDto);
         }
     }
 

@@ -81,12 +81,12 @@ public class MangadexService
         }
     }
 
-    public async Task<ErrorOr<MangaDexSharp.Manga>> GetByGuid(Guid mangaId)
+    public async Task<ErrorOr<MangaDexRoot<MangaDexSharp.Manga>>> GetByGuid(Guid mangaId)
     {
         try
         {
             var manga = await this._md.Manga.Get(mangaId.ToString(), new[] {MangaIncludes.cover_art});
-            return manga.Result is "ok" ? manga.Data : Errors.Mangadex.NotFound;
+            return manga.Result is "ok" ? manga : Errors.Mangadex.NotFound;
         }
         catch (Exception e)
         {

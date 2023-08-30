@@ -37,7 +37,7 @@ else
 
         if (!hunterResponse.IsError)
         {
-            MangaUpdatesDto = hunterResponse.Value.MangaUpdatesDto;
+            MangaUpdatesDto = new MangaUpdatesDto(); // hunterResponse.Value.MangaUpdatesDto;
         }
     }
 

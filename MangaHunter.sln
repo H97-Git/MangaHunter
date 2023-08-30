@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaHunter.BlazorServer", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaDexSharpOld", "..\mangadex-sharp\src\MangaDexSharpOld\MangaDexSharpOld.csproj", "{89AEBD05-D163-4C03-BF0C-EA6A62C7BEC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaDexSharp", "..\MangaDexSharp\src\MangaDexSharp\MangaDexSharp.csproj", "{EB739020-025C-4142-9882-64DBC29C605B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,9 +53,5 @@ Global
 		{89AEBD05-D163-4C03-BF0C-EA6A62C7BEC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89AEBD05-D163-4C03-BF0C-EA6A62C7BEC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89AEBD05-D163-4C03-BF0C-EA6A62C7BEC4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EB739020-025C-4142-9882-64DBC29C605B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EB739020-025C-4142-9882-64DBC29C605B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EB739020-025C-4142-9882-64DBC29C605B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EB739020-025C-4142-9882-64DBC29C605B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

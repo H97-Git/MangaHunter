@@ -60,6 +60,15 @@ try
         // }
         app.UseSwagger();
         app.UseSwaggerUI();
+        app.Use(async (context, next) =>
+        {
+            if (context.Request.Path == "/")
+            {
+                context.Response.Redirect("/swagger/index.html");
+                return;
+            }
+            await next();
+        });
 
         app.UseExceptionHandler("/error");
 

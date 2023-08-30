@@ -14,6 +14,7 @@ using MangaHunter.Application.Hunter.Queries.GetTodayRss;
 using MangaHunter.Application.Hunter.Queries.Search;
 using MangaHunter.Contracts.Common;
 using MangaHunter.Contracts.Hunter;
+using MangaHunter.Contracts.Mangadex.Models.Manga;
 
 using MapsterMapper;
 
@@ -22,9 +23,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using Newtonsoft.Json;
+
 using Serilog;
 
 using Hunter = MangaHunter.Domain.Entities.Hunter;
+using JsonConverter = System.Text.Json.Serialization.JsonConverter;
 
 namespace MangaHunter.API.Controllers;
 
@@ -76,7 +80,13 @@ public class HunterController : ApiController
             HasMangaUpdates: parameters.HasMangaUpdates, HasMangaUpdatesRss: parameters.HasMangaUpdatesRss);
         var result = await Mediator.Send(query);
 
-        return result.Match(value => Ok(Mapper.Map<HunterResponseNew>(value)), Problem);
+        return result.Match(
+            value =>
+            {
+                // Imperatively use Newtonsoft to serialize the result or the serialization will fail.
+                var json = JsonConvert.SerializeObject(this.Mapper.Map<HunterResponseNew>(value));
+                return this.Ok(json);
+            }, this.Problem);
     }
 
     [HttpGet("/[controller]/mangaupdatesid/{mangadexId}")]

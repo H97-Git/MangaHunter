@@ -1,3 +1,5 @@
+namespace MangaHunter.Infrastructure.Services;
+
 using ErrorOr;
 
 using MangaDexSharpOld.Parameters.Manga;
@@ -5,7 +7,8 @@ using MangaDexSharpOld.Resources;
 
 using MangaHunter.Application.Common.Interfaces.Services;
 using MangaHunter.Domain.Common;
-using MangaHunter.Infrastructure.Common;
+
+using Common;
 
 using Mapster;
 
@@ -14,8 +17,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
 using Serilog;
-
-namespace MangaHunter.Infrastructure.Services;
 
 public class CachedMangadexService : IMangadexService
 {
@@ -78,22 +79,23 @@ public class CachedMangadexService : IMangadexService
         return coverList.Value.Adapt<List<CoverArtSerializable>>();
     }
 
-    public async Task<ErrorOr<MangaDexSharp.Manga>> GetByGuid(Guid mangaId)
+    public async Task<ErrorOr<MangaDexSharp.MangaDexRoot<MangaDexSharp.Manga>>> GetByGuid(Guid mangaId)
     {
         string key = $"mangadex.{mangaId}";
         var cached = await _distributedCache.GetStringAsync(key);
         if (!string.IsNullOrEmpty(cached))
         {
             Log.Debug($"key {key} found in cache");
-            return JsonConvert.DeserializeObject<MangaDexSharp.Manga>(cached, CachingOptions.JsonSerializerSettings)!;
+            return JsonConvert.DeserializeObject<MangaDexSharp.MangaDexRoot<MangaDexSharp.Manga>>(cached,
+                CachingOptions.JsonSerializerSettings)!;
         }
 
         Log.Debug($"Get a new value for {key}");
-        ErrorOr<MangaDexSharp.Manga> manga = await _decorated.GetByGuid(mangaId);
+        var manga = await _decorated.GetByGuid(mangaId);
         if (manga.IsError)
         {
             // return manga.Adapt<MangaSerializable>();
-            return new ErrorOr<MangaDexSharp.Manga>();
+            return new ErrorOr<MangaDexSharp.MangaDexRoot<MangaDexSharp.Manga>>();
         }
 
         var json = JsonConvert.SerializeObject(manga.Value, CachingOptions.JsonSerializerSettings);

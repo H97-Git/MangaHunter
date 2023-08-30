@@ -14,12 +14,12 @@ namespace MangaHunter.API.Common.Mapping;
 
 public static class MangadexMapping
 {
-    public static MangadexDto? MapTuple((MangaSerializable?, CoverArtSerializable?) src)
+    public static MangadexOldDto? MapTuple((MangaSerializable?, CoverArtSerializable?) src)
     {
         if (src.Item1 is null)
             return null;
         var manga = src.Item1;
-        return new MangadexDto()
+        return new MangadexOldDto()
         {
             Id = manga.Id,
             Title = manga.Title.Adapt<LocalizedString>(),

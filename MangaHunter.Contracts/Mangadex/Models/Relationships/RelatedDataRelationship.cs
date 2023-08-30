@@ -7,7 +7,7 @@ namespace MangaHunter.Contracts.Mangadex.Models.Relationships;
 /// <summary>
 /// Represents a related item
 /// </summary>
-public class RelatedDataRelationship : MangaDto, IRelationship
+public class RelatedDataRelationship : Manga.Manga, IRelationship
 {
 	/// <summary>
 	/// How the item is related 
